@@ -8,8 +8,21 @@ website:
   navbar:
     left:
       - href: index.qmd
-        text: Home
-      - about.qmd
+        text: Inicio
+      - sidebar:documentos
+      - href: dashboard.qmd
+        text: Dashboard
+      - href: presentaciones.qmd
+        text: Presentaciones
+      - href: about.qmd
+        text: Acerca de
+  sidebar:
+    - id: documentos
+      title: Documentos
+      style: docked
+      contents:
+        - documentos/memoria-de-calculo.qmd
+        - documentos/reporte.qmd
 
 lang: es
 format:

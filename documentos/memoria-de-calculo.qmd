@@ -1,0 +1,127 @@
+---
+title: "Memoria de Cálculo"
+author:
+  - name: "Renato Vargas"
+    id: rv
+    affiliation: 
+      - name: "Universidad de la Vida"
+
+format:
+  html:
+    toc: true
+
+bibliography: referencias.bib
+csl: apa-es.csl
+---
+
+
+# Introducción
+
+En esta memoria de cálculo describimos los pasos utilizados para preparar los datos. Primero limpiamos el área de trabajo y llamamos las librerías que necesitamos.
+
+
+
+```{r}
+#| warning: false
+#| message: false
+# Limpiar el área de trabajo
+rm(list = ls())
+
+# Cargar librería para leer Excel
+library(readxl)
+
+# Escribir resultados a Excel
+library(openxlsx)
+
+# Cargar librerías para procesar los datos
+library(tidyverse)
+
+# Ver tablas
+library(gt)
+```
+
+# Procesamiento
+
+## Descripción del origen del dato
+
+El insumo original para esta sección proviene de un archivo de Excel entregado por la contraparte, en el cual la hoja "actividades" contiene el detalle de producción, consumo intermedio y valor agregado por actividad económica. Leemos esta hoja tal cual fue recibida, sin modificaciones todavía, para partir de un registro fiel del dato crudo.
+
+```{r}
+actividades_economicas <- read_excel(
+  "datos/productos_y_actividades.xlsx",
+  sheet = "actividades"
+)
+```
+
+Echamos un vistazo a algunas de las observaciones de los datos.
+
+```{r}
+actividades_economicas |> 
+    tail() |> 
+    gt()
+```
+
+## Inconvenientes encontrados
+
+Al inspeccionar la columna `Código Actividad Económica` notamos que combina el código numérico con el el tipo de mercado al que pertenece el dato en un mismo texto (por ejemplo, "45.1 NM" o de no mercado), lo cual dificulta agrupar y cruzar los datos más adelante. Por ello extraemos únicamente la parte numérica del código a una nueva columna `Codigo_AE` mediante una expresión regular, y descartamos la columna original ya que su información queda redundante pues se encuentra en la columna `Condición de Mercado`.
+
+```{r}
+actividades_limpias2 <- actividades_economicas |>
+  mutate(
+    Codigo_AE = str_extract(`Código Actividad Económica`, "^\\d+\\.?\\d*")
+  ) |>
+  select(!`Código Actividad Económica`)
+```
+
+## Consolidación de sectores duplicados
+
+El archivo original desagrega cada actividad económica por condición de mercado (mercado y no mercado), pero para efectos de esta memoria de cálculo necesitamos los totales consolidados por actividad. Por eso agregamos las variables de producción, consumo intermedio y valor agregado sumando sobre esa desagregación, dejando el resultado a nivel de código y nombre de actividad económica únicamente.
+
+```{r}
+actividades_limpias1 <- actividades_limpias2 |>
+  summarize(
+    VBP = sum(Producción, na.rm = T),
+    CI = sum(`Consumo Intermedio`, na.rm = T),
+    VA = sum(`Valor Agregado`, na.rm = T),
+    .by = c(
+      Codigo_AE,
+      `Actividad Económica`,
+      # `Condición de Mercado`
+    )
+  )
+```
+
+## Validación
+
+Como control de calidad, verificamos que el valor agregado reportado en el archivo sea consistente con la identidad contable que lo define (valor agregado igual a producción menos consumo intermedio). Para ello calculamos una columna adicional `VA_check` con esa diferencia, la cual podremos comparar contra el valor agregado original en una revisión posterior.
+
+```{r}
+actividades_limpias <- actividades_limpias1 |>
+  mutate(
+    VA_check = VBP - CI
+  )
+```
+
+Verificamos las primeras observaciones del resultado final.
+
+```{r}
+actividades_limpias |> 
+    head() |> 
+    gt()
+```
+
+Finalmente, exportamos la tabla de actividades ya depurada a un archivo de Excel para que quede disponible como insumo para las siguientes etapas del ejercicio, cuidando que no se genere el formato de tabla nativa de Excel para simplificar su lectura posterior con otras herramientas.
+
+# Exportación de la base de datos limpia
+
+```{r}
+# Guardar a Excel
+library(openxlsx)
+
+# Guardar rápidamente
+write.xlsx(
+  actividades_limpias,
+  file = "salidas/actividades_limpias.xlsx",
+  asTable = FALSE
+)
+```

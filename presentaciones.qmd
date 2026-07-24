@@ -1,0 +1,15 @@
+---
+title: "Presentaciones"
+---
+
+Esta página reúne las presentaciones utilizadas en el curso. Cada una está pensada como un recurso complementario a los reportes y a la memoria de cálculo, enfocado en explicar de forma visual y progresiva los conceptos y herramientas que se van utilizando a lo largo de las sesiones.
+
+## Sobre esta presentación
+
+La presentación embebida a continuación introduce las tecnologías que usaremos durante el curso: control de versiones con git y GitHub, el entorno de análisis estadístico R, el editor Positron y el sistema de publicación Quarto. Estas herramientas conforman la base de un flujo de trabajo reproducible que emplearemos en el resto de los ejercicios.
+
+```{=html}
+<div>
+<iframe class="slide-deck" src="presentaciones/01-tecnologias.html" style="width:100%; height:600px; border:1px solid #dee2e6; border-radius:8px;"></iframe>
+</div>
+```

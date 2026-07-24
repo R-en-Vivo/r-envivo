@@ -1,16 +1,176 @@
 [
   {
-    "objectID": "about.html",
-    "href": "about.html",
-    "title": "About",
+    "objectID": "presentaciones/01-tecnologias.html#contenido",
+    "href": "presentaciones/01-tecnologias.html#contenido",
+    "title": "Análisis de Datos y Reportes Reproducibles",
+    "section": "Contenido",
+    "text": "Contenido\n\n¿Por qué adoptar la reproducibilidad?\nGit (Control de Versiones).\nEntorno de análisis estadístico R.\nPositron.\n¿Qué es Quarto?\nCierre"
+  },
+  {
+    "objectID": "presentaciones/01-tecnologias.html#por-qué-adoptar-la-reproducibilidad",
+    "href": "presentaciones/01-tecnologias.html#por-qué-adoptar-la-reproducibilidad",
+    "title": "Análisis de Datos y Reportes Reproducibles",
+    "section": "¿Por qué adoptar la reproducibilidad?",
+    "text": "¿Por qué adoptar la reproducibilidad?\n\nLa reproducibilidad permite que otra persona (o uno mismo, meses después) obtenga los mismos resultados a partir de los mismos datos y código.\nEvita el problema de “funcionaba en mi computadora” al documentar el entorno y los pasos exactos del análisis.\nReduce errores de manipulación manual (copiar y pegar, editar celdas a mano) que son difíciles de rastrear.\nFacilita la revisión y auditoría de los resultados por terceros (colegas, revisores, público).\nPermite actualizar el análisis fácilmente cuando llegan datos nuevos, sin repetir el trabajo desde cero.\nEvita la pérdida de trabajo y la confusión de versiones (archivos como “final_v2_definitivo-este-sí.xlsx”)."
+  },
+  {
+    "objectID": "presentaciones/01-tecnologias.html#qué-es-git-control-de-versiones",
+    "href": "presentaciones/01-tecnologias.html#qué-es-git-control-de-versiones",
+    "title": "Análisis de Datos y Reportes Reproducibles",
+    "section": "¿Qué es Git (control de versiones)?",
+    "text": "¿Qué es Git (control de versiones)?\n\nSistema para registrar el historial de cambios de un directorio de proyecto (código, texto, datos).\nPermite volver a versiones anteriores en cualquier momento.\nCada cambio queda documentado: quién, qué y por qué (commits).\nEl historial se organiza como una línea de commits encadenados, cada uno con su “padre”.\nLas ramas (branches) son líneas de desarrollo paralelas.\nmain suele ser la rama principal; se crean otras para features o pruebas sin afectarla.\nLos cambios de una rama se integran a otra mediante merge (o pull request en GitHub).\nGitHub es una plataforma para alojar y compartir repositorios de git en la nube."
+  },
+  {
+    "objectID": "presentaciones/01-tecnologias.html#inicializar-un-repositorio-y-subirlo-a-github",
+    "href": "presentaciones/01-tecnologias.html#inicializar-un-repositorio-y-subirlo-a-github",
+    "title": "Análisis de Datos y Reportes Reproducibles",
+    "section": "Inicializar un repositorio y subirlo a GitHub",
+    "text": "Inicializar un repositorio y subirlo a GitHub\ngit init\ngit add .\ngit commit -m \"Commit inicial\"\ngit remote add origin mi-repositorio-en-github.git\ngit branch -M main\ngit push -u origin main"
+  },
+  {
+    "objectID": "presentaciones/01-tecnologias.html#el-entorno-de-análisis-r",
+    "href": "presentaciones/01-tecnologias.html#el-entorno-de-análisis-r",
+    "title": "Análisis de Datos y Reportes Reproducibles",
+    "section": "El entorno de análisis R",
+    "text": "El entorno de análisis R\nR es un conjunto integrado de herramientas de software para la manipulación de datos, cálculo y visualización gráfica. Incluye:\n\nUna eficaz herramienta para el manejo y almacenamiento de datos,\nUn conjunto de operadores para cálculos en matrices,\nUna colección grande, coherente e integrada de herramientas intermedias para el análisis de datos,\nherramientas gráficas para el análisis y visualización de datos, ya sea en pantalla o en copia impresa, y\nUn lenguaje de programación bien desarrollado, simple y eficaz que incluye condicionales, bucles, funciones recursivas definidas y herramientas para ingreso y salida de información.\nUn ambiente en el que se han implementado funciones estadísticas."
+  },
+  {
+    "objectID": "presentaciones/01-tecnologias.html#positron",
+    "href": "presentaciones/01-tecnologias.html#positron",
+    "title": "Análisis de Datos y Reportes Reproducibles",
+    "section": "Positron",
+    "text": "Positron\n\nPositron es un ambiente para trabajar con código (Integrated Development Environment —IDE—) moderno y con capacidad para ser extendido dirigido al trabajo de ciencia de datos, construido sobre la plataforma de Code OSS (la versión de fuente abierta de Visual Studio Code). Combina el poder de un ambiente de trabajo poderoso con herramientas explícitas para el trabajo de ciencia de datos con R y Python."
+  },
+  {
+    "objectID": "presentaciones/01-tecnologias.html#qué-es-quarto",
+    "href": "presentaciones/01-tecnologias.html#qué-es-quarto",
+    "title": "Análisis de Datos y Reportes Reproducibles",
+    "section": "¿Qué es Quarto?",
+    "text": "¿Qué es Quarto?\n\nUn sistema de publicación científica y técnica de fuente abierta.\nPermite combinar texto en markdown, código (R, Python, Julia, entre otros) y sus resultados en un mismo documento.\nUn mismo archivo fuente se puede convertir a múltiples formatos: HTML, PDF, Word, presentaciones, sitios web, dashboards.\nEl código se ejecuta al momento de generar el documento, por lo que el texto, las cifras y los gráficos siempre reflejan los datos actuales.\nEs la herramienta con la que construimos este sitio: la memoria de cálculo, el reporte, el dashboard y esta misma presentación.\nAsí logramos que el análisis sea reproducible: cualquier persona puede tomar el mismo código y los mismos datos y obtener exactamente los mismos resultados."
+  },
+  {
+    "objectID": "presentaciones/01-tecnologias.html#section-1",
+    "href": "presentaciones/01-tecnologias.html#section-1",
+    "title": "Análisis de Datos y Reportes Reproducibles",
     "section": "",
-    "text": "About this site"
+    "text": "¡Gracias!"
+  },
+  {
+    "objectID": "documentos/memoria-de-calculo.html",
+    "href": "documentos/memoria-de-calculo.html",
+    "title": "Memoria de Cálculo",
+    "section": "",
+    "text": "En esta memoria de cálculo describimos los pasos utilizados para preparar los datos. Primero limpiamos el área de trabajo y llamamos las librerías que necesitamos.\n\n# Limpiar el área de trabajo\nrm(list = ls())\n\n# Cargar librería para leer Excel\nlibrary(readxl)\n\n# Escribir resultados a Excel\nlibrary(openxlsx)\n\n# Cargar librerías para procesar los datos\nlibrary(tidyverse)\n\n# Ver tablas\nlibrary(gt)",
+    "crumbs": [
+      "Memoria de Cálculo"
+    ]
+  },
+  {
+    "objectID": "documentos/memoria-de-calculo.html#descripción-del-origen-del-dato",
+    "href": "documentos/memoria-de-calculo.html#descripción-del-origen-del-dato",
+    "title": "Memoria de Cálculo",
+    "section": "Descripción del origen del dato",
+    "text": "Descripción del origen del dato\nEl insumo original para esta sección proviene de un archivo de Excel entregado por la contraparte, en el cual la hoja “actividades” contiene el detalle de producción, consumo intermedio y valor agregado por actividad económica. Leemos esta hoja tal cual fue recibida, sin modificaciones todavía, para partir de un registro fiel del dato crudo.\n\nactividades_economicas &lt;- read_excel(\n  \"datos/productos_y_actividades.xlsx\",\n  sheet = \"actividades\"\n)\n\nEchamos un vistazo a algunas de las observaciones de los datos.\n\nactividades_economicas |&gt; \n    tail() |&gt; \n    gt()\n\n\n\n\n\n\n\nCódigo Actividad Económica\nActividad Económica\nCondición de Mercado\nProducción\nConsumo Intermedio\nValor Agregado\n\n\n\n\n50.2\nPrestación de servicios a la comunidad en general\nNo de mercado\n903.10112\n193.597250\n709.503868\n\n\n50.3\nActividades de planes de seguridad social de afiliación obligatoria\nNo de mercado\n181.06931\n15.140377\n165.928930\n\n\n45.1 NM\nEnseñanza\nNo de mercado\n1558.04496\n88.831604\n1469.213358\n\n\n46.1 NM\nActividades de atención de la salud humana y de asistencia social\nNo de mercado\n1712.76849\n402.072459\n1310.696026\n\n\n47.1 NM\nActividades artísticas, de entretenimiento y recreativas\nNo de mercado\n10.63715\n3.558225\n7.078926\n\n\n48.1 NM\nOtras actividades de servicio\nNo de mercado\n110.71209\n48.722707\n61.989385",
+    "crumbs": [
+      "Memoria de Cálculo"
+    ]
+  },
+  {
+    "objectID": "documentos/memoria-de-calculo.html#inconvenientes-encontrados",
+    "href": "documentos/memoria-de-calculo.html#inconvenientes-encontrados",
+    "title": "Memoria de Cálculo",
+    "section": "Inconvenientes encontrados",
+    "text": "Inconvenientes encontrados\nAl inspeccionar la columna Código Actividad Económica notamos que combina el código numérico con el el tipo de mercado al que pertenece el dato en un mismo texto (por ejemplo, “45.1 NM” o de no mercado), lo cual dificulta agrupar y cruzar los datos más adelante. Por ello extraemos únicamente la parte numérica del código a una nueva columna Codigo_AE mediante una expresión regular, y descartamos la columna original ya que su información queda redundante pues se encuentra en la columna Condición de Mercado.\n\nactividades_limpias2 &lt;- actividades_economicas |&gt;\n  mutate(\n    Codigo_AE = str_extract(`Código Actividad Económica`, \"^\\\\d+\\\\.?\\\\d*\")\n  ) |&gt;\n  select(!`Código Actividad Económica`)",
+    "crumbs": [
+      "Memoria de Cálculo"
+    ]
+  },
+  {
+    "objectID": "documentos/memoria-de-calculo.html#consolidación-de-sectores-duplicados",
+    "href": "documentos/memoria-de-calculo.html#consolidación-de-sectores-duplicados",
+    "title": "Memoria de Cálculo",
+    "section": "Consolidación de sectores duplicados",
+    "text": "Consolidación de sectores duplicados\nEl archivo original desagrega cada actividad económica por condición de mercado (mercado y no mercado), pero para efectos de esta memoria de cálculo necesitamos los totales consolidados por actividad. Por eso agregamos las variables de producción, consumo intermedio y valor agregado sumando sobre esa desagregación, dejando el resultado a nivel de código y nombre de actividad económica únicamente.\n\nactividades_limpias1 &lt;- actividades_limpias2 |&gt;\n  summarize(\n    VBP = sum(Producción, na.rm = T),\n    CI = sum(`Consumo Intermedio`, na.rm = T),\n    VA = sum(`Valor Agregado`, na.rm = T),\n    .by = c(\n      Codigo_AE,\n      `Actividad Económica`,\n      # `Condición de Mercado`\n    )\n  )",
+    "crumbs": [
+      "Memoria de Cálculo"
+    ]
+  },
+  {
+    "objectID": "documentos/memoria-de-calculo.html#validación",
+    "href": "documentos/memoria-de-calculo.html#validación",
+    "title": "Memoria de Cálculo",
+    "section": "Validación",
+    "text": "Validación\nComo control de calidad, verificamos que el valor agregado reportado en el archivo sea consistente con la identidad contable que lo define (valor agregado igual a producción menos consumo intermedio). Para ello calculamos una columna adicional VA_check con esa diferencia, la cual podremos comparar contra el valor agregado original en una revisión posterior.\n\nactividades_limpias &lt;- actividades_limpias1 |&gt;\n  mutate(\n    VA_check = VBP - CI\n  )\n\nVerificamos las primeras observaciones del resultado final.\n\nactividades_limpias |&gt; \n    head() |&gt; \n    gt()\n\n\n\n\n\n\n\nCodigo_AE\nActividad Económica\nVBP\nCI\nVA\nVA_check\n\n\n\n\n01.1\nCultivo de cereales, legumbres y semillas oleaginosas\n21.18894\n6.990292\n14.19865\n14.19865\n\n\n02.1\nCultivo de maiz\n92.10899\n39.724612\n52.38437\n52.38437\n\n\n03.1\nCultivo de arroz\n193.33509\n63.932435\n129.40265\n129.40265\n\n\n04.1\nCultivo de vegetales, raíces y tubérculos\n125.33849\n47.832201\n77.50629\n77.50629\n\n\n05.1\nCultivo de Banano\n188.48149\n48.026509\n140.45498\n140.45498\n\n\n06.1\nCultivo de otras frutas y nueces\n62.80165\n14.311288\n48.49036\n48.49036\n\n\n\n\n\n\n\nFinalmente, exportamos la tabla de actividades ya depurada a un archivo de Excel para que quede disponible como insumo para las siguientes etapas del ejercicio, cuidando que no se genere el formato de tabla nativa de Excel para simplificar su lectura posterior con otras herramientas.",
+    "crumbs": [
+      "Memoria de Cálculo"
+    ]
   },
   {
     "objectID": "index.html",
     "href": "index.html",
-    "title": "R en Vivo",
+    "title": "R En Vivo",
     "section": "",
-    "text": "This is a Quarto website.\nTo learn more about Quarto websites visit https://quarto.org/docs/websites."
+    "text": "Este sitio ilustra un paradigma de análisis reproducible construido enteramente con Quarto y tecnologías de fuente abierta. La idea central es que un mismo documento combine texto, código y resultados, de modo que cualquier persona pueda revisar, ejecutar de nuevo y entender cómo se llegó a cada cifra o gráfico.\nEn resumen, el sitio contiene:\n\nPresentaciones: diapositivas introductorias sobre las tecnologías del curso (git, GitHub, R, Positron y Quarto).\nDocumentos: un reporte ficticio y una memoria de cálculo ficticia que muestran cómo documentar un análisis paso a paso, incluyendo citas bibliográficas.\nDashboard: un tablero interactivo que resume los mismos resultados del reporte en un formato más visual."
+  },
+  {
+    "objectID": "about.html",
+    "href": "about.html",
+    "title": "Acerca de",
+    "section": "",
+    "text": "Este sitio muestra las funcionalidades básicas de Quarto para un paradigma de análisis de datos reproducibles."
+  },
+  {
+    "objectID": "documentos/reporte.html",
+    "href": "documentos/reporte.html",
+    "title": "Un Lindo Reporte Ficticio",
+    "section": "",
+    "text": "El crecimiento económico de los países centroamericanos ha estado marcado en los últimos años por una combinación de choques externos y procesos de recuperación pospandemia, lo cual hace relevante contar con ejercicios periódicos de seguimiento estadístico. Panamá en particular ha mostrado un desempeño singular dentro de la región debido a su condición de economía de servicios y centro logístico, por lo que este reporte ficticio ilustra, a manera de ejemplo, cómo se documentaría un análisis reproducible que combina fuentes de datos internacionales, ejercicios de clasificación biológica y datos geoespaciales dentro de un mismo documento de Quarto.",
+    "crumbs": [
+      "Un Lindo Reporte Ficticio"
+    ]
+  },
+  {
+    "objectID": "documentos/reporte.html#una-mirada-a-la-naturaleza",
+    "href": "documentos/reporte.html#una-mirada-a-la-naturaleza",
+    "title": "Un Lindo Reporte Ficticio",
+    "section": "Una mirada a la naturaleza",
+    "text": "Una mirada a la naturaleza\nComo segundo ejercicio ilustrativo, se exploró la relación entre el largo y el grosor del pico en la base de datos de pingüinos (Horst et al., 2020), diferenciando por especie. La Figura 2 muestra una agrupación relativamente clara de las tres especies en este espacio bivariado, lo cual es consistente con el uso frecuente de este conjunto de datos como ejemplo pedagógico de clasificación.\n\n\n\n\n\n\n\n\nFigura 2: Largo y grosor del pico de pingüinos, por especie",
+    "crumbs": [
+      "Un Lindo Reporte Ficticio"
+    ]
+  },
+  {
+    "objectID": "documentos/reporte.html#la-perspectiva-geográfica",
+    "href": "documentos/reporte.html#la-perspectiva-geográfica",
+    "title": "Un Lindo Reporte Ficticio",
+    "section": "La perspectiva geográfica",
+    "text": "La perspectiva geográfica\nPor último, la Figura 3 presenta la división administrativa de primer nivel de Panamá, generada a partir de datos geoespaciales, la cual serviría como base cartográfica para futuros análisis territoriales.\n\n\n\n\n\n\n\n\nFigura 3: División administrativa de primer nivel de Panamá",
+    "crumbs": [
+      "Un Lindo Reporte Ficticio"
+    ]
+  },
+  {
+    "objectID": "documentos/reporte.html#referencias",
+    "href": "documentos/reporte.html#referencias",
+    "title": "Un Lindo Reporte Ficticio",
+    "section": "Referencias",
+    "text": "Referencias\n\n\nArel-Bundock, V. (2026). WDI: World Development Indicators and Other World Bank Data. https://doi.org/10.32614/CRAN.package.WDI\n\n\nHorst, A. M., Hill, A. P. y Gorman, K. B. (2020). palmerpenguins: Palmer Archipelago (Antarctica) penguin data. https://doi.org/10.5281/zenodo.3960218",
+    "crumbs": [
+      "Un Lindo Reporte Ficticio"
+    ]
+  },
+  {
+    "objectID": "presentaciones.html",
+    "href": "presentaciones.html",
+    "title": "Presentaciones",
+    "section": "",
+    "text": "Esta página reúne las presentaciones utilizadas en el curso. Cada una está pensada como un recurso complementario a los reportes y a la memoria de cálculo, enfocado en explicar de forma visual y progresiva los conceptos y herramientas que se van utilizando a lo largo de las sesiones."
+  },
+  {
+    "objectID": "presentaciones.html#sobre-esta-presentación",
+    "href": "presentaciones.html#sobre-esta-presentación",
+    "title": "Presentaciones",
+    "section": "Sobre esta presentación",
+    "text": "Sobre esta presentación\nLa presentación embebida a continuación introduce las tecnologías que usaremos durante el curso: control de versiones con git y GitHub, el entorno de análisis estadístico R, el editor Positron y el sistema de publicación Quarto. Estas herramientas conforman la base de un flujo de trabajo reproducible que emplearemos en el resto de los ejercicios."
   }
 ]

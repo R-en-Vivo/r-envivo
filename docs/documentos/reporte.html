@@ -6,8 +6,9 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
+<meta name="author" content="Renato Vargas">
 
-<title>Acerca de – R en Vivo</title>
+<title>Un Lindo Reporte Ficticio – R en Vivo</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -23,26 +24,46 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
-</style>
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+  margin-bottom: 0em;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
 
 
-<script src="site_libs/quarto-nav/quarto-nav.js"></script>
-<script src="site_libs/quarto-nav/headroom.min.js"></script>
-<script src="site_libs/clipboard/clipboard.min.js"></script>
-<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
-<script src="site_libs/quarto-search/fuse.min.js"></script>
-<script src="site_libs/quarto-search/quarto-search.js"></script>
-<meta name="quarto:offset" content="./">
-<script src="site_libs/quarto-html/quarto.js" type="module"></script>
-<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
-<script src="site_libs/quarto-html/popper.min.js"></script>
-<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
-<script src="site_libs/quarto-html/anchor.min.js"></script>
-<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="site_libs/quarto-html/quarto-syntax-highlighting-15634bcf2e68342d4ad2dfa704d543f6.css" rel="stylesheet" id="quarto-text-highlighting-styles">
-<script src="site_libs/bootstrap/bootstrap.min.js"></script>
-<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-6417478169390d5200ae675d66b5a4f4.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<script src="../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-15634bcf2e68342d4ad2dfa704d543f6.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-6417478169390d5200ae675d66b5a4f4.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -72,17 +93,17 @@ ul.task-list li input[type="checkbox"] {
 }</script>
 
 
-<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="../styles.css">
 </head>
 
-<body class="nav-fixed quarto-light">
+<body class="nav-sidebar docked nav-fixed quarto-light">
 
 <div id="quarto-search-results"></div>
   <header id="quarto-header" class="headroom fixed-top">
     <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
       <div class="navbar-container container-fluid">
       <div class="navbar-brand-container mx-auto">
-    <a class="navbar-brand" href="./index.html">
+    <a class="navbar-brand" href="../index.html">
     <span class="navbar-title">R en Vivo</span>
     </a>
   </div>
@@ -93,7 +114,7 @@ ul.task-list li input[type="checkbox"] {
           <div class="collapse navbar-collapse" id="navbarCollapse">
             <ul class="navbar-nav navbar-nav-scroll me-auto">
   <li class="nav-item">
-    <a class="nav-link" href="./index.html"> 
+    <a class="nav-link" href="../index.html"> 
 <span class="menu-text">Inicio</span></a>
   </li>  
   <li class="nav-item dropdown ">
@@ -102,25 +123,25 @@ ul.task-list li input[type="checkbox"] {
     </a>
     <ul class="dropdown-menu" aria-labelledby="nav-menu-documentos">    
         <li>
-    <a class="dropdown-item" href="./documentos/memoria-de-calculo.html">
+    <a class="dropdown-item" href="../documentos/memoria-de-calculo.html">
  <span class="dropdown-text">Memoria de Cálculo</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="./documentos/reporte.html">
+    <a class="dropdown-item" href="../documentos/reporte.html">
  <span class="dropdown-text">Un Lindo Reporte Ficticio</span></a>
   </li>  
     </ul>
   </li>
   <li class="nav-item">
-    <a class="nav-link" href="./dashboard.html"> 
+    <a class="nav-link" href="../dashboard.html"> 
 <span class="menu-text">Dashboard</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="./presentaciones.html"> 
+    <a class="nav-link" href="../presentaciones.html"> 
 <span class="menu-text">Presentaciones</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link active" href="./about.html" aria-current="page"> 
+    <a class="nav-link" href="../about.html"> 
 <span class="menu-text">Acerca de</span></a>
   </li>  
 </ul>
@@ -129,27 +150,86 @@ ul.task-list li input[type="checkbox"] {
 </div>
       </div> <!-- /container-fluid -->
     </nav>
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Alternar barra lateral" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../documentos/reporte.html">Un Lindo Reporte Ficticio</a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Alternar barra lateral" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+    </div>
+  </nav>
 </header>
 <!-- content -->
 <div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
 <!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation docked overflow-auto">
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../documentos/memoria-de-calculo.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Memoria de Cálculo</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../documentos/reporte.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">Un Lindo Reporte Ficticio</span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
 <!-- margin-sidebar -->
-    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
-        
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">En esta página</h2>
+   
+  <ul>
+  <li><a href="#introducción" id="toc-introducción" class="nav-link active" data-scroll-target="#introducción">Introducción</a></li>
+  <li><a href="#metodología" id="toc-metodología" class="nav-link" data-scroll-target="#metodología">Metodología</a></li>
+  <li><a href="#resultados" id="toc-resultados" class="nav-link" data-scroll-target="#resultados">Resultados</a></li>
+  <li><a href="#desempeño-económico" id="toc-desempeño-económico" class="nav-link" data-scroll-target="#desempeño-económico">Desempeño económico</a>
+  <ul class="collapse">
+  <li><a href="#una-mirada-a-la-naturaleza" id="toc-una-mirada-a-la-naturaleza" class="nav-link" data-scroll-target="#una-mirada-a-la-naturaleza">Una mirada a la naturaleza</a></li>
+  <li><a href="#la-perspectiva-geográfica" id="toc-la-perspectiva-geográfica" class="nav-link" data-scroll-target="#la-perspectiva-geográfica">La perspectiva geográfica</a></li>
+  </ul></li>
+  <li><a href="#conclusiones" id="toc-conclusiones" class="nav-link" data-scroll-target="#conclusiones">Conclusiones</a>
+  <ul class="collapse">
+  <li><a href="#referencias" id="toc-referencias" class="nav-link" data-scroll-target="#referencias">Referencias</a></li>
+  </ul></li>
+  </ul>
+<div class="quarto-alternate-formats"><h2>Otros formatos</h2><ul><li><a href="reporte.docx"><i class="bi bi-file-word"></i>MS Word</a></li><li><a href="reporte.pdf"><i class="bi bi-file-pdf"></i>PDF</a></li></ul></div></nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Acerca de</h1>
+<h1 class="title">Un Lindo Reporte Ficticio</h1>
 </div>
 
 
+<div class="quarto-title-meta-author">
+  <div class="quarto-title-meta-heading">Autor/a</div>
+  <div class="quarto-title-meta-heading">Afiliación</div>
+  
+    <div class="quarto-title-meta-contents">
+    <p class="author">Renato Vargas </p>
+  </div>
+  <div class="quarto-title-meta-contents">
+        <p class="affiliation">
+            Universidad de la Vida
+          </p>
+      </div>
+  </div>
 
 <div class="quarto-title-meta">
 
-    
+      
   
     
   </div>
@@ -159,9 +239,89 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
-<p>Este sitio muestra las funcionalidades básicas de Quarto para un paradigma de análisis de datos reproducibles.</p>
+<section id="introducción" class="level1">
+<h1>Introducción</h1>
+<p>El crecimiento económico de los países centroamericanos ha estado marcado en los últimos años por una combinación de choques externos y procesos de recuperación pospandemia, lo cual hace relevante contar con ejercicios periódicos de seguimiento estadístico. Panamá en particular ha mostrado un desempeño singular dentro de la región debido a su condición de economía de servicios y centro logístico, por lo que este reporte ficticio ilustra, a manera de ejemplo, cómo se documentaría un análisis reproducible que combina fuentes de datos internacionales, ejercicios de clasificación biológica y datos geoespaciales dentro de un mismo documento de Quarto.</p>
+</section>
+<section id="metodología" class="level1">
+<h1>Metodología</h1>
+<p>Para efectos de este ejercicio se combinaron tres fuentes de datos de naturaleza distinta con el único propósito de demostrar capacidades de reproducibilidad y no de sustentar un análisis económico real. En primer lugar, se descargaron series del Producto Interno Bruto de Panamá directamente desde la API del Banco Mundial (<em>World Development Indicators</em>) mediante el paquete de R <code>WDI</code> <span class="citation" data-cites="arelbundock_wdi_2026">(<a href="#ref-arelbundock_wdi_2026" role="doc-biblioref">Arel-Bundock, 2026</a>)</span>. En segundo lugar, se utilizó la base de datos de pingüinos incluida en el paquete <code>palmerpenguins</code> <span class="citation" data-cites="horst_palmerpenguins_2020">(<a href="#ref-horst_palmerpenguins_2020" role="doc-biblioref">Horst et&nbsp;al., 2020</a>)</span> como un ejemplo didáctico de análisis exploratorio multivariado. Finalmente, se incorporó información geoespacial administrativa de Panamá a nivel de primera división para ilustrar la generación de mapas dentro del mismo flujo de trabajo reproducible.</p>
+</section>
+<section id="resultados" class="level1">
+<h1>Resultados</h1>
+</section>
+<section id="desempeño-económico" class="level1">
+<h1>Desempeño económico</h1>
+<p>El primer resultado que se presenta corresponde a la evolución reciente del Producto Interno Bruto de Panamá proveniente de la base de datos de indicadores globales del Banco Mundial <span class="citation" data-cites="arelbundock_wdi_2026">(<a href="#ref-arelbundock_wdi_2026" role="doc-biblioref">Arel-Bundock, 2026</a>)</span>. Como se observa en la <a href="#fig-pib" class="quarto-xref">Figura&nbsp;1</a>, el PIB muestra la caída abrupta característica del año 2020 asociada a la pandemia, seguida de una recuperación sostenida en los años posteriores.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div id="fig-pib" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-pib-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="reporte_files/figure-html/fig-pib-1.png" class="img-fluid figure-img" width="672">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-pib-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figura&nbsp;1: Producto Interno Bruto de Panamá, 2020-2025
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<section id="una-mirada-a-la-naturaleza" class="level2">
+<h2 class="anchored" data-anchor-id="una-mirada-a-la-naturaleza">Una mirada a la naturaleza</h2>
+<p>Como segundo ejercicio ilustrativo, se exploró la relación entre el largo y el grosor del pico en la base de datos de pingüinos <span class="citation" data-cites="horst_palmerpenguins_2020">(<a href="#ref-horst_palmerpenguins_2020" role="doc-biblioref">Horst et&nbsp;al., 2020</a>)</span>, diferenciando por especie. La <a href="#fig-pinguinos" class="quarto-xref">Figura&nbsp;2</a> muestra una agrupación relativamente clara de las tres especies en este espacio bivariado, lo cual es consistente con el uso frecuente de este conjunto de datos como ejemplo pedagógico de clasificación.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div id="fig-pinguinos" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-pinguinos-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="reporte_files/figure-html/fig-pinguinos-1.png" class="img-fluid figure-img" width="672">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-pinguinos-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figura&nbsp;2: Largo y grosor del pico de pingüinos, por especie
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="la-perspectiva-geográfica" class="level2">
+<h2 class="anchored" data-anchor-id="la-perspectiva-geográfica">La perspectiva geográfica</h2>
+<p>Por último, la <a href="#fig-mapa" class="quarto-xref">Figura&nbsp;3</a> presenta la división administrativa de primer nivel de Panamá, generada a partir de datos geoespaciales, la cual serviría como base cartográfica para futuros análisis territoriales.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div id="fig-mapa" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-mapa-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="reporte_files/figure-html/fig-mapa-1.png" class="img-fluid figure-img" width="672">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-mapa-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figura&nbsp;3: División administrativa de primer nivel de Panamá
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="conclusiones" class="level1">
+<h1>Conclusiones</h1>
+<p>Este reporte ficticio ilustra, con fines exclusivamente demostrativos, cómo integrar fuentes de datos heterogéneas (indicadores macroeconómicos obtenidos mediante <code>WDI</code> <span class="citation" data-cites="arelbundock_wdi_2026">(<a href="#ref-arelbundock_wdi_2026" role="doc-biblioref">Arel-Bundock, 2026</a>)</span>, datos biológicos de ejemplo del paquete <code>palmerpenguins</code> <span class="citation" data-cites="horst_palmerpenguins_2020">(<a href="#ref-horst_palmerpenguins_2020" role="doc-biblioref">Horst et&nbsp;al., 2020</a>)</span> y capas geoespaciales) en un único documento reproducible con referencias cruzadas a figuras y citas bibliográficas.</p>
+<p>Para futuros ejercicios de este tipo se recomienda ampliar el rango temporal de las series económicas y contrastar el desempeño de Panamá con el de otros países de la región centroamericana. También sería conveniente incorporar variables geoespaciales adicionales, como indicadores socioeconómicos a nivel provincial, para enriquecer el análisis territorial. Finalmente, se recomienda documentar de manera explícita las limitaciones de cada fuente de datos utilizada, de forma que quede clara la naturaleza ilustrativa de este tipo de reportes.</p>
+<section id="referencias" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="referencias">Referencias</h2>
+<div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" data-line-spacing="2" role="list">
+<div id="ref-arelbundock_wdi_2026" class="csl-entry" role="listitem">
+Arel-Bundock, V. (2026). <em>WDI: World Development Indicators and Other World Bank Data</em>. <a href="https://doi.org/10.32614/CRAN.package.WDI">https://doi.org/10.32614/CRAN.package.WDI</a>
+</div>
+<div id="ref-horst_palmerpenguins_2020" class="csl-entry" role="listitem">
+Horst, A. M., Hill, A. P. y Gorman, K. B. (2020). <em>palmerpenguins: Palmer Archipelago (Antarctica) penguin data</em>. <a href="https://doi.org/10.5281/zenodo.3960218">https://doi.org/10.5281/zenodo.3960218</a>
+</div>
+</div>
 
 
+</section>
+</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">

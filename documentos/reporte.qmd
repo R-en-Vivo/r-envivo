@@ -1,0 +1,126 @@
+---
+title: "Un Lindo Reporte Ficticio"
+author:
+  - name: "Renato Vargas"
+    id: rv
+    affiliation: 
+      - name: "Universidad de la Vida"
+
+format:
+  html:
+    toc: true
+  docx:
+    reference-doc: custom-reference-doc.docx
+    toc: true
+    number-sections: true
+    syntax-highlighting: github
+  pdf:
+    toc: true
+    number-sections: true
+    colorlinks: true
+bibliography: referencias.bib
+csl: apa-es.csl
+---
+
+
+```{r}
+#| label: setup
+#| include: false
+#| echo: false
+#| warning: false
+#| message: false
+
+library(WDI)
+library(tidyverse)
+library(gt)
+library(palmerpenguins)
+```
+
+
+# Introducción
+
+El crecimiento económico de los países centroamericanos ha estado marcado en los últimos años por una combinación de choques externos y procesos de recuperación pospandemia, lo cual hace relevante contar con ejercicios periódicos de seguimiento estadístico. Panamá en particular ha mostrado un desempeño singular dentro de la región debido a su condición de economía de servicios y centro logístico, por lo que este reporte ficticio ilustra, a manera de ejemplo, cómo se documentaría un análisis reproducible que combina fuentes de datos internacionales, ejercicios de clasificación biológica y datos geoespaciales dentro de un mismo documento de Quarto.
+
+# Metodología
+
+Para efectos de este ejercicio se combinaron tres fuentes de datos de naturaleza distinta con el único propósito de demostrar capacidades de reproducibilidad y no de sustentar un análisis económico real. En primer lugar, se descargaron series del Producto Interno Bruto de Panamá directamente desde la API del Banco Mundial (*World Development Indicators*) mediante el paquete de R `WDI` [@arelbundock_wdi_2026]. En segundo lugar, se utilizó la base de datos de pingüinos incluida en el paquete `palmerpenguins` [@horst_palmerpenguins_2020] como un ejemplo didáctico de análisis exploratorio multivariado. Finalmente, se incorporó información geoespacial administrativa de Panamá a nivel de primera división para ilustrar la generación de mapas dentro del mismo flujo de trabajo reproducible.
+
+# Resultados
+
+# Desempeño económico
+
+El primer resultado que se presenta corresponde a la evolución reciente del Producto Interno Bruto de Panamá proveniente de la base de datos de indicadores globales del Banco Mundial [@arelbundock_wdi_2026]. Como se observa en la @fig-pib, el PIB muestra la caída abrupta característica del año 2020 asociada a la pandemia, seguida de una recuperación sostenida en los años posteriores.
+
+```{r}
+#| label: fig-pib
+#| fig-cap: "Producto Interno Bruto de Panamá, 2020-2025"
+#| warning: false
+#| message: false
+#| echo: false
+
+pib_panama <- WDI(
+  country = "PA",
+  indicator = "NY.GDP.MKTP.CD",
+  start = 2020,
+  end = 2025
+)
+
+ggplot(pib_panama, aes(x = factor(year), y = NY.GDP.MKTP.CD / 1e9)) +
+  geom_col(fill = "steelblue") +
+  labs(
+    x = "Año",
+    y = "PIB (miles de millones de US$)",
+    title = "PIB de Panamá"
+  )
+```
+
+## Una mirada a la naturaleza
+
+Como segundo ejercicio ilustrativo, se exploró la relación entre el largo y el grosor del pico en la base de datos de pingüinos [@horst_palmerpenguins_2020], diferenciando por especie. La @fig-pinguinos muestra una agrupación relativamente clara de las tres especies en este espacio bivariado, lo cual es consistente con el uso frecuente de este conjunto de datos como ejemplo pedagógico de clasificación.
+
+```{r}
+#| label: fig-pinguinos
+#| fig-cap: "Largo y grosor del pico de pingüinos, por especie"
+#| warning: false
+#| message: false
+#| echo: false
+
+ggplot(penguins, aes(x = bill_length_mm, y = bill_depth_mm, color = species)) +
+  geom_point() +
+  labs(
+    x = "Largo del pico (mm)",
+    y = "Grosor del pico (mm)",
+    color = "Especie",
+    title = "Pingüinos de Palmer"
+  )
+```
+
+## La perspectiva geográfica
+
+Por último, la @fig-mapa presenta la división administrativa de primer nivel de Panamá, generada a partir de datos geoespaciales, la cual serviría como base cartográfica para futuros análisis territoriales.
+
+```{r}
+#| label: fig-mapa
+#| fig-cap: "División administrativa de primer nivel de Panamá"
+#| echo: false
+
+# Leer el dato geográfico
+adm1 <- sf::read_sf("datos/gis/gadm41_PAN_1.shp")
+
+# Visualizarlo
+ggplot2::ggplot(adm1) +
+  ggplot2::geom_sf(ggplot2::aes(fill = NAME_1)) +
+  ggplot2::labs(fill = "Provincia")
+```
+
+# Conclusiones
+
+Este reporte ficticio ilustra, con fines exclusivamente demostrativos, cómo integrar fuentes de datos heterogéneas (indicadores macroeconómicos obtenidos mediante `WDI` [@arelbundock_wdi_2026], datos biológicos de ejemplo del paquete `palmerpenguins` [@horst_palmerpenguins_2020] y capas geoespaciales) en un único documento reproducible con referencias cruzadas a figuras y citas bibliográficas.
+
+Para futuros ejercicios de este tipo se recomienda ampliar el rango temporal de las series económicas y contrastar el desempeño de Panamá con el de otros países de la región centroamericana. También sería conveniente incorporar variables geoespaciales adicionales, como indicadores socioeconómicos a nivel provincial, para enriquecer el análisis territorial. Finalmente, se recomienda documentar de manera explícita las limitaciones de cada fuente de datos utilizada, de forma que quede clara la naturaleza ilustrativa de este tipo de reportes.
+
+## Referencias {.unnumbered}
+
+::: {#refs}
+:::
+

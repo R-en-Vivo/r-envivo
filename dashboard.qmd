@@ -1,0 +1,136 @@
+---
+title: "Dashboard"
+format:
+  dashboard:
+    orientation: rows
+---
+
+```{r}
+#| label: setup
+#| include: false
+#| warning: false
+#| message: false
+
+library(WDI)
+library(tidyverse)
+library(palmerpenguins)
+library(sf)
+```
+
+## Row {height="20%"}
+
+```{r}
+#| content: valuebox
+#| title: "PIB de Panamá (2025)"
+#| color: "#0d6efd"
+list(
+  icon = "cash-coin",
+  value = "US$ 90,463 M"
+)
+```
+
+```{r}
+#| content: valuebox
+#| title: "Pingüinos estudiados"
+#| color: "#dc3545"
+list(
+  icon = "binoculars",
+  value = "342"
+)
+```
+
+```{r}
+#| content: valuebox
+#| title: "Provincias de Panamá"
+#| color: "#ffc107"
+list(
+  icon = "map",
+  value = "13"
+)
+```
+
+## Row {.tabset height="80%"}
+
+### PIB de Panamá
+
+:::: {.columns}
+
+::: {.column width="30%"}
+El primer resultado corresponde a la evolución reciente del Producto Interno Bruto de Panamá. El PIB muestra la caída abrupta característica del año 2020 asociada a la pandemia, seguida de una recuperación sostenida en los años posteriores.
+:::
+
+::: {.column width="70%"}
+```{r}
+#| warning: false
+#| message: false
+#| echo: false
+
+pib_panama <- WDI(
+  country = "PA",
+  indicator = "NY.GDP.MKTP.CD",
+  start = 2020,
+  end = 2025
+)
+
+ggplot(pib_panama, aes(x = factor(year), y = NY.GDP.MKTP.CD / 1e9)) +
+  geom_col(fill = "steelblue") +
+  labs(
+    x = "Año",
+    y = "PIB (miles de millones de US$)",
+    title = "PIB de Panamá"
+  )
+```
+:::
+
+::::
+
+### Pingüinos de Palmer
+
+:::: {.columns}
+
+::: {.column width="30%"}
+Como segundo ejercicio ilustrativo, se exploró la relación entre el largo y el grosor del pico en la base de datos de pingüinos, diferenciando por especie. Se observa una agrupación relativamente clara de las tres especies en este espacio bivariado.
+:::
+
+::: {.column width="70%"}
+```{r}
+#| warning: false
+#| message: false
+#| echo: false
+
+ggplot(penguins, aes(x = bill_length_mm, y = bill_depth_mm, color = species)) +
+  geom_point() +
+  labs(
+    x = "Largo del pico (mm)",
+    y = "Grosor del pico (mm)",
+    color = "Especie",
+    title = "Pingüinos de Palmer"
+  )
+```
+:::
+
+::::
+
+### Mapa de Panamá
+
+:::: {.columns}
+
+::: {.column width="30%"}
+Por último, se presenta la división administrativa de primer nivel de Panamá, generada a partir de datos geoespaciales, la cual serviría como base cartográfica para futuros análisis territoriales.
+:::
+
+::: {.column width="70%"}
+```{r}
+#| echo: false
+
+# Leer el dato geográfico
+adm1 <- sf::read_sf("datos/gis/gadm41_PAN_1.shp")
+
+# Visualizarlo
+ggplot2::ggplot(adm1) +
+  ggplot2::geom_sf(ggplot2::aes(fill = NAME_1)) +
+  ggplot2::labs(fill = "Provincia")
+```
+:::
+
+::::
