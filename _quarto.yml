@@ -5,10 +5,13 @@ project:
 
 website:
   title: "R en Vivo"
+  site-url: https://r-en-vivo.github.io/r-envivo/
   navbar:
     left:
       - href: index.qmd
         text: Inicio
+      - href: sesiones
+        text: Sesiones
       - sidebar:documentos
       - href: dashboard.qmd
         text: Dashboard

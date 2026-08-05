@@ -1,0 +1,13 @@
+---
+title: "R En Vivo"
+subtitle: "Sesiones de análisis reproducible"
+listing:
+  contents: posts
+  sort: "date desc"
+  type: default
+  categories: true
+  feed: true
+format:
+  html:
+    toc: false
+---

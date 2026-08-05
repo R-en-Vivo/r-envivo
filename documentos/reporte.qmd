@@ -9,15 +9,15 @@ author:
 format:
   html:
     toc: true
-  docx:
-    reference-doc: custom-reference-doc.docx
-    toc: true
-    number-sections: true
-    syntax-highlighting: github
-  pdf:
-    toc: true
-    number-sections: true
-    colorlinks: true
+  # docx:
+  #   reference-doc: custom-reference-doc.docx
+  #   toc: true
+  #   number-sections: true
+  #   syntax-highlighting: github
+  # pdf:
+  #   toc: true
+  #   number-sections: true
+  #   colorlinks: true
 bibliography: referencias.bib
 csl: apa-es.csl
 ---

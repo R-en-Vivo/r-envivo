@@ -1,0 +1,7 @@
+# options apply to all posts in this folder
+format:
+  html:
+    toc: true
+
+# freeze computational output
+freeze: auto

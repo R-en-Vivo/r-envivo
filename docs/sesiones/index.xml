@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss  xmlns:atom="http://www.w3.org/2005/Atom" 
+      xmlns:media="http://search.yahoo.com/mrss/" 
+      xmlns:content="http://purl.org/rss/1.0/modules/content/" 
+      xmlns:dc="http://purl.org/dc/elements/1.1/" 
+      version="2.0">
+<channel>
+<title>R en Vivo</title>
+<link>https://r-en-vivo.github.io/r-envivo/sesiones/</link>
+<atom:link href="https://r-en-vivo.github.io/r-envivo/sesiones/index.xml" rel="self" type="application/rss+xml"/>
+<description></description>
+<generator>quarto-1.9.37</generator>
+<lastBuildDate>Thu, 06 Aug 2026 06:00:00 GMT</lastBuildDate>
+<item>
+  <title>Encuestas de Hogares</title>
+  <dc:creator>Renato Vargas</dc:creator>
+  <link>https://r-en-vivo.github.io/r-envivo/sesiones/posts/0001-encuestas/</link>
+  <description><![CDATA[ 
+
+
+
+
+<p>En esta sesión, exploraremos cómo trabajar con datos de encuestas de hogares utilizando R y el paquete <code>dplyr</code>. Aprenderemos a limpiar, transformar y analizar los datos para obtener información valiosa. Asegúrate de tener instalado R y Positron para seguir este ejemplo. Estos los debes instalar en el siguiente orden y puedes encontrarlos en:</p>
+<ul>
+<li><a href="https://cran.r-project.org/">Entorno estadístico R</a>.</li>
+<li><a href="https://positron.posit.co/download.html">Positron</a>.</li>
+</ul>
+<p>Las encuestas de hogares cobraron importancia en Latinoamérica en los 80 gracias al trabajo de Angus Deaton y John Muellbauer, quienes desarrollaron métodos para analizar datos de consumo y bienestar, con apoyo financiero del Banco Mundial. Estas encuestas permiten obtener información detallada sobre las condiciones de vida de los hogares, incluyendo ingresos, gastos, educación y salud.</p>
+<p>Quizá la fuente más relevante respecto del trabajo de Deaton es su libro <em>The Analysis of Household Surveys: A Microeconometric Approach to Development Policy</em>. En este libro, Deaton presenta un enfoque microeconómico para analizar datos de encuestas de hogares y cómo estos datos pueden ser utilizados para informar políticas de desarrollo y que recientemente tiene <a href="https://documents.worldbank.org/en/publication/documents-reports/documentdetail/593871468777303124">una nueva edición</a> (Deaton, 2023). Este trabajo le supuso el Premio Nobel de Economía en 2015 por su análisis de consumo, pobreza y bienestar. El libro tenía la particularidad que contaba con el código de Stata para replicar los análisis, lo cual fue un gran aporte a la ciencia reproducible y con lo que aprendimos muchos de nosotros.</p>
+<p>En esta sesión, sin embargo, no profundizaremos tanto en los métodos econométricos, sino que nos centraremos en cómo manipular y analizar los datos de encuestas de hogares utilizando R y <code>dplyr</code>, pues el objetivo es aprender a extraer información útil de los datos y cómo presentarla de manera clara y reproducible.</p>
+<section id="los-datos" class="level2">
+<h2 class="anchored" data-anchor-id="los-datos">Los Datos</h2>
+<p>En esta sesión utilizaremos los datos reales de la Encuesta Nacional de Hogares (ENAHO) de Perú, que se encuentran disponibles en el <a href="https://proyectos.inei.gob.pe/microdatos/">repositorio de datos Instituto Nacional de Estadística e Informática</a>. Los datos de la ENAHO son una fuente valiosa para analizar las condiciones de vida de los hogares peruanos. Utilizaremos los datos más recientes disponibles, que corresponden al primer trimestre de 2026. Entre los datos disponibles tenemos bases de datos sobre:</p>
+<ol type="1">
+<li>Características de la Vivienda y del Hogar <a href="">descargar</a></li>
+<li>Características de los Miembros del Hogar <a href="">descargar</a></li>
+<li>Educación</li>
+<li>Salud</li>
+<li>Gastos en Alimentos y Bebidas (Módulo 601).</li>
+<li>Programas Sociales (Miembros del Hogar).</li>
+<li>Gobernabilidad, Democracia y Transparencia.</li>
+</ol>
+</section>
+<section id="el-paquete-dplyr" class="level2">
+<h2 class="anchored" data-anchor-id="el-paquete-dplyr">El paquete <code>dplyr</code></h2>
+<p>El paquete <code>dplyr</code> es parte del conjunto de paquetes de la colección <em>tidyverse</em> y proporciona un conjunto de funciones para manipular y transformar datos de manera eficiente y legible. Está basado en la filosofía de la gramática de datos, lo que permite expresar operaciones complejas de manera concisa y clara. Algunas de las funciones más utilizadas han sido concebidas como verbos que describen la acción que se desea realizar sobre los datos, como <code>filter()</code>, <code>select()</code>, <code>mutate()</code>, <code>summarise()</code> y <code>arrange()</code> (filtrar, seleccionar, mutar, resumir y ordenar, respectivamente en español). Además, <code>dplyr</code> permite encadenar operaciones utilizando el operador <code>|&gt;</code>, lo que facilita la lectura y comprensión del flujo de trabajo.</p>
+</section>
+<section id="nuestra-tarea-ficticia-la-vulnerabilidad-de-los-hogares-peruanos" class="level2">
+<h2 class="anchored" data-anchor-id="nuestra-tarea-ficticia-la-vulnerabilidad-de-los-hogares-peruanos">Nuestra tarea ficticia: La vulnerabilidad de los hogares peruanos</h2>
+<p>Imaginemos que somos analistas de datos del Banco Mundial y nos han solicitado un informe sobre la vulnerabilidad de los hogares peruanos, utilizando ideas de Freije-Rodriguez en las que la vulnerabilidad ambiental se define como la probabilidad de que un hogar caiga en pobreza en el futuro debido a factores externos, como desastres naturales. Ellos han identificado una serie de factores que pueden influir en la vulnerabilidad de los hogares, como el nivel educativo del jefe del hogar, el acceso a servicios básicos, la calidad de la vivienda y la exposición a riesgos ambientales. Nuestra tarea será analizar los datos de la ENAHO para identificar patrones y tendencias que puedan ayudar a informar políticas públicas destinadas a reducir la vulnerabilidad de los hogares peruanos.</p>
+<p>Empezamos por cargar nuestras librerías y los datos de la ENAHO. Asegúrate de tener instalados los paquetes necesarios antes de continuar.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Limpiar el área de trabajo</span></span>
+<span id="cb1-2"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">rm</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">list =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">ls</span>()) </span>
+<span id="cb1-3"></span>
+<span id="cb1-4"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Cargar librerías</span></span>
+<span id="cb1-5"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">library</span>(tidyverse)</span>
+<span id="cb1-6"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">library</span>(gt)</span>
+<span id="cb1-7"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">library</span>(haven) <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># importar datos de SPSS y Stata</span></span></code></pre></div></div>
+</div>
+<p>Continuaremos con la carga de los datos de la ENAHO y la exploración inicial de los mismos. Asegúrate de tener los archivos descargados y ubicados en el directorio correcto para poder acceder a ellos sin problemas.</p>
+<p>Para esto utilizamos el paquete <code>haven</code> que permite importar datos de SPSS y Stata, que son los formatos en los que se encuentran los datos de la ENAHO. A continuación, cargamos las bases de datos de personas y viviendas.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1">personas <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">read_spss</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"datos/per_enaho/Enaho01-2026-200-personas.sav"</span>)</span>
+<span id="cb2-2">viviendas <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">read_spss</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"datos/per_enaho/Enaho01-2026-100-vivienda.sav"</span>)</span></code></pre></div></div>
+</div>
+<p>Primeramente, vamos a explorar la estructura de los datos para entender qué variables están disponibles y cómo se organizan. Esto nos permitirá identificar las variables relevantes para nuestro análisis de vulnerabilidad de los hogares peruanos.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># estructura de la base de datos de personas</span></span>
+<span id="cb3-2"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">ncol</span>(personas)</span></code></pre></div></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 39</code></pre>
+</div>
+</div>
+<p>Y vemos la base de datos de viviendas:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># estructura de la base de datos de viviendas</span></span>
+<span id="cb5-2"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">ncol</span>(viviendas)</span></code></pre></div></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 330</code></pre>
+</div>
+</div>
+
+
+</section>
+
+ ]]></description>
+  <category>ciencia de datos</category>
+  <category>rstats</category>
+  <category>análisis reproducible</category>
+  <category>encuestas</category>
+  <category>dplyr</category>
+  <guid>https://r-en-vivo.github.io/r-envivo/sesiones/posts/0001-encuestas/</guid>
+  <pubDate>Thu, 06 Aug 2026 06:00:00 GMT</pubDate>
+</item>
+</channel>
+</rss>

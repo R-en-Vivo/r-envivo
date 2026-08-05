@@ -1,0 +1,87 @@
+---
+title: "Encuestas de Hogares"
+description: "Explorando datos con R y dplyr"
+author: "Renato Vargas"
+date: "2026-08-06"
+categories:
+  - ciencia de datos
+  - rstats
+  - análisis reproducible
+  - encuestas
+  - dplyr
+bibliography: ../../../documentos/referencias.bib
+csl: ../../../documentos/apa-es.csl
+---
+
+En esta sesión, exploraremos cómo trabajar con datos de encuestas de hogares utilizando R y el paquete `dplyr`. Aprenderemos a limpiar, transformar y analizar los datos para obtener información valiosa. Asegúrate de tener instalado R y Positron para seguir este ejemplo. Estos los debes instalar en el siguiente orden y puedes encontrarlos en:
+
+- [Entorno estadístico R](https://cran.r-project.org/).
+- [Positron](https://positron.posit.co/download.html).
+
+Las encuestas de hogares cobraron importancia en Latinoamérica en los 80 gracias al trabajo de Angus Deaton y John Muellbauer, quienes desarrollaron métodos para analizar datos de consumo y bienestar, con apoyo financiero del Banco Mundial. Estas encuestas permiten obtener información detallada sobre las condiciones de vida de los hogares, incluyendo ingresos, gastos, educación y salud. 
+
+Quizá la fuente más relevante respecto del trabajo de Deaton es su libro *The Analysis of Household Surveys: A Microeconometric Approach to Development Policy*. En este libro, Deaton presenta un enfoque microeconómico para analizar datos de encuestas de hogares y cómo estos datos pueden ser utilizados para informar políticas de desarrollo y que recientemente tiene [una nueva edición](https://documents.worldbank.org/en/publication/documents-reports/documentdetail/593871468777303124) (Deaton, 2023). Este trabajo le supuso el Premio Nobel de Economía en 2015 por su análisis de consumo, pobreza y bienestar. El libro tenía la particularidad que contaba con el código de Stata para replicar los análisis, lo cual fue un gran aporte a la ciencia reproducible y con lo que aprendimos muchos de nosotros.
+
+En esta sesión, sin embargo, no profundizaremos tanto en los métodos econométricos, sino que nos centraremos en cómo manipular y analizar los datos de encuestas de hogares utilizando R y `dplyr`, pues el objetivo es aprender a extraer información útil de los datos y cómo presentarla de manera clara y reproducible.
+
+## Los Datos
+
+En esta sesión utilizaremos los datos reales de la Encuesta Nacional de Hogares (ENAHO) de Perú, que se encuentran disponibles en el [repositorio de datos Instituto Nacional de Estadística e Informática](https://proyectos.inei.gob.pe/microdatos/). Los datos de la ENAHO son una fuente valiosa para analizar las condiciones de vida de los hogares peruanos. Utilizaremos los datos más recientes disponibles, que corresponden al primer trimestre de 2026. Entre los datos disponibles tenemos bases de datos sobre:
+
+1. Características de la Vivienda y del Hogar [descargar]()
+2. Características de los Miembros del Hogar [descargar]()
+3. Educación
+4. Salud
+5. Gastos en Alimentos y Bebidas (Módulo 601).
+6. Programas Sociales (Miembros del Hogar).
+7. Gobernabilidad, Democracia y Transparencia.
+
+## El paquete `dplyr`
+
+El paquete `dplyr` es parte del conjunto de paquetes de la colección *tidyverse* y proporciona un conjunto de funciones para manipular y transformar datos de manera eficiente y legible. Está basado en la filosofía de la gramática de datos, lo que permite expresar operaciones complejas de manera concisa y clara. Algunas de las funciones más utilizadas han sido concebidas como verbos que describen la acción que se desea realizar sobre los datos, como `filter()`, `select()`, `mutate()`, `summarise()` y `arrange()` (filtrar, seleccionar, mutar, resumir y ordenar, respectivamente en español). Además, `dplyr` permite encadenar operaciones utilizando el operador `|>`, lo que facilita la lectura y comprensión del flujo de trabajo.
+
+## Nuestra tarea ficticia: La vulnerabilidad de los hogares peruanos
+
+Imaginemos que somos analistas de datos del Banco Mundial y nos han solicitado un informe sobre la vulnerabilidad de los hogares peruanos, utilizando ideas de Freije-Rodriguez en las que la vulnerabilidad ambiental se define como la probabilidad de que un hogar caiga en pobreza en el futuro debido a factores externos, como desastres naturales. Ellos han identificado una serie de factores que pueden influir en la vulnerabilidad de los hogares, como el nivel educativo del jefe del hogar, el acceso a servicios básicos, la calidad de la vivienda y la exposición a riesgos ambientales. Nuestra tarea será analizar los datos de la ENAHO para identificar patrones y tendencias que puedan ayudar a informar políticas públicas destinadas a reducir la vulnerabilidad de los hogares peruanos.
+
+Empezamos por cargar nuestras librerías y los datos de la ENAHO. Asegúrate de tener instalados los paquetes necesarios antes de continuar.
+
+
+```{r}
+#| warning: false
+#| message: false
+
+# Limpiar el área de trabajo
+rm(list = ls()) 
+
+# Cargar librerías
+library(tidyverse)
+library(gt)
+library(haven) # importar datos de SPSS y Stata
+```
+
+
+Continuaremos con la carga de los datos de la ENAHO y la exploración inicial de los mismos. Asegúrate de tener los archivos descargados y ubicados en el directorio correcto para poder acceder a ellos sin problemas.
+
+Para esto utilizamos el paquete `haven` que permite importar datos de SPSS y Stata, que son los formatos en los que se encuentran los datos de la ENAHO. A continuación, cargamos las bases de datos de personas y viviendas.
+
+```{r}
+personas <- read_spss("datos/per_enaho/Enaho01-2026-200-personas.sav")
+viviendas <- read_spss("datos/per_enaho/Enaho01-2026-100-vivienda.sav")
+```
+
+
+Primeramente, vamos a explorar la estructura de los datos para entender qué variables están disponibles y cómo se organizan. Esto nos permitirá identificar las variables relevantes para nuestro análisis de vulnerabilidad de los hogares peruanos.
+
+
+```{r}
+# estructura de la base de datos de personas
+ncol(personas)
+```
+
+Y vemos la base de datos de viviendas:
+
+```{r}
+# estructura de la base de datos de viviendas
+ncol(viviendas)
+```

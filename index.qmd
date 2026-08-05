@@ -1,5 +1,12 @@
 ---
 title: "R En Vivo"
+listing:
+  contents: "sesiones/posts"
+  sort: "date desc"
+  type: default
+  max-items: 3
+  categories: false
+  feed: true
 ---
 
 Este sitio ilustra un paradigma de análisis reproducible construido enteramente con Quarto y tecnologías de fuente abierta. La idea central es que un mismo documento combine texto, código y resultados, de modo que cualquier persona pueda revisar, ejecutar de nuevo y entender cómo se llegó a cada cifra o gráfico.
@@ -9,3 +16,6 @@ En resumen, el sitio contiene:
 - **Presentaciones**: diapositivas introductorias sobre las tecnologías del curso (git, GitHub, R, Positron y Quarto).
 - **Documentos**: un reporte ficticio y una memoria de cálculo ficticia que muestran cómo documentar un análisis paso a paso, incluyendo citas bibliográficas.
 - **Dashboard**: un tablero interactivo que resume los mismos resultados del reporte en un formato más visual.
+
+## Sesiones de R En Vivo
+
