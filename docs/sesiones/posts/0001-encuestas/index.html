@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="es" xml:lang="es"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.9.37">
+<meta name="generator" content="quarto-1.9.38">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -60,7 +60,27 @@ div.sourceCode
 @media screen {
 pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
-</style>
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+  margin-bottom: 0em;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
 
 
 <script src="../../../site_libs/quarto-nav/quarto-nav.js"></script>
@@ -76,10 +96,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="../../../site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="../../../site_libs/quarto-html/anchor.min.js"></script>
 <link href="../../../site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="../../../site_libs/quarto-html/quarto-syntax-highlighting-7f8f88aac4f3542376d5c11b86a4c14d.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="../../../site_libs/quarto-html/quarto-syntax-highlighting-15634bcf2e68342d4ad2dfa704d543f6.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="../../../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../../../site_libs/bootstrap/bootstrap-f670ab49fb9634e9dab58972b11477cb.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="../../../site_libs/bootstrap/bootstrap-6417478169390d5200ae675d66b5a4f4.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -180,9 +200,22 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">En esta página</h2>
    
   <ul>
-  <li><a href="#los-datos" id="toc-los-datos" class="nav-link active" data-scroll-target="#los-datos">Los Datos</a></li>
+  <li><a href="#introducción" id="toc-introducción" class="nav-link active" data-scroll-target="#introducción">Introducción</a>
+  <ul class="collapse">
+  <li><a href="#los-datos" id="toc-los-datos" class="nav-link" data-scroll-target="#los-datos">Los Datos</a></li>
   <li><a href="#el-paquete-dplyr" id="toc-el-paquete-dplyr" class="nav-link" data-scroll-target="#el-paquete-dplyr">El paquete <code>dplyr</code></a></li>
-  <li><a href="#nuestra-tarea-ficticia-la-vulnerabilidad-de-los-hogares-peruanos" id="toc-nuestra-tarea-ficticia-la-vulnerabilidad-de-los-hogares-peruanos" class="nav-link" data-scroll-target="#nuestra-tarea-ficticia-la-vulnerabilidad-de-los-hogares-peruanos">Nuestra tarea ficticia: La vulnerabilidad de los hogares peruanos</a></li>
+  </ul></li>
+  <li><a href="#nuestra-tarea-ficticia-la-vulnerabilidad-de-los-hogares-peruanos" id="toc-nuestra-tarea-ficticia-la-vulnerabilidad-de-los-hogares-peruanos" class="nav-link" data-scroll-target="#nuestra-tarea-ficticia-la-vulnerabilidad-de-los-hogares-peruanos">Nuestra tarea ficticia: La vulnerabilidad de los hogares peruanos</a>
+  <ul class="collapse">
+  <li><a href="#metodología" id="toc-metodología" class="nav-link" data-scroll-target="#metodología">Metodología</a></li>
+  <li><a href="#particularidades-de-los-datos-antes-de-empezar" id="toc-particularidades-de-los-datos-antes-de-empezar" class="nav-link" data-scroll-target="#particularidades-de-los-datos-antes-de-empezar">Particularidades de los datos antes de empezar</a></li>
+  <li><a href="#identificando-las-dimensiones-con-select" id="toc-identificando-las-dimensiones-con-select" class="nav-link" data-scroll-target="#identificando-las-dimensiones-con-select">Identificando las dimensiones con select</a>
+  <ul class="collapse">
+  <li><a href="#calculadas" id="toc-calculadas" class="nav-link" data-scroll-target="#calculadas">Calculadas</a></li>
+  <li><a href="#educación" id="toc-educación" class="nav-link" data-scroll-target="#educación">Educación</a></li>
+  </ul></li>
+  </ul></li>
+  <li><a href="#referencias" id="toc-referencias" class="nav-link" data-scroll-target="#referencias">Referencias</a></li>
   </ul>
 </nav>
     </div>
@@ -232,71 +265,198 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
-<p>En esta sesión, exploraremos cómo trabajar con datos de encuestas de hogares utilizando R y el paquete <code>dplyr</code>. Aprenderemos a limpiar, transformar y analizar los datos para obtener información valiosa. Asegúrate de tener instalado R y Positron para seguir este ejemplo. Estos los debes instalar en el siguiente orden y puedes encontrarlos en:</p>
-<ul>
-<li><a href="https://cran.r-project.org/">Entorno estadístico R</a>.</li>
-<li><a href="https://positron.posit.co/download.html">Positron</a>.</li>
-</ul>
-<p>Las encuestas de hogares cobraron importancia en Latinoamérica en los 80 gracias al trabajo de Angus Deaton y John Muellbauer, quienes desarrollaron métodos para analizar datos de consumo y bienestar, con apoyo financiero del Banco Mundial. Estas encuestas permiten obtener información detallada sobre las condiciones de vida de los hogares, incluyendo ingresos, gastos, educación y salud.</p>
-<p>Quizá la fuente más relevante respecto del trabajo de Deaton es su libro <em>The Analysis of Household Surveys: A Microeconometric Approach to Development Policy</em>. En este libro, Deaton presenta un enfoque microeconómico para analizar datos de encuestas de hogares y cómo estos datos pueden ser utilizados para informar políticas de desarrollo y que recientemente tiene <a href="https://documents.worldbank.org/en/publication/documents-reports/documentdetail/593871468777303124">una nueva edición</a> (Deaton, 2023). Este trabajo le supuso el Premio Nobel de Economía en 2015 por su análisis de consumo, pobreza y bienestar. El libro tenía la particularidad que contaba con el código de Stata para replicar los análisis, lo cual fue un gran aporte a la ciencia reproducible y con lo que aprendimos muchos de nosotros.</p>
-<p>En esta sesión, sin embargo, no profundizaremos tanto en los métodos econométricos, sino que nos centraremos en cómo manipular y analizar los datos de encuestas de hogares utilizando R y <code>dplyr</code>, pues el objetivo es aprender a extraer información útil de los datos y cómo presentarla de manera clara y reproducible.</p>
-<section id="los-datos" class="level2">
-<h2 class="anchored" data-anchor-id="los-datos">Los Datos</h2>
-<p>En esta sesión utilizaremos los datos reales de la Encuesta Nacional de Hogares (ENAHO) de Perú, que se encuentran disponibles en el <a href="https://proyectos.inei.gob.pe/microdatos/">repositorio de datos Instituto Nacional de Estadística e Informática</a>. Los datos de la ENAHO son una fuente valiosa para analizar las condiciones de vida de los hogares peruanos. Utilizaremos los datos más recientes disponibles, que corresponden al primer trimestre de 2026. Entre los datos disponibles tenemos bases de datos sobre:</p>
-<ol type="1">
-<li>Características de la Vivienda y del Hogar <a href="">descargar</a></li>
-<li>Características de los Miembros del Hogar <a href="">descargar</a></li>
-<li>Educación</li>
-<li>Salud</li>
-<li>Gastos en Alimentos y Bebidas (Módulo 601).</li>
-<li>Programas Sociales (Miembros del Hogar).</li>
-<li>Gobernabilidad, Democracia y Transparencia.</li>
-</ol>
-</section>
-<section id="el-paquete-dplyr" class="level2">
-<h2 class="anchored" data-anchor-id="el-paquete-dplyr">El paquete <code>dplyr</code></h2>
-<p>El paquete <code>dplyr</code> es parte del conjunto de paquetes de la colección <em>tidyverse</em> y proporciona un conjunto de funciones para manipular y transformar datos de manera eficiente y legible. Está basado en la filosofía de la gramática de datos, lo que permite expresar operaciones complejas de manera concisa y clara. Algunas de las funciones más utilizadas han sido concebidas como verbos que describen la acción que se desea realizar sobre los datos, como <code>filter()</code>, <code>select()</code>, <code>mutate()</code>, <code>summarise()</code> y <code>arrange()</code> (filtrar, seleccionar, mutar, resumir y ordenar, respectivamente en español). Además, <code>dplyr</code> permite encadenar operaciones utilizando el operador <code>|&gt;</code>, lo que facilita la lectura y comprensión del flujo de trabajo.</p>
-</section>
-<section id="nuestra-tarea-ficticia-la-vulnerabilidad-de-los-hogares-peruanos" class="level2">
-<h2 class="anchored" data-anchor-id="nuestra-tarea-ficticia-la-vulnerabilidad-de-los-hogares-peruanos">Nuestra tarea ficticia: La vulnerabilidad de los hogares peruanos</h2>
-<p>Imaginemos que somos analistas de datos del Banco Mundial y nos han solicitado un informe sobre la vulnerabilidad de los hogares peruanos, utilizando ideas de Freije-Rodriguez en las que la vulnerabilidad ambiental se define como la probabilidad de que un hogar caiga en pobreza en el futuro debido a factores externos, como desastres naturales. Ellos han identificado una serie de factores que pueden influir en la vulnerabilidad de los hogares, como el nivel educativo del jefe del hogar, el acceso a servicios básicos, la calidad de la vivienda y la exposición a riesgos ambientales. Nuestra tarea será analizar los datos de la ENAHO para identificar patrones y tendencias que puedan ayudar a informar políticas públicas destinadas a reducir la vulnerabilidad de los hogares peruanos.</p>
-<p>Empezamos por cargar nuestras librerías y los datos de la ENAHO. Asegúrate de tener instalados los paquetes necesarios antes de continuar.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Limpiar el área de trabajo</span></span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">rm</span>(<span class="at">list =</span> <span class="fu">ls</span>()) </span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Cargar librerías</span></span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(gt)</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse) <span class="co"># Cargar dplyr y sus amigos</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(gt) <span class="co"># tablas en html</span></span>
 <span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(haven) <span class="co"># importar datos de SPSS y Stata</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
+<section id="introducción" class="level1">
+<h1>Introducción</h1>
+<p>En esta sesión, exploraremos cómo trabajar con datos de encuestas de hogares utilizando R y el paquete <code>dplyr</code>. Aprenderemos a limpiar, transformar y analizar los datos para obtener información valiosa. Asegúrate de tener instalado R y Positron para seguir este ejemplo. Estos los debes instalar en el siguiente orden y puedes encontrarlos en:</p>
+<ul>
+<li><a href="https://cran.r-project.org/">Entorno estadístico R</a>.</li>
+<li><a href="https://positron.posit.co/download.html">Positron</a>.</li>
+</ul>
+<p>Las encuestas de hogares cobraron importancia en Latinoamérica en los 80 gracias al trabajo de Angus Deaton y John Muellbauer, quienes desarrollaron métodos para analizar datos de consumo y bienestar, con apoyo del Banco Mundial. Estas encuestas permiten obtener información detallada sobre las condiciones de vida de los hogares, incluyendo ingresos, gastos, educación y salud.</p>
+<p>Quizá la fuente más relevante respecto del trabajo de Deaton es su libro <em><strong>The Analysis of Household Surveys: A Microeconometric Approach to Development Policy</strong></em>. En este libro, Deaton presenta un enfoque microeconómico para analizar datos de encuestas de hogares y cómo estos datos pueden ser utilizados para informar políticas de desarrollo y que recientemente tiene <a href="https://documents.worldbank.org/en/publication/documents-reports/documentdetail/593871468777303124">una nueva edición</a> (Deaton, 2023). Este trabajo le supuso el Premio Nobel de Economía en 2015 por su análisis de consumo, pobreza y bienestar. El libro tenía la particularidad que contaba con el código de Stata para replicar los análisis, lo cual fue un gran aporte a la ciencia reproducible y con lo que aprendimos muchos de nosotros.</p>
+<p>En esta sesión, sin embargo, no profundizaremos en los métodos econométricos, sino que nos centraremos en cómo manipular y analizar los datos de encuestas de hogares utilizando R y <code>dplyr</code>, pues el objetivo es aprender a extraer información útil de los datos y cómo presentarla de manera clara y reproducible.</p>
+<section id="los-datos" class="level2">
+<h2 class="anchored" data-anchor-id="los-datos">Los Datos</h2>
+<p>En esta sesión utilizaremos los datos reales de la Encuesta Nacional de Hogares (ENAHO) de Perú, que se encuentran disponibles en el <a href="https://proyectos.inei.gob.pe/microdatos/">repositorio de datos Instituto Nacional de Estadística e Informática (INEI)</a>. Los datos de la ENAHO son una fuente valiosa para analizar las condiciones de vida de los hogares peruanos. Utilizaremos los datos más recientes disponibles, que corresponden al primer trimestre de 2026. Entre los datos disponibles, hay muchos módulos y nosotros nos concentraremos solo en algunos:</p>
+<ul>
+<li>Características de la Vivienda y del Hogar: <a href="https://github.com/R-en-Vivo/r-envivo/raw/refs/heads/main/datos/per_enaho/Enaho01-2025-100-viviendas.sav">datos SPSS</a> | <a href="https://github.com/R-en-Vivo/r-envivo/raw/refs/heads/main/datos/per_enaho/CED-01-100-2025-vivienda.pdf">preguntas módulo vivienda</a>.</li>
+<li>Características de los Miembros del Hogar: <a href="https://github.com/R-en-Vivo/r-envivo/raw/refs/heads/main/datos/per_enaho/Enaho01-2025-200-personas.sav">datos SPSS</a> | <a href="https://github.com/R-en-Vivo/r-envivo/raw/refs/heads/main/datos/per_enaho/CED-01-100-2025-vivienda.pdf">preguntas módulo personas</a>.</li>
+<li>Educación: <a href="https://github.com/R-en-Vivo/r-envivo/raw/refs/heads/main/datos/per_enaho/Enaho01-2025-100-educacion.sav">datos SPSS</a> | <a href="https://github.com/R-en-Vivo/r-envivo/raw/refs/heads/main/datos/per_enaho/CED-01A-300-2025-educacion.pdf">preguntas módulo educación</a>.</li>
+<li>Sumarias (variables calculadas): <a href="https://github.com/R-en-Vivo/r-envivo/raw/refs/heads/main/datos/per_enaho/Sumaria-2025.sav">datos SPSS</a> | <a href="https://github.com/R-en-Vivo/r-envivo/raw/refs/heads/main/datos/per_enaho/Sumaria_2025.pdf">metodología de cálculo</a>.</li>
+</ul>
+<p>Además es muy importante tener acceso al diccionario que explica las variables, el cual el INEI incluye con las descargas.</p>
+<ul>
+<li>Diccionario de todas las bases de datos: <a href="https://github.com/R-en-Vivo/r-envivo/raw/refs/heads/main/datos/per_enaho/Diccionario_2025.pdf">descargar</a>.</li>
+</ul>
 <p>Continuaremos con la carga de los datos de la ENAHO y la exploración inicial de los mismos. Asegúrate de tener los archivos descargados y ubicados en el directorio correcto para poder acceder a ellos sin problemas.</p>
-<p>Para esto utilizamos el paquete <code>haven</code> que permite importar datos de SPSS y Stata, que son los formatos en los que se encuentran los datos de la ENAHO. A continuación, cargamos las bases de datos de personas y viviendas.</p>
+<p>Para esto utilizamos el paquete <code>haven</code> que permite importar datos de SPSS (y Stata), que son los formatos en los que se encuentran los datos de la ENAHO. A continuación, cargamos las bases de datos de personas y viviendas.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>personas <span class="ot">&lt;-</span> <span class="fu">read_spss</span>(<span class="st">"datos/per_enaho/Enaho01-2026-200-personas.sav"</span>)</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>viviendas <span class="ot">&lt;-</span> <span class="fu">read_spss</span>(<span class="st">"datos/per_enaho/Enaho01-2026-100-vivienda.sav"</span>)</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>viviendas <span class="ot">&lt;-</span> <span class="fu">read_spss</span>(<span class="st">"datos/per_enaho/Enaho01-2025-100-viviendas.sav"</span>)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>personas <span class="ot">&lt;-</span> <span class="fu">read_spss</span>(<span class="st">"datos/per_enaho/Enaho01-2025-200-personas.sav"</span>)</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>educacion <span class="ot">&lt;-</span> <span class="fu">read_spss</span>(<span class="st">"datos/per_enaho/Enaho01A-2025-300-educacion.sav"</span>)</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>calculadas <span class="ot">&lt;-</span> <span class="fu">read_spss</span>(<span class="st">"datos/per_enaho/Sumaria-2025.sav"</span>)</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p>Primeramente, vamos a explorar la estructura de los datos para entender qué variables están disponibles y cómo se organizan. Esto nos permitirá identificar las variables relevantes para nuestro análisis de vulnerabilidad de los hogares peruanos.</p>
+</section>
+<section id="el-paquete-dplyr" class="level2">
+<h2 class="anchored" data-anchor-id="el-paquete-dplyr">El paquete <code>dplyr</code></h2>
+<p>El paquete <code>dplyr</code> es parte del conjunto de paquetes de la colección <em>tidyverse</em> y proporciona un conjunto de funciones para manipular y transformar datos de manera eficiente y legible. Está basado en la filosofía de la gramática de datos, lo que permite expresar operaciones complejas de manera concisa y clara. Algunas de las funciones más utilizadas han sido concebidas como verbos que describen la acción que se desea realizar sobre los datos, como:</p>
+<ul>
+<li><code>select()</code> (seleccionar)</li>
+<li><code>filter()</code> (filtrar)</li>
+<li><code>mutate()</code> (mutar o crear nuevas variables en función de otras)</li>
+<li><code>summarise()</code> (resumir)</li>
+<li><code>arrange()</code> (ordenar).</li>
+</ul>
+<p>Además, <code>dplyr</code> permite encadenar operaciones utilizando el operador <code>|&gt;</code>, lo que facilita la lectura y comprensión del flujo de trabajo.</p>
+</section>
+</section>
+<section id="nuestra-tarea-ficticia-la-vulnerabilidad-de-los-hogares-peruanos" class="level1">
+<h1>Nuestra tarea ficticia: La vulnerabilidad de los hogares peruanos</h1>
+<section id="metodología" class="level2">
+<h2 class="anchored" data-anchor-id="metodología">Metodología</h2>
+<p>Imaginemos que somos analistas de datos y nos han solicitado que estimemos el número de peruanos bajo circunstancias vulnerables ante eventos climáticos extremos. Para esto, utilizamos ideas de <span class="citation" data-cites="doan2023">Doan et&nbsp;al. (<a href="#ref-doan2023" role="doc-biblioref">2023</a>)</span> en las que entendemos que la <em><strong>“vulnerabilidad de un hogar ante un evento climático extremo dependerá de las características del hogar que determinan el impacto inicial del evento y la capacidad del hogar para afrontarlo (…). Esto se refleja en la definición del IPCC: la vulnerabilidad incluye tanto ‘la sensibilidad o susceptibilidad al daño’ como ‘la falta de capacidad para afrontar y adaptarse’”</strong></em>. Es decir que los resultados de dos vecinos que se enfrentan a un evento natural extremo pueden ser radicalmente diferentes, dependiendo de los medios que tengan para prepararse, hacer frente y recuperarse de ese evento.</p>
+<p><span class="citation" data-cites="doan2023">Doan et&nbsp;al. (<a href="#ref-doan2023" role="doc-biblioref">2023</a>)</span> identifican una serie de dimensiones de la vulnerabilidad<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a>. Tenemos, por ejemplo:</p>
+<ul>
+<li>Ingreso/gasto.</li>
+<li>Educación.</li>
+<li>Acceso a agua.</li>
+<li>Acceso a saneamiento.</li>
+<li>Materiales de construcción.</li>
+<li>Protección social.</li>
+<li>Servicios financieros (bancarización).</li>
+</ul>
+</section>
+<section id="particularidades-de-los-datos-antes-de-empezar" class="level2">
+<h2 class="anchored" data-anchor-id="particularidades-de-los-datos-antes-de-empezar">Particularidades de los datos antes de empezar</h2>
+<p>Es interesante notar que si unimos las variables <code>CONGLOME</code>, <code>VIVIENDA</code>, y <code>HOGAR</code> de la base de datos de <code>personas</code> para crear un identificador único, tenemos 33,702 hogares (que corresponde también al número de observaciones de la base de datos calculada). Sin embargo, los hogares pueden tener hasta 6 núcleos familiares, según la variable <code>P203A</code> teniendo múltiples jefes de hogar (o de núcleo) dentro de cada familia (Variable <code>P203B</code>). Eso nos da un total de 44,537 núcleos familares en la encuesta.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># estructura de la base de datos de personas</span></span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ncol</span>(personas)</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Cálculo rápido de hogares según la base de datos de personas</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">length</span>(</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">unique</span>(</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">paste0</span>(</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>      personas<span class="sc">$</span>CONGLOME,</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>      personas<span class="sc">$</span>VIVIENDA,</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>      personas<span class="sc">$</span>HOGAR</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>      <span class="co"># ,personas$P203A # número de núcleo</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] 39</code></pre>
+<pre><code>[1] 33702</code></pre>
 </div>
 </div>
-<p>Y vemos la base de datos de viviendas:</p>
+<p>Hacemos un ejercicio similar conla base de viviendas, para ver si hay una vivienda para cada hogar. La base de datos de viviendas tiene 44599 observaciones, mientras que tenemos un total de 33702 hogares. Existe una vivienda por cada hogar, pero no tenemos hogares para todas las viviendas, lo que es interesante también. Esto probablemente está relacionado con la variable de la base de datos <code>viviendas</code>, <code>P22</code> (Ademas de esta vivienda ¿existe otra vivienda en la que Ud.o algun miembro de su hogar viven regularmente?).</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># estructura de la base de datos de viviendas</span></span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ncol</span>(viviendas)</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">length</span>(</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">unique</span>(</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">paste0</span>(</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>      viviendas<span class="sc">$</span>CONGLOME,</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>      viviendas<span class="sc">$</span>VIVIENDA,</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>      viviendas<span class="sc">$</span>HOGAR</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] 330</code></pre>
+<pre><code>[1] 44599</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">unique</span>(viviendas<span class="sc">$</span>P22)</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>&lt;labelled&lt;double&gt;[3]&gt;: Ademas de esta vivienda, Existe otra vivienda en la que Ud.o algun miembro de su hogar viven regularmente
+[1]  2 NA  1
+
+Labels:
+ value label
+     1    Si
+     2    No</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">table</span>(<span class="fu">as_factor</span>(viviendas<span class="sc">$</span>P22))</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+   Si    No 
+ 3306 30396 </code></pre>
+</div>
+</div>
+</section>
+<section id="identificando-las-dimensiones-con-select" class="level2">
+<h2 class="anchored" data-anchor-id="identificando-las-dimensiones-con-select">Identificando las dimensiones con select</h2>
+<p>Vamos a crear una serie de bases de datos acotadas con solo las variables necesarias para cada dimensión a partir de las bases de datos cargadas.</p>
+<section id="calculadas" class="level3">
+<h3 class="anchored" data-anchor-id="calculadas">Calculadas</h3>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>dim_calculadas <span class="ot">&lt;-</span> calculadas <span class="sc">|&gt;</span> </span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Variables para ID</span></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>    CONGLOME,</span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>    VIVIENDA,</span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>    HOGAR,</span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Características varias</span></span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>    DOMINIO,</span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>    MIEPERHO,</span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>    TOTMIEHO,</span>
+<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a>    PERCEPHO,</span>
+<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Ingresos y gastos</span></span>
+<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a>    INGHOG2D,</span>
+<span id="cb11-14"><a href="#cb11-14" aria-hidden="true" tabindex="-1"></a>    GASHOG2D,</span>
+<span id="cb11-15"><a href="#cb11-15" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Pobreza</span></span>
+<span id="cb11-16"><a href="#cb11-16" aria-hidden="true" tabindex="-1"></a>    LD,</span>
+<span id="cb11-17"><a href="#cb11-17" aria-hidden="true" tabindex="-1"></a>    LINPE,</span>
+<span id="cb11-18"><a href="#cb11-18" aria-hidden="true" tabindex="-1"></a>    LINEA,</span>
+<span id="cb11-19"><a href="#cb11-19" aria-hidden="true" tabindex="-1"></a>    LINEAV,</span>
+<span id="cb11-20"><a href="#cb11-20" aria-hidden="true" tabindex="-1"></a>    POBREZA,</span>
+<span id="cb11-21"><a href="#cb11-21" aria-hidden="true" tabindex="-1"></a>    POBREZAV,</span>
+<span id="cb11-22"><a href="#cb11-22" aria-hidden="true" tabindex="-1"></a>    ESTRSOCIAL,</span>
+<span id="cb11-23"><a href="#cb11-23" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Factor de expansión</span></span>
+<span id="cb11-24"><a href="#cb11-24" aria-hidden="true" tabindex="-1"></a>    FACTOR07</span>
+<span id="cb11-25"><a href="#cb11-25" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</section>
+<section id="educación" class="level3">
+<h3 class="anchored" data-anchor-id="educación">Educación</h3>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>dim_educacion <span class="ot">&lt;-</span> educacion <span class="sc">|&gt;</span> </span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>    <span class="co"># ID</span></span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>    CONGLOME,</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>    VIVIENDA,</span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>    HOGAR,</span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>    CODPERSO,</span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Nivel educativo</span></span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>    P301A,</span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Factores de expansión</span></span>
+<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a>    FACTOR07,</span>
+<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a>    FACTORA07</span>
+<span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</section>
+</section>
+</section>
+<section id="referencias" class="level1 unnumbered">
+<h1 class="unnumbered">Referencias</h1>
+<div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" data-line-spacing="2" role="list">
+<div id="ref-doan2023" class="csl-entry" role="listitem">
+Doan, M. K., Hill, R., Hallegatte, S., Corral Rodas, P. A., Brunckhorst, B. J., Nguyen, M., Freije-Rodriguez, S. y Naikal, E. (2023). <em>Counting People Exposed to, Vulnerable to, or at High Risk From Climate Shocks: A Methodology</em>. <a href="https://documents.worldbank.org/en/publication/documents-reports/documentdetail/099602511292336760/IDU07639ca570f3cb048db09bf60fc2cc82df22d">https://documents.worldbank.org/en/publication/documents-reports/documentdetail/099602511292336760/IDU07639ca570f3cb048db09bf60fc2cc82df22d</a>
 </div>
 </div>
 
 
 </section>
 
-</main> <!-- /main -->
+
+<div id="quarto-appendix" class="default"><section id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes"><h2 class="anchored quarto-appendix-heading">Notas</h2>
+
+<ol>
+<li id="fn1"><p>Ellos le llaman “factores”, pero dado que la palabra <em>factores</em> tiene una connotación especial en R, nosotros utilizaremos la denominación <em>dimensiones</em>.<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+</ol>
+</section></div></main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
   window.document.addEventListener("DOMContentLoaded", function (event) {
     const icon = "";
