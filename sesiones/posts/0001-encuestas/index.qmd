@@ -60,8 +60,8 @@ Para esto utilizamos el paquete `haven` que permite importar datos de SPSS (y St
 ```{r}
 viviendas <- read_spss("datos/per_enaho/Enaho01-2025-100-viviendas.sav")
 personas <- read_spss("datos/per_enaho/Enaho01-2025-200-personas.sav")
-educacion <- read_spss("datos/per_enaho/Enaho01A-2025-300-educacion.sav")
 calculadas <- read_spss("datos/per_enaho/Sumaria-2025.sav")
+educacion <- readRDS("datos/per_enaho/Enaho01A-2025-300-educacion.RDS") # La cargamos en formato RDS por tamaño
 ```
 
 ## El paquete `dplyr`
