@@ -4,7 +4,7 @@
     "href": "sesiones/posts/0001-encuestas/index.html",
     "title": "Encuestas de Hogares",
     "section": "",
-    "text": "# Limpiar el área de trabajo\nrm(list = ls()) \n\n# Cargar librerías\nlibrary(tidyverse) # Cargar dplyr y sus amigos\nlibrary(gt) # tablas en html\nlibrary(haven) # importar datos de SPSS y Stata\nlibrary(openxlsx) # exportar resultados a Excel"
+    "text": "Puedes ver el vídeo de implementación de esta sesión aquí:"
   },
   {
     "objectID": "sesiones/posts/0001-encuestas/index.html#los-datos",

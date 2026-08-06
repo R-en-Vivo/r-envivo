@@ -20,6 +20,13 @@
 
 
 
+<section id="video" class="level1">
+<h1>Video</h1>
+<p>Puedes ver el vídeo de implementación de esta sesión aquí:</p>
+<div class="quarto-video"><video id="video_shortcode_videojs_video1" class="video-js vjs-default-skin vjs-big-play-centered vjs-fluid" controls="" preload="auto" data-setup="{}" title=""><source src="https://youtube.com/live/YaNlhnRMKN8"></video></div>
+</section>
+<section id="preámbulo" class="level1">
+<h1>Preámbulo</h1>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><span class="co" style="color: #5E5E5E;
 background-color: null;
@@ -56,6 +63,7 @@ font-style: inherit;">library</span>(openxlsx) <span class="co" style="color: #5
 background-color: null;
 font-style: inherit;"># exportar resultados a Excel</span></span></code></pre></div></div>
 </div>
+</section>
 <section id="introducción" class="level1">
 <h1>Introducción</h1>
 <p>En esta sesión, exploraremos cómo trabajar con datos de encuestas de hogares utilizando R y el paquete <code>dplyr</code>. Aprenderemos a limpiar, transformar y analizar los datos para obtener información valiosa. Asegúrate de tener instalado R y Positron para seguir este ejemplo. Estos los debes instalar en el siguiente orden y puedes encontrarlos en:</p>
@@ -1046,23 +1054,23 @@ Tabla&nbsp;1: Número de personas vulnerables por dominio y dimensión
 </figcaption>
 <div aria-describedby="tbl-vulnerabilidad-dominio-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="cell-output-display">
-<div id="zcnvtobyaf" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
-<style>#zcnvtobyaf table {
+<div id="yzmerjauyg" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#yzmerjauyg table {
   font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-#zcnvtobyaf thead, #zcnvtobyaf tbody, #zcnvtobyaf tfoot, #zcnvtobyaf tr, #zcnvtobyaf td, #zcnvtobyaf th {
+#yzmerjauyg thead, #yzmerjauyg tbody, #yzmerjauyg tfoot, #yzmerjauyg tr, #yzmerjauyg td, #yzmerjauyg th {
   border-style: none;
 }
 
-#zcnvtobyaf p {
+#yzmerjauyg p {
   margin: 0;
   padding: 0;
 }
 
-#zcnvtobyaf .gt_table {
+#yzmerjauyg .gt_table {
   display: table;
   border-collapse: collapse;
   line-height: normal;
@@ -1088,12 +1096,12 @@ Tabla&nbsp;1: Número de personas vulnerables por dominio y dimensión
   border-left-color: #D3D3D3;
 }
 
-#zcnvtobyaf .gt_caption {
+#yzmerjauyg .gt_caption {
   padding-top: 4px;
   padding-bottom: 4px;
 }
 
-#zcnvtobyaf .gt_title {
+#yzmerjauyg .gt_title {
   color: #333333;
   font-size: 125%;
   font-weight: initial;
@@ -1105,7 +1113,7 @@ Tabla&nbsp;1: Número de personas vulnerables por dominio y dimensión
   border-bottom-width: 0;
 }
 
-#zcnvtobyaf .gt_subtitle {
+#yzmerjauyg .gt_subtitle {
   color: #333333;
   font-size: 85%;
   font-weight: initial;
@@ -1117,7 +1125,7 @@ Tabla&nbsp;1: Número de personas vulnerables por dominio y dimensión
   border-top-width: 0;
 }
 
-#zcnvtobyaf .gt_heading {
+#yzmerjauyg .gt_heading {
   background-color: #FFFFFF;
   text-align: center;
   border-bottom-color: #FFFFFF;
@@ -1129,13 +1137,13 @@ Tabla&nbsp;1: Número de personas vulnerables por dominio y dimensión
   border-right-color: #D3D3D3;
 }
 
-#zcnvtobyaf .gt_bottom_border {
+#yzmerjauyg .gt_bottom_border {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
 }
 
-#zcnvtobyaf .gt_col_headings {
+#yzmerjauyg .gt_col_headings {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -1150,7 +1158,7 @@ Tabla&nbsp;1: Número de personas vulnerables por dominio y dimensión
   border-right-color: #D3D3D3;
 }
 
-#zcnvtobyaf .gt_col_heading {
+#yzmerjauyg .gt_col_heading {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -1170,7 +1178,7 @@ Tabla&nbsp;1: Número de personas vulnerables por dominio y dimensión
   overflow-x: hidden;
 }
 
-#zcnvtobyaf .gt_column_spanner_outer {
+#yzmerjauyg .gt_column_spanner_outer {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -1182,15 +1190,15 @@ Tabla&nbsp;1: Número de personas vulnerables por dominio y dimensión
   padding-right: 4px;
 }
 
-#zcnvtobyaf .gt_column_spanner_outer:first-child {
+#yzmerjauyg .gt_column_spanner_outer:first-child {
   padding-left: 0;
 }
 
-#zcnvtobyaf .gt_column_spanner_outer:last-child {
+#yzmerjauyg .gt_column_spanner_outer:last-child {
   padding-right: 0;
 }
 
-#zcnvtobyaf .gt_column_spanner {
+#yzmerjauyg .gt_column_spanner {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
@@ -1202,11 +1210,11 @@ Tabla&nbsp;1: Número de personas vulnerables por dominio y dimensión
   width: 100%;
 }
 
-#zcnvtobyaf .gt_spanner_row {
+#yzmerjauyg .gt_spanner_row {
   border-bottom-style: hidden;
 }
 
-#zcnvtobyaf .gt_group_heading {
+#yzmerjauyg .gt_group_heading {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1232,7 +1240,7 @@ Tabla&nbsp;1: Número de personas vulnerables por dominio y dimensión
   text-align: left;
 }
 
-#zcnvtobyaf .gt_empty_group_heading {
+#yzmerjauyg .gt_empty_group_heading {
   padding: 0.5px;
   color: #333333;
   background-color: #FFFFFF;
@@ -1247,15 +1255,15 @@ Tabla&nbsp;1: Número de personas vulnerables por dominio y dimensión
   vertical-align: middle;
 }
 
-#zcnvtobyaf .gt_from_md > :first-child {
+#yzmerjauyg .gt_from_md > :first-child {
   margin-top: 0;
 }
 
-#zcnvtobyaf .gt_from_md > :last-child {
+#yzmerjauyg .gt_from_md > :last-child {
   margin-bottom: 0;
 }
 
-#zcnvtobyaf .gt_row {
+#yzmerjauyg .gt_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1274,7 +1282,7 @@ Tabla&nbsp;1: Número de personas vulnerables por dominio y dimensión
   overflow-x: hidden;
 }
 
-#zcnvtobyaf .gt_stub {
+#yzmerjauyg .gt_stub {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -1287,7 +1295,7 @@ Tabla&nbsp;1: Número de personas vulnerables por dominio y dimensión
   padding-right: 5px;
 }
 
-#zcnvtobyaf .gt_stub_row_group {
+#yzmerjauyg .gt_stub_row_group {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -1301,15 +1309,15 @@ Tabla&nbsp;1: Número de personas vulnerables por dominio y dimensión
   vertical-align: top;
 }
 
-#zcnvtobyaf .gt_row_group_first td {
+#yzmerjauyg .gt_row_group_first td {
   border-top-width: 2px;
 }
 
-#zcnvtobyaf .gt_row_group_first th {
+#yzmerjauyg .gt_row_group_first th {
   border-top-width: 2px;
 }
 
-#zcnvtobyaf .gt_summary_row {
+#yzmerjauyg .gt_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -1319,16 +1327,16 @@ Tabla&nbsp;1: Número de personas vulnerables por dominio y dimensión
   padding-right: 5px;
 }
 
-#zcnvtobyaf .gt_first_summary_row {
+#yzmerjauyg .gt_first_summary_row {
   border-top-style: solid;
   border-top-color: #D3D3D3;
 }
 
-#zcnvtobyaf .gt_first_summary_row.thick {
+#yzmerjauyg .gt_first_summary_row.thick {
   border-top-width: 2px;
 }
 
-#zcnvtobyaf .gt_last_summary_row {
+#yzmerjauyg .gt_last_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1338,7 +1346,7 @@ Tabla&nbsp;1: Número de personas vulnerables por dominio y dimensión
   border-bottom-color: #D3D3D3;
 }
 
-#zcnvtobyaf .gt_grand_summary_row {
+#yzmerjauyg .gt_grand_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -1348,7 +1356,7 @@ Tabla&nbsp;1: Número de personas vulnerables por dominio y dimensión
   padding-right: 5px;
 }
 
-#zcnvtobyaf .gt_first_grand_summary_row {
+#yzmerjauyg .gt_first_grand_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1358,7 +1366,7 @@ Tabla&nbsp;1: Número de personas vulnerables por dominio y dimensión
   border-top-color: #D3D3D3;
 }
 
-#zcnvtobyaf .gt_last_grand_summary_row_top {
+#yzmerjauyg .gt_last_grand_summary_row_top {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1368,11 +1376,11 @@ Tabla&nbsp;1: Número de personas vulnerables por dominio y dimensión
   border-bottom-color: #D3D3D3;
 }
 
-#zcnvtobyaf .gt_striped {
+#yzmerjauyg .gt_striped {
   background-color: rgba(128, 128, 128, 0.05);
 }
 
-#zcnvtobyaf .gt_table_body {
+#yzmerjauyg .gt_table_body {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -1381,7 +1389,7 @@ Tabla&nbsp;1: Número de personas vulnerables por dominio y dimensión
   border-bottom-color: #D3D3D3;
 }
 
-#zcnvtobyaf .gt_footnotes {
+#yzmerjauyg .gt_footnotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -1395,7 +1403,7 @@ Tabla&nbsp;1: Número de personas vulnerables por dominio y dimensión
   border-right-color: #D3D3D3;
 }
 
-#zcnvtobyaf .gt_footnote {
+#yzmerjauyg .gt_footnote {
   margin: 0px;
   font-size: 90%;
   padding-top: 4px;
@@ -1404,7 +1412,7 @@ Tabla&nbsp;1: Número de personas vulnerables por dominio y dimensión
   padding-right: 5px;
 }
 
-#zcnvtobyaf .gt_sourcenotes {
+#yzmerjauyg .gt_sourcenotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -1418,7 +1426,7 @@ Tabla&nbsp;1: Número de personas vulnerables por dominio y dimensión
   border-right-color: #D3D3D3;
 }
 
-#zcnvtobyaf .gt_sourcenote {
+#yzmerjauyg .gt_sourcenote {
   font-size: 90%;
   padding-top: 4px;
   padding-bottom: 4px;
@@ -1426,72 +1434,72 @@ Tabla&nbsp;1: Número de personas vulnerables por dominio y dimensión
   padding-right: 5px;
 }
 
-#zcnvtobyaf .gt_left {
+#yzmerjauyg .gt_left {
   text-align: left;
 }
 
-#zcnvtobyaf .gt_center {
+#yzmerjauyg .gt_center {
   text-align: center;
 }
 
-#zcnvtobyaf .gt_right {
+#yzmerjauyg .gt_right {
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
 
-#zcnvtobyaf .gt_font_normal {
+#yzmerjauyg .gt_font_normal {
   font-weight: normal;
 }
 
-#zcnvtobyaf .gt_font_bold {
+#yzmerjauyg .gt_font_bold {
   font-weight: bold;
 }
 
-#zcnvtobyaf .gt_font_italic {
+#yzmerjauyg .gt_font_italic {
   font-style: italic;
 }
 
-#zcnvtobyaf .gt_super {
+#yzmerjauyg .gt_super {
   font-size: 65%;
 }
 
-#zcnvtobyaf .gt_footnote_marks {
+#yzmerjauyg .gt_footnote_marks {
   font-size: 75%;
   vertical-align: 0.4em;
   position: initial;
 }
 
-#zcnvtobyaf .gt_asterisk {
+#yzmerjauyg .gt_asterisk {
   font-size: 100%;
   vertical-align: 0;
 }
 
-#zcnvtobyaf .gt_indent_1 {
+#yzmerjauyg .gt_indent_1 {
   text-indent: 5px;
 }
 
-#zcnvtobyaf .gt_indent_2 {
+#yzmerjauyg .gt_indent_2 {
   text-indent: 10px;
 }
 
-#zcnvtobyaf .gt_indent_3 {
+#yzmerjauyg .gt_indent_3 {
   text-indent: 15px;
 }
 
-#zcnvtobyaf .gt_indent_4 {
+#yzmerjauyg .gt_indent_4 {
   text-indent: 20px;
 }
 
-#zcnvtobyaf .gt_indent_5 {
+#yzmerjauyg .gt_indent_5 {
   text-indent: 25px;
 }
 
-#zcnvtobyaf .katex-display {
+#yzmerjauyg .katex-display {
   display: inline-flex !important;
   margin-bottom: 0.75em !important;
 }
 
-#zcnvtobyaf div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
+#yzmerjauyg div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
   height: 0px !important;
 }
 </style>
@@ -1834,23 +1842,23 @@ Tabla&nbsp;2: Número de personas vulnerables en múltiples dimensiones, por dom
 </figcaption>
 <div aria-describedby="tbl-vulnerabilidad-multiple-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="cell-output-display">
-<div id="dsswcexlij" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
-<style>#dsswcexlij table {
+<div id="kpurpalmar" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#kpurpalmar table {
   font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-#dsswcexlij thead, #dsswcexlij tbody, #dsswcexlij tfoot, #dsswcexlij tr, #dsswcexlij td, #dsswcexlij th {
+#kpurpalmar thead, #kpurpalmar tbody, #kpurpalmar tfoot, #kpurpalmar tr, #kpurpalmar td, #kpurpalmar th {
   border-style: none;
 }
 
-#dsswcexlij p {
+#kpurpalmar p {
   margin: 0;
   padding: 0;
 }
 
-#dsswcexlij .gt_table {
+#kpurpalmar .gt_table {
   display: table;
   border-collapse: collapse;
   line-height: normal;
@@ -1876,12 +1884,12 @@ Tabla&nbsp;2: Número de personas vulnerables en múltiples dimensiones, por dom
   border-left-color: #D3D3D3;
 }
 
-#dsswcexlij .gt_caption {
+#kpurpalmar .gt_caption {
   padding-top: 4px;
   padding-bottom: 4px;
 }
 
-#dsswcexlij .gt_title {
+#kpurpalmar .gt_title {
   color: #333333;
   font-size: 125%;
   font-weight: initial;
@@ -1893,7 +1901,7 @@ Tabla&nbsp;2: Número de personas vulnerables en múltiples dimensiones, por dom
   border-bottom-width: 0;
 }
 
-#dsswcexlij .gt_subtitle {
+#kpurpalmar .gt_subtitle {
   color: #333333;
   font-size: 85%;
   font-weight: initial;
@@ -1905,7 +1913,7 @@ Tabla&nbsp;2: Número de personas vulnerables en múltiples dimensiones, por dom
   border-top-width: 0;
 }
 
-#dsswcexlij .gt_heading {
+#kpurpalmar .gt_heading {
   background-color: #FFFFFF;
   text-align: center;
   border-bottom-color: #FFFFFF;
@@ -1917,13 +1925,13 @@ Tabla&nbsp;2: Número de personas vulnerables en múltiples dimensiones, por dom
   border-right-color: #D3D3D3;
 }
 
-#dsswcexlij .gt_bottom_border {
+#kpurpalmar .gt_bottom_border {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
 }
 
-#dsswcexlij .gt_col_headings {
+#kpurpalmar .gt_col_headings {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -1938,7 +1946,7 @@ Tabla&nbsp;2: Número de personas vulnerables en múltiples dimensiones, por dom
   border-right-color: #D3D3D3;
 }
 
-#dsswcexlij .gt_col_heading {
+#kpurpalmar .gt_col_heading {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -1958,7 +1966,7 @@ Tabla&nbsp;2: Número de personas vulnerables en múltiples dimensiones, por dom
   overflow-x: hidden;
 }
 
-#dsswcexlij .gt_column_spanner_outer {
+#kpurpalmar .gt_column_spanner_outer {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -1970,15 +1978,15 @@ Tabla&nbsp;2: Número de personas vulnerables en múltiples dimensiones, por dom
   padding-right: 4px;
 }
 
-#dsswcexlij .gt_column_spanner_outer:first-child {
+#kpurpalmar .gt_column_spanner_outer:first-child {
   padding-left: 0;
 }
 
-#dsswcexlij .gt_column_spanner_outer:last-child {
+#kpurpalmar .gt_column_spanner_outer:last-child {
   padding-right: 0;
 }
 
-#dsswcexlij .gt_column_spanner {
+#kpurpalmar .gt_column_spanner {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
@@ -1990,11 +1998,11 @@ Tabla&nbsp;2: Número de personas vulnerables en múltiples dimensiones, por dom
   width: 100%;
 }
 
-#dsswcexlij .gt_spanner_row {
+#kpurpalmar .gt_spanner_row {
   border-bottom-style: hidden;
 }
 
-#dsswcexlij .gt_group_heading {
+#kpurpalmar .gt_group_heading {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -2020,7 +2028,7 @@ Tabla&nbsp;2: Número de personas vulnerables en múltiples dimensiones, por dom
   text-align: left;
 }
 
-#dsswcexlij .gt_empty_group_heading {
+#kpurpalmar .gt_empty_group_heading {
   padding: 0.5px;
   color: #333333;
   background-color: #FFFFFF;
@@ -2035,15 +2043,15 @@ Tabla&nbsp;2: Número de personas vulnerables en múltiples dimensiones, por dom
   vertical-align: middle;
 }
 
-#dsswcexlij .gt_from_md > :first-child {
+#kpurpalmar .gt_from_md > :first-child {
   margin-top: 0;
 }
 
-#dsswcexlij .gt_from_md > :last-child {
+#kpurpalmar .gt_from_md > :last-child {
   margin-bottom: 0;
 }
 
-#dsswcexlij .gt_row {
+#kpurpalmar .gt_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -2062,7 +2070,7 @@ Tabla&nbsp;2: Número de personas vulnerables en múltiples dimensiones, por dom
   overflow-x: hidden;
 }
 
-#dsswcexlij .gt_stub {
+#kpurpalmar .gt_stub {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -2075,7 +2083,7 @@ Tabla&nbsp;2: Número de personas vulnerables en múltiples dimensiones, por dom
   padding-right: 5px;
 }
 
-#dsswcexlij .gt_stub_row_group {
+#kpurpalmar .gt_stub_row_group {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -2089,15 +2097,15 @@ Tabla&nbsp;2: Número de personas vulnerables en múltiples dimensiones, por dom
   vertical-align: top;
 }
 
-#dsswcexlij .gt_row_group_first td {
+#kpurpalmar .gt_row_group_first td {
   border-top-width: 2px;
 }
 
-#dsswcexlij .gt_row_group_first th {
+#kpurpalmar .gt_row_group_first th {
   border-top-width: 2px;
 }
 
-#dsswcexlij .gt_summary_row {
+#kpurpalmar .gt_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -2107,16 +2115,16 @@ Tabla&nbsp;2: Número de personas vulnerables en múltiples dimensiones, por dom
   padding-right: 5px;
 }
 
-#dsswcexlij .gt_first_summary_row {
+#kpurpalmar .gt_first_summary_row {
   border-top-style: solid;
   border-top-color: #D3D3D3;
 }
 
-#dsswcexlij .gt_first_summary_row.thick {
+#kpurpalmar .gt_first_summary_row.thick {
   border-top-width: 2px;
 }
 
-#dsswcexlij .gt_last_summary_row {
+#kpurpalmar .gt_last_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -2126,7 +2134,7 @@ Tabla&nbsp;2: Número de personas vulnerables en múltiples dimensiones, por dom
   border-bottom-color: #D3D3D3;
 }
 
-#dsswcexlij .gt_grand_summary_row {
+#kpurpalmar .gt_grand_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -2136,7 +2144,7 @@ Tabla&nbsp;2: Número de personas vulnerables en múltiples dimensiones, por dom
   padding-right: 5px;
 }
 
-#dsswcexlij .gt_first_grand_summary_row {
+#kpurpalmar .gt_first_grand_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -2146,7 +2154,7 @@ Tabla&nbsp;2: Número de personas vulnerables en múltiples dimensiones, por dom
   border-top-color: #D3D3D3;
 }
 
-#dsswcexlij .gt_last_grand_summary_row_top {
+#kpurpalmar .gt_last_grand_summary_row_top {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -2156,11 +2164,11 @@ Tabla&nbsp;2: Número de personas vulnerables en múltiples dimensiones, por dom
   border-bottom-color: #D3D3D3;
 }
 
-#dsswcexlij .gt_striped {
+#kpurpalmar .gt_striped {
   background-color: rgba(128, 128, 128, 0.05);
 }
 
-#dsswcexlij .gt_table_body {
+#kpurpalmar .gt_table_body {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -2169,7 +2177,7 @@ Tabla&nbsp;2: Número de personas vulnerables en múltiples dimensiones, por dom
   border-bottom-color: #D3D3D3;
 }
 
-#dsswcexlij .gt_footnotes {
+#kpurpalmar .gt_footnotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -2183,7 +2191,7 @@ Tabla&nbsp;2: Número de personas vulnerables en múltiples dimensiones, por dom
   border-right-color: #D3D3D3;
 }
 
-#dsswcexlij .gt_footnote {
+#kpurpalmar .gt_footnote {
   margin: 0px;
   font-size: 90%;
   padding-top: 4px;
@@ -2192,7 +2200,7 @@ Tabla&nbsp;2: Número de personas vulnerables en múltiples dimensiones, por dom
   padding-right: 5px;
 }
 
-#dsswcexlij .gt_sourcenotes {
+#kpurpalmar .gt_sourcenotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -2206,7 +2214,7 @@ Tabla&nbsp;2: Número de personas vulnerables en múltiples dimensiones, por dom
   border-right-color: #D3D3D3;
 }
 
-#dsswcexlij .gt_sourcenote {
+#kpurpalmar .gt_sourcenote {
   font-size: 90%;
   padding-top: 4px;
   padding-bottom: 4px;
@@ -2214,72 +2222,72 @@ Tabla&nbsp;2: Número de personas vulnerables en múltiples dimensiones, por dom
   padding-right: 5px;
 }
 
-#dsswcexlij .gt_left {
+#kpurpalmar .gt_left {
   text-align: left;
 }
 
-#dsswcexlij .gt_center {
+#kpurpalmar .gt_center {
   text-align: center;
 }
 
-#dsswcexlij .gt_right {
+#kpurpalmar .gt_right {
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
 
-#dsswcexlij .gt_font_normal {
+#kpurpalmar .gt_font_normal {
   font-weight: normal;
 }
 
-#dsswcexlij .gt_font_bold {
+#kpurpalmar .gt_font_bold {
   font-weight: bold;
 }
 
-#dsswcexlij .gt_font_italic {
+#kpurpalmar .gt_font_italic {
   font-style: italic;
 }
 
-#dsswcexlij .gt_super {
+#kpurpalmar .gt_super {
   font-size: 65%;
 }
 
-#dsswcexlij .gt_footnote_marks {
+#kpurpalmar .gt_footnote_marks {
   font-size: 75%;
   vertical-align: 0.4em;
   position: initial;
 }
 
-#dsswcexlij .gt_asterisk {
+#kpurpalmar .gt_asterisk {
   font-size: 100%;
   vertical-align: 0;
 }
 
-#dsswcexlij .gt_indent_1 {
+#kpurpalmar .gt_indent_1 {
   text-indent: 5px;
 }
 
-#dsswcexlij .gt_indent_2 {
+#kpurpalmar .gt_indent_2 {
   text-indent: 10px;
 }
 
-#dsswcexlij .gt_indent_3 {
+#kpurpalmar .gt_indent_3 {
   text-indent: 15px;
 }
 
-#dsswcexlij .gt_indent_4 {
+#kpurpalmar .gt_indent_4 {
   text-indent: 20px;
 }
 
-#dsswcexlij .gt_indent_5 {
+#kpurpalmar .gt_indent_5 {
   text-indent: 25px;
 }
 
-#dsswcexlij .katex-display {
+#kpurpalmar .katex-display {
   display: inline-flex !important;
   margin-bottom: 0.75em !important;
 }
 
-#dsswcexlij div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
+#kpurpalmar div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
   height: 0px !important;
 }
 </style>

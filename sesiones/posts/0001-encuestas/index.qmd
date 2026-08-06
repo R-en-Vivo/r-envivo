@@ -12,6 +12,14 @@ categories:
 bibliography: referencias.bib
 csl: ../../../documentos/apa-es.csl
 ---
+# Video
+
+Puedes ver el vídeo de implementación de esta sesión aquí:
+
+{{< video https://youtube.com/live/YaNlhnRMKN8 >}}
+
+
+# Preámbulo 
 
 ```{r}
 #| label: preambulo
