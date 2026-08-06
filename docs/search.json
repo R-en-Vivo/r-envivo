@@ -1,59 +1,141 @@
 [
   {
-    "objectID": "presentaciones/01-tecnologias.html#contenido",
-    "href": "presentaciones/01-tecnologias.html#contenido",
-    "title": "Análisis de Datos y Reportes Reproducibles",
+    "objectID": "sesiones/posts/0001-encuestas/index.html",
+    "href": "sesiones/posts/0001-encuestas/index.html",
+    "title": "Encuestas de Hogares",
     "section": "",
-    "text": "¿Por qué adoptar la reproducibilidad?\nGit (Control de Versiones).\nEntorno de análisis estadístico R.\nPositron.\n¿Qué es Quarto?\nCierre"
+    "text": "# Limpiar el área de trabajo\nrm(list = ls()) \n\n# Cargar librerías\nlibrary(tidyverse) # Cargar dplyr y sus amigos\nlibrary(gt) # tablas en html\nlibrary(haven) # importar datos de SPSS y Stata\nlibrary(openxlsx) # exportar resultados a Excel"
   },
   {
-    "objectID": "presentaciones/01-tecnologias.html#por-qué-adoptar-la-reproducibilidad",
-    "href": "presentaciones/01-tecnologias.html#por-qué-adoptar-la-reproducibilidad",
-    "title": "Análisis de Datos y Reportes Reproducibles",
-    "section": "¿Por qué adoptar la reproducibilidad?",
-    "text": "¿Por qué adoptar la reproducibilidad?\n\n\nLa reproducibilidad permite que otra persona (o uno mismo, meses después) obtenga los mismos resultados a partir de los mismos datos y código.\nEvita el problema de “funcionaba en mi computadora” al documentar el entorno y los pasos exactos del análisis.\nReduce errores de manipulación manual (copiar y pegar, editar celdas a mano) que son difíciles de rastrear.\nFacilita la revisión y auditoría de los resultados por terceros (colegas, revisores, público).\nPermite actualizar el análisis fácilmente cuando llegan datos nuevos, sin repetir el trabajo desde cero.\nEvita la pérdida de trabajo y la confusión de versiones (archivos como “final_v2_definitivo-este-sí.xlsx”)."
+    "objectID": "sesiones/posts/0001-encuestas/index.html#los-datos",
+    "href": "sesiones/posts/0001-encuestas/index.html#los-datos",
+    "title": "Encuestas de Hogares",
+    "section": "Los Datos",
+    "text": "Los Datos\nEn esta sesión utilizaremos los datos reales de la Encuesta Nacional de Hogares (ENAHO) de Perú, que se encuentran disponibles en el repositorio de datos Instituto Nacional de Estadística e Informática (INEI). Los datos de la ENAHO son una fuente valiosa para analizar las condiciones de vida de los hogares peruanos. Utilizaremos los datos más recientes disponibles, que corresponden al primer trimestre de 2026. Entre los datos disponibles, hay muchos módulos y nosotros nos concentraremos solo en algunos:\n\nCaracterísticas de la Vivienda y del Hogar: datos SPSS | preguntas módulo vivienda.\nCaracterísticas de los Miembros del Hogar: datos SPSS | preguntas módulo personas.\nEducación: datos SPSS | preguntas módulo educación.\nSumarias (variables calculadas): datos SPSS | metodología de cálculo.\n\nAdemás es muy importante tener acceso al diccionario que explica las variables, el cual el INEI incluye con las descargas.\n\nDiccionario de todas las bases de datos: descargar.\n\nContinuaremos con la carga de los datos de la ENAHO y la exploración inicial de los mismos. Asegúrate de tener los archivos descargados y ubicados en el directorio correcto para poder acceder a ellos sin problemas.\nPara esto utilizamos el paquete haven que permite importar datos de SPSS (y Stata), que son los formatos en los que se encuentran los datos de la ENAHO. A continuación, cargamos las bases de datos de personas y viviendas.\n\nviviendas &lt;- read_spss(\"datos/per_enaho/Enaho01-2025-100-viviendas.sav\")\npersonas &lt;- read_spss(\"datos/per_enaho/Enaho01-2025-200-personas.sav\")\ncalculadas &lt;- read_spss(\"datos/per_enaho/Sumaria-2025.sav\")\neducacion &lt;- readRDS(\"datos/per_enaho/Enaho01A-2025-300-educacion.RDS\") # La cargamos en formato RDS por tamaño"
   },
   {
-    "objectID": "presentaciones/01-tecnologias.html#qué-es-git-control-de-versiones",
-    "href": "presentaciones/01-tecnologias.html#qué-es-git-control-de-versiones",
-    "title": "Análisis de Datos y Reportes Reproducibles",
-    "section": "¿Qué es Git (control de versiones)?",
-    "text": "¿Qué es Git (control de versiones)?\n\n\nSistema para registrar el historial de cambios de un directorio de proyecto (código, texto, datos).\nPermite volver a versiones anteriores en cualquier momento.\nCada cambio queda documentado: quién, qué y por qué (commits).\nEl historial se organiza como una línea de commits encadenados, cada uno con su “padre”.\nLas ramas (branches) son líneas de desarrollo paralelas.\nmain suele ser la rama principal; se crean otras para features o pruebas sin afectarla.\nLos cambios de una rama se integran a otra mediante merge (o pull request en GitHub).\nGitHub es una plataforma para alojar y compartir repositorios de git en la nube."
+    "objectID": "sesiones/posts/0001-encuestas/index.html#el-paquete-dplyr",
+    "href": "sesiones/posts/0001-encuestas/index.html#el-paquete-dplyr",
+    "title": "Encuestas de Hogares",
+    "section": "El paquete dplyr",
+    "text": "El paquete dplyr\nEl paquete dplyr es parte del conjunto de paquetes de la colección tidyverse y proporciona un conjunto de funciones para manipular y transformar datos de manera eficiente y legible. Está basado en la filosofía de la gramática de datos, lo que permite expresar operaciones complejas de manera concisa y clara. Algunas de las funciones más utilizadas han sido concebidas como verbos que describen la acción que se desea realizar sobre los datos, como:\n\nselect() (seleccionar)\nfilter() (filtrar)\nmutate() (mutar o crear nuevas variables en función de otras)\nsummarise() (resumir)\narrange() (ordenar).\n\nAdemás, dplyr permite encadenar operaciones utilizando el operador |&gt;, lo que facilita la lectura y comprensión del flujo de trabajo."
   },
   {
-    "objectID": "presentaciones/01-tecnologias.html#inicializar-un-repositorio-y-subirlo-a-github",
-    "href": "presentaciones/01-tecnologias.html#inicializar-un-repositorio-y-subirlo-a-github",
-    "title": "Análisis de Datos y Reportes Reproducibles",
-    "section": "Inicializar un repositorio y subirlo a GitHub",
-    "text": "Inicializar un repositorio y subirlo a GitHub\ngit init\ngit add .\ngit commit -m \"Commit inicial\"\ngit remote add origin mi-repositorio-en-github.git\ngit branch -M main\ngit push -u origin main"
+    "objectID": "sesiones/posts/0001-encuestas/index.html#metodología",
+    "href": "sesiones/posts/0001-encuestas/index.html#metodología",
+    "title": "Encuestas de Hogares",
+    "section": "Metodología",
+    "text": "Metodología\nImaginemos que somos analistas de datos y nos han solicitado que estimemos el número de peruanos bajo circunstancias vulnerables ante eventos climáticos extremos. Para esto, utilizamos ideas de Doan et al. (2023) en las que entendemos que la “vulnerabilidad de un hogar ante un evento climático extremo dependerá de las características del hogar que determinan el impacto inicial del evento y la capacidad del hogar para afrontarlo (…). Esto se refleja en la definición del IPCC: la vulnerabilidad incluye tanto ‘la sensibilidad o susceptibilidad al daño’ como ‘la falta de capacidad para afrontar y adaptarse’”. Es decir que los resultados de dos vecinos que se enfrentan a un evento natural extremo pueden ser radicalmente diferentes, dependiendo de los medios que tengan para prepararse, hacer frente y recuperarse de ese evento.\nDoan et al. (2023) identifican una serie de dimensiones de la vulnerabilidad1. Tenemos, por ejemplo:\n\nIngreso/gasto.\nEducación.\nAcceso a agua.\nAcceso a saneamiento.\nMateriales de construcción.\nProtección social."
   },
   {
-    "objectID": "presentaciones/01-tecnologias.html#el-entorno-de-análisis-r",
-    "href": "presentaciones/01-tecnologias.html#el-entorno-de-análisis-r",
-    "title": "Análisis de Datos y Reportes Reproducibles",
-    "section": "El entorno de análisis R",
-    "text": "El entorno de análisis R\nR es un conjunto integrado de herramientas de software para la manipulación de datos, cálculo y visualización gráfica. Incluye:\n\n\nUna eficaz herramienta para el manejo y almacenamiento de datos,\nUn conjunto de operadores para cálculos en matrices,\nUna colección grande, coherente e integrada de herramientas intermedias para el análisis de datos,\nherramientas gráficas para el análisis y visualización de datos, ya sea en pantalla o en copia impresa, y\nUn lenguaje de programación bien desarrollado, simple y eficaz que incluye condicionales, bucles, funciones recursivas definidas y herramientas para ingreso y salida de información.\nUn ambiente en el que se han implementado funciones estadísticas."
+    "objectID": "sesiones/posts/0001-encuestas/index.html#particularidades-de-los-datos-antes-de-empezar",
+    "href": "sesiones/posts/0001-encuestas/index.html#particularidades-de-los-datos-antes-de-empezar",
+    "title": "Encuestas de Hogares",
+    "section": "Particularidades de los datos antes de empezar",
+    "text": "Particularidades de los datos antes de empezar\nEs interesante notar que si unimos las variables CONGLOME, VIVIENDA, y HOGAR de la base de datos de personas para crear un identificador único, tenemos 33,702 hogares (que corresponde también al número de observaciones de la base de datos calculada). Sin embargo, los hogares pueden tener hasta 6 núcleos familiares, según la variable P203A teniendo múltiples jefes de hogar (o de núcleo) dentro de cada familia (Variable P203B). Eso nos da un total de 44,537 núcleos familares en la encuesta.\n\n# Cálculo rápido de hogares según la base de datos de personas\nlength(\n  unique(\n    paste0(\n      personas$CONGLOME,\n      personas$VIVIENDA,\n      personas$HOGAR\n      # ,personas$P203A # número de núcleo\n    )\n  )\n)\n\n[1] 33702\n\n\n\nBase de datos de variables calculadas\nEn esta base de datos obtenemos información sobre ingreso. Según Doan et al. (2023), ser vulnerable en esta dimensión es tener un ingreso por debajo de 1.5 la línea de pobreza general. En Perú, el INEI muy eficiente ya hizo este trabajo por nosotros a través de la variable POBREZAV. De lo contrario, tendríamos que tomar la variable de gasto anualizada GASHOG2D, dividirla entre 12 (meses) y compararla contra la línea de pobreza LINEA multiplicada por 1.52.\n“Otra dimensión de la incapacidad para afrontar shocks es el acceso al apoyo público. Existe evidencia considerable de que las transferencias monetarias ayudan a los hogares a gestionar shocks (…) utilizando información sobre la cobertura actual, ya que es más probable que el apoyo esté disponible en respuesta a un desastre en lugares donde las tasas de cobertura [de programas de transferencias] previas al desastre son altas” (Doan et al., 2023). En la base de datos calculadas, la variable INGTPUHD muestra los hogares que efectivamente recibieron beneficios de protección social.\n\ndim_calculadas &lt;- calculadas |&gt; \n  select(\n    CONGLOME,\n    VIVIENDA,\n    HOGAR,\n    # Características varias\n    DOMINIO,\n    MIEPERHO,\n    TOTMIEHO,\n    PERCEPHO,\n    # Accceso a la seguridad social\n    # de programas: juntos, pensión 65,\n    # beca 18, bono del gas, bono \n    # electricidad, bono niño, bono\n    # onp para jubilados, programa\n    # contigo y \"otros\".\n    INGTPUHD,\n    #Ingresos y gastos\n    INGHOG2D,\n    GASHOG2D,\n    # Pobreza\n    LD,\n    LINPE,\n    LINEA,\n    LINEAV,\n    POBREZA,\n    POBREZAV,\n    ESTRSOCIAL,\n    # Factor de expansión\n    FACTOR07\n  )\n\n\n\nBase de datos de educación\nDe la base de datos de educación nos interesa únicamente el nivel educativo. La educación como medio para cambiar de fuente de sustento o para acceder a información y recursos se aproxima mediante una variable que refleja si el hogar cuenta con un adulto que haya completado la educación primaria. La base de datos de pobreza ya cuenta con el nivel educativo del jefe de hogar. Sin embargo, la metodología (Doan et al., 2023) requiere que cualquier miembro tenga al menos educación primaria, pues los miembros alfabetizados de la familia pueden cerrar la brecha de comprensión para los que no lo están, independientemente de si son jefes de hogar o no.\n\ndim_educacion &lt;- educacion |&gt; \n  select(\n    # ID\n    CONGLOME,\n    VIVIENDA,\n    HOGAR,\n    CODPERSO,\n    # Nivel educativo\n    P301A,\n    # Factores de expansión\n    FACTOR07\n  )\n\n\n\nBase de datos de viviendas\n“Cuando ocurren los shocks, el acceso a servicios básicos es un determinante importante del impacto del shock sobre el bienestar. Por ejemplo, con acceso a agua potable mejorada, el agua contaminada por inundaciones y tormentas, o la falta de agua debido a la sequía, tiene un menor impacto. Sin embargo, es esencial reconocer que el indicador actual de acceso a agua potable mejorada, a menudo representado por pozos cubiertos en países de bajos ingresos, puede no reflejar suficientemente la susceptibilidad a la contaminación durante eventos extremos como inundaciones o sequías. Por lo tanto, es necesario un trabajo futuro que refine este indicador considerando un umbral potencialmente más alto. Métricas como ‘agua entubada mejorada’ pueden ofrecer una evaluación más precisa de la infraestructura que protege contra los riesgos relacionados con el agua en caso de shocks” (Doan et al., 2023).\nTomamos nota de esta advertencia y elegimos “1. Red publica, dentro de la vivienda” y “2. Red publica, fuera de la vivienda pero dentro del edificio”, a partir de las siguientes opciones posibles (de la pregunta P110):\n\nRed publica, dentro de la vivienda\nRed publica, fuera de la vivienda pero dentro del edificio\nPilon o pileta de uso publico\nCamion-cisterna u otro similar\nPozo (agua subterranea)\nManantial o puquio\nOtra\nRio, acequia, lago, laguna\n\nAdemás lo aunamos a P110A1 (El agua es potable: 1. Sí, 2. No.), para seleccionar como no vulnerables a quienes su agua sea potable.\n“Con acceso a electricidad, los hogares tienen más probabilidades de contar con activos como ventiladores que pueden ayudar con las olas de calor. Una discusión más completa está disponible en el informe Lifelines del Banco Mundial (Hallegatte et al., 2019). Si bien no constituyen una selección definitiva de activos e infraestructura relevantes para determinar la pérdida inicial del shock, estas medidas ofrecen una buena primera estimación para estimular la discusión” (Doan et al., 2023). La variable P1121 de la base de datos viviendas es una variable dummy que determina si el hogar tiene acceso a electricidad.\nPara esta variable (P111A, El baño o servicio higiénico que tiene su hogar está conectado a:) tenemos las siguientes categorías, de las cuales elegimos “Red pública de desagüe dentro de la vivienda” y “Red pública de desagüe fuera de la vivienda pero dentro del edificio” como acceso a saneamiento.\n\nRed publica de desagüe dentro de la vivienda\nRed publica de desagüe fuera de la vivienda pero dentro del edificio\nLetrina (con tratamiento)\nPozo septico, tanque septico o biodigestor\nPozo ciego o negro\nRio, acequia, canal o similar\nOtra\nCampo abierto o al aire libre\n\nRespecto de materiales de construcción, utilizamos la variable P102 (El material predominante en las paredes exteriores es).\n\nLadrillo o bloque de cemento\nPiedra o sillar con cal o cemento\nAdobe\nTapia\nQuincha (caña con barro)\nPiedra con barro\nMadera (pona, tornillo, etc)\nTriplay/calamina/estera\nOtro material\n\n\ndim_viviendas &lt;- viviendas |&gt; \n  select(\n    # ID\n    CONGLOME,\n    VIVIENDA,\n    HOGAR,\n    # Ubicación\n    DOMINIO,\n    # Agua\n    P110,\n    P110A1,\n    # Electricidad\n    P1121,\n    # Saneamiento\n    P111A,\n    # Materiales de construcción\n    P102,\n    # Factor de expansión\n    FACTOR07\n  )"
   },
   {
-    "objectID": "presentaciones/01-tecnologias.html#positron",
-    "href": "presentaciones/01-tecnologias.html#positron",
-    "title": "Análisis de Datos y Reportes Reproducibles",
-    "section": "Positron",
-    "text": "Positron\n\nPositron es un ambiente para trabajar con código (Integrated Development Environment —IDE—) moderno y con capacidad para ser extendido dirigido al trabajo de ciencia de datos, construido sobre la plataforma de Code OSS (la versión de fuente abierta de Visual Studio Code). Combina el poder de un ambiente de trabajo poderoso con herramientas explícitas para el trabajo de ciencia de datos con R y Python."
+    "objectID": "sesiones/posts/0001-encuestas/index.html#preparando-nuestras-variables-con-mutate",
+    "href": "sesiones/posts/0001-encuestas/index.html#preparando-nuestras-variables-con-mutate",
+    "title": "Encuestas de Hogares",
+    "section": "Preparando nuestras variables con mutate()",
+    "text": "Preparando nuestras variables con mutate()\nCon las dimensiones ya seleccionadas, usamos mutate() para crear, dentro de cada base de datos, una variable binaria por hogar (1 = vulnerable, 0 = no vulnerable) en cada dimensión. Como en este ejercicio no incluimos ninguna variable de bancarización o servicios financieros, dejamos esa séptima dimensión fuera y trabajamos con las seis restantes3.\n\nIngreso\nINEI ya construyó, a través de POBREZAV, una clasificación que distingue a los hogares vulnerables (bajo 1.5 veces la línea de pobreza) de los que no lo son, así que solo necesitamos convertirla en nuestra variable binaria.\n\ndim_calculadas &lt;- dim_calculadas |&gt; \n  mutate(\n    vulnerabilidad_ingreso = if_else(\n      as_factor(POBREZAV) == \"No Vulnerable\", 0, 1\n    )\n  )\n\n\n\nProtección social\nConsideramos que un hogar no es vulnerable en esta dimensión si recibió algún ingreso por transferencias públicas (INGTPUHD mayor a cero).\n\ndim_calculadas &lt;- dim_calculadas |&gt; \n  mutate(\n    vulnerabilidad_proteccion = if_else(\n      INGTPUHD &gt; 0, 0, 1\n    )\n  )\n\n\n\nEducación\nPrimero identificamos, a nivel de persona, quiénes completaron al menos la primaria. Luego colapsamos la base de datos de educación a nivel de hogar para saber si existe al menos un miembro educado.\n\ndim_educacion &lt;- dim_educacion |&gt; \n  mutate(\n    miembro_educado = if_else(\n      as_factor(P301A) %in% c(\n        \"Sin nivel\", \n        \"Educacion inicial\", \n        \"Primaria incompleta\"\n      ),\n      0, 1\n    )\n  )\n\nvulnerabilidad_educacion &lt;- dim_educacion |&gt; \n  group_by(CONGLOME, VIVIENDA, HOGAR) |&gt; \n  summarise(\n    miembros_educados = sum(miembro_educado, na.rm = TRUE),\n    vulnerabilidad_educacion = if_else(miembros_educados == 0, 1, 0),\n    .groups = \"drop\"\n  ) |&gt; \n  select(-miembros_educados)\n\n\n\nAgua\nComo discutimos antes, un hogar no es vulnerable si tiene acceso a red pública de agua (dentro o fuera de la vivienda pero dentro del edificio) y, además, esa agua es potable.\n\ndim_viviendas &lt;- dim_viviendas |&gt; \n  mutate(\n    vulnerabilidad_agua = if_else(\n      as_factor(P110) %in% c(\n        \"Red publica, dentro de la vivienda\",\n        \"Red publica, fuera de la vivienda pero dentro del edificio\"\n      ) & as_factor(P110A1) == \"Si\",\n      0, 1\n    )\n  )\n\nLa misma lógica, usando directamente los códigos numéricos de P110 (1 y 2 son red pública) y P110A1 (1 es “Sí”):\n\n# dim_viviendas &lt;- dim_viviendas |&gt; \n#   mutate(\n#     vulnerabilidad_agua = if_else(\n#       P110 %in% c(1, 2) & P110A1 == 1,\n#       0, 1\n#     )\n#   )\n\n\n\nElectricidad\nUn hogar es vulnerable si no cuenta con acceso a electricidad, según P1121.\n\ndim_viviendas &lt;- dim_viviendas |&gt; \n  mutate(\n    vulnerabilidad_electricidad = if_else(\n      as_factor(P1121) == \"Electricidad\", 0, 1\n    )\n  )\n\nLa misma lógica, usando el código numérico de P1121 (1 es “Electricidad”):\n\n# dim_viviendas &lt;- dim_viviendas |&gt; \n#   mutate(\n#     vulnerabilidad_electricidad = if_else(\n#       P1121 == 1, 0, 1\n#     )\n#   )\n\n\n\nSaneamiento\nUn hogar no es vulnerable si su servicio higiénico está conectado a la red pública de desagüe, dentro o fuera de la vivienda pero dentro del edificio.\n\ndim_viviendas &lt;- dim_viviendas |&gt; \n  mutate(\n    vulnerabilidad_saneamiento = if_else(\n      as_factor(P111A) %in% c(\n        \"Red publica de desagüe dentro de la vivienda\",\n        \"Red publica de desagüe fuera de la vivienda pero dentro del edificio\"\n      ),\n      0, 1\n    )\n  )\n\nLa misma lógica, usando directamente los códigos numéricos de P111A (1 y 2 son red pública de desagüe):\n\n# dim_viviendas &lt;- dim_viviendas |&gt; \n#   mutate(\n#     vulnerabilidad_saneamiento = if_else(\n#       P111A %in% c(1, 2),\n#       0, 1\n#     )\n#   )\n\n\n\nMateriales de construcción\nConsideramos como no vulnerables únicamente a los hogares cuyas paredes exteriores son de ladrillo, bloque de cemento, piedra o sillar con cal o cemento.\n\ndim_viviendas &lt;- dim_viviendas |&gt; \n  mutate(\n    vulnerabilidad_construccion = if_else(\n      as_factor(P102) %in% c(\n        \"Ladrillo o bloque de cemento\",\n        \"Piedra o sillar con cal o cemento\"\n      ),\n      0, 1\n    )\n  )\n\nLa misma lógica, usando directamente los códigos numéricos de P102 (1 y 2 son ladrillo/bloque de cemento y piedra o sillar):\n\n# dim_viviendas &lt;- dim_viviendas |&gt; \n#   mutate(\n#     vulnerabilidad_construccion = if_else(\n#       P102 %in% c(1, 2),\n#       0, 1\n#     )\n#   )"
   },
   {
-    "objectID": "presentaciones/01-tecnologias.html#qué-es-quarto",
-    "href": "presentaciones/01-tecnologias.html#qué-es-quarto",
-    "title": "Análisis de Datos y Reportes Reproducibles",
-    "section": "¿Qué es Quarto?",
-    "text": "¿Qué es Quarto?\n\n\nUn sistema de publicación científica y técnica de fuente abierta.\nPermite combinar texto en markdown, código (R, Python, Julia, entre otros) y sus resultados en un mismo documento.\nUn mismo archivo fuente se puede convertir a múltiples formatos: HTML, PDF, Word, presentaciones, sitios web, dashboards.\nEl código se ejecuta al momento de generar el documento, por lo que el texto, las cifras y los gráficos siempre reflejan los datos actuales.\nEs la herramienta con la que construimos este sitio: la memoria de cálculo, el reporte, el dashboard y esta misma presentación.\nAsí logramos que el análisis sea reproducible: cualquier persona puede tomar el mismo código y los mismos datos y obtener exactamente los mismos resultados."
+    "objectID": "sesiones/posts/0001-encuestas/index.html#uniendo-las-bases-de-datos-con-left_join",
+    "href": "sesiones/posts/0001-encuestas/index.html#uniendo-las-bases-de-datos-con-left_join",
+    "title": "Encuestas de Hogares",
+    "section": "Uniendo las bases de datos con left_join()",
+    "text": "Uniendo las bases de datos con left_join()\nYa con las seis dimensiones calculadas, unimos todo a nivel de hogar con left_join(), usando CONGLOME, VIVIENDA y HOGAR como llaves. Partimos de la base de datos calculada, que ya trae el tamaño del hogar (MIEPERHO) y el factor de expansión (FACTOR07), y evitamos duplicar columnas como DOMINIO o FACTOR07 que ya vienen de ahí.\n\nhogares_vulnerables &lt;- dim_calculadas |&gt; \n  left_join(\n    dim_viviendas |&gt; select(-DOMINIO, -FACTOR07),\n    join_by(CONGLOME, VIVIENDA, HOGAR)\n  ) |&gt; \n  left_join(\n    vulnerabilidad_educacion,\n    join_by(CONGLOME, VIVIENDA, HOGAR)\n  )"
   },
   {
-    "objectID": "presentaciones/01-tecnologias.html#section-1",
-    "href": "presentaciones/01-tecnologias.html#section-1",
-    "title": "Análisis de Datos y Reportes Reproducibles",
+    "objectID": "sesiones/posts/0001-encuestas/index.html#incluyendo-la-fila-de-totales-en-la-exportación",
+    "href": "sesiones/posts/0001-encuestas/index.html#incluyendo-la-fila-de-totales-en-la-exportación",
+    "title": "Encuestas de Hogares",
+    "section": "Incluyendo la fila de totales en la exportación",
+    "text": "Incluyendo la fila de totales en la exportación\nLa fila de totales que grand_summary_rows() agrega en pantalla vive únicamente en el objeto de gt, no en los data frames tabla_dominio y tabla_multidimensional, así que no aparece al exportar con writeData(). Para que el Excel también la tenga, calculamos esa fila directamente con summarise() y la agregamos a cada tabla con bind_rows(), antes de exportar a un nuevo archivo.\n\ntabla_dominio_totales &lt;- tabla_dominio |&gt; \n  bind_rows(\n    tabla_dominio |&gt; \n      summarise(\n        across(where(is.numeric), sum),\n        Dominio = \"Total\"\n      )\n  )\n\ntabla_multidimensional_totales &lt;- tabla_multidimensional |&gt; \n  bind_rows(\n    tabla_multidimensional |&gt; \n      summarise(\n        across(where(is.numeric), sum),\n        Dominio = \"Total\"\n      )\n  )\n\nlibro_totales &lt;- createWorkbook()\naddWorksheet(libro_totales, \"Por dominio\")\naddWorksheet(libro_totales, \"Multidimensional\")\n\nwriteData(libro_totales, \"Por dominio\", tabla_dominio_totales)\nwriteData(libro_totales, \"Multidimensional\", tabla_multidimensional_totales)\n\nsaveWorkbook(\n  libro_totales,\n  \"salidas/sesiones/0001-encuestas/vulnerabilidad_enaho_totales.xlsx\",\n  overwrite = TRUE\n)"
+  },
+  {
+    "objectID": "sesiones/posts/0001-encuestas/index.html#footnotes",
+    "href": "sesiones/posts/0001-encuestas/index.html#footnotes",
+    "title": "Encuestas de Hogares",
+    "section": "Notas",
+    "text": "Notas\n\n\nEllos le llaman “factores”, pero dado que la palabra factores tiene una connotación especial en R, nosotros utilizaremos la denominación dimensiones.↩︎\nComo ejercicio, puedes replicar ese cálculo y clasificación con las variables que incluimos aquí y lo que aprendamos más adelante con mutate().↩︎\nEn otra sesión en vivo veremos cómo combinar esta vulnerabilidad con la exposición a eventos climáticos extremos (la otra cara de la moneda) para llegar al número de personas “en riesgo”.↩︎"
+  },
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "R En Vivo",
     "section": "",
-    "text": "¡Gracias!"
+    "text": "Este sitio ilustra un paradigma de análisis reproducible construido enteramente con Quarto y tecnologías de fuente abierta. La idea central es que un mismo documento combine texto, código y resultados, de modo que cualquier persona pueda revisar, ejecutar de nuevo y entender cómo se llegó a cada cifra o gráfico.\nEn resumen, el sitio contiene:"
+  },
+  {
+    "objectID": "index.html#sesiones-de-r-en-vivo",
+    "href": "index.html#sesiones-de-r-en-vivo",
+    "title": "R En Vivo",
+    "section": "Sesiones de R En Vivo",
+    "text": "Sesiones de R En Vivo"
+  },
+  {
+    "objectID": "presentaciones.html",
+    "href": "presentaciones.html",
+    "title": "Presentaciones",
+    "section": "",
+    "text": "Esta página reúne las presentaciones utilizadas en el curso. Cada una está pensada como un recurso complementario a los reportes y a la memoria de cálculo, enfocado en explicar de forma visual y progresiva los conceptos y herramientas que se van utilizando a lo largo de las sesiones."
+  },
+  {
+    "objectID": "presentaciones.html#sobre-esta-presentación",
+    "href": "presentaciones.html#sobre-esta-presentación",
+    "title": "Presentaciones",
+    "section": "Sobre esta presentación",
+    "text": "Sobre esta presentación\nLa presentación embebida a continuación introduce las tecnologías que usaremos durante el curso: control de versiones con git y GitHub, el entorno de análisis estadístico R, el editor Positron y el sistema de publicación Quarto. Estas herramientas conforman la base de un flujo de trabajo reproducible que emplearemos en el resto de los ejercicios."
+  },
+  {
+    "objectID": "documentos/reporte.html",
+    "href": "documentos/reporte.html",
+    "title": "Un Lindo Reporte Ficticio",
+    "section": "",
+    "text": "El crecimiento económico de los países centroamericanos ha estado marcado en los últimos años por una combinación de choques externos y procesos de recuperación pospandemia, lo cual hace relevante contar con ejercicios periódicos de seguimiento estadístico. Panamá en particular ha mostrado un desempeño singular dentro de la región debido a su condición de economía de servicios y centro logístico, por lo que este reporte ficticio ilustra, a manera de ejemplo, cómo se documentaría un análisis reproducible que combina fuentes de datos internacionales, ejercicios de clasificación biológica y datos geoespaciales dentro de un mismo documento de Quarto.",
+    "crumbs": [
+      "Un Lindo Reporte Ficticio"
+    ]
+  },
+  {
+    "objectID": "documentos/reporte.html#una-mirada-a-la-naturaleza",
+    "href": "documentos/reporte.html#una-mirada-a-la-naturaleza",
+    "title": "Un Lindo Reporte Ficticio",
+    "section": "Una mirada a la naturaleza",
+    "text": "Una mirada a la naturaleza\nComo segundo ejercicio ilustrativo, se exploró la relación entre el largo y el grosor del pico en la base de datos de pingüinos (Horst et al., 2020), diferenciando por especie. La Figura 2 muestra una agrupación relativamente clara de las tres especies en este espacio bivariado, lo cual es consistente con el uso frecuente de este conjunto de datos como ejemplo pedagógico de clasificación.\n\n\n\n\n\n\n\n\nFigura 2: Largo y grosor del pico de pingüinos, por especie",
+    "crumbs": [
+      "Un Lindo Reporte Ficticio"
+    ]
+  },
+  {
+    "objectID": "documentos/reporte.html#la-perspectiva-geográfica",
+    "href": "documentos/reporte.html#la-perspectiva-geográfica",
+    "title": "Un Lindo Reporte Ficticio",
+    "section": "La perspectiva geográfica",
+    "text": "La perspectiva geográfica\nPor último, la Figura 3 presenta la división administrativa de primer nivel de Panamá, generada a partir de datos geoespaciales, la cual serviría como base cartográfica para futuros análisis territoriales.\n\n\n\n\n\n\n\n\nFigura 3: División administrativa de primer nivel de Panamá",
+    "crumbs": [
+      "Un Lindo Reporte Ficticio"
+    ]
+  },
+  {
+    "objectID": "documentos/reporte.html#referencias",
+    "href": "documentos/reporte.html#referencias",
+    "title": "Un Lindo Reporte Ficticio",
+    "section": "Referencias",
+    "text": "Referencias\n\n\nArel-Bundock, V. (2026). WDI: World Development Indicators and Other World Bank Data. https://doi.org/10.32614/CRAN.package.WDI\n\n\nHorst, A. M., Hill, A. P. y Gorman, K. B. (2020). palmerpenguins: Palmer Archipelago (Antarctica) penguin data. https://doi.org/10.5281/zenodo.3960218",
+    "crumbs": [
+      "Un Lindo Reporte Ficticio"
+    ]
+  },
+  {
+    "objectID": "about.html",
+    "href": "about.html",
+    "title": "Acerca de",
+    "section": "",
+    "text": "Este sitio muestra las funcionalidades básicas de Quarto para un paradigma de análisis de datos reproducibles."
   },
   {
     "objectID": "documentos/memoria-de-calculo.html",
@@ -106,72 +188,60 @@
     ]
   },
   {
-    "objectID": "index.html",
-    "href": "index.html",
-    "title": "R En Vivo",
+    "objectID": "presentaciones/01-tecnologias.html#contenido",
+    "href": "presentaciones/01-tecnologias.html#contenido",
+    "title": "Análisis de Datos y Reportes Reproducibles",
+    "section": "Contenido",
+    "text": "Contenido\n\n¿Por qué adoptar la reproducibilidad?\nGit (Control de Versiones).\nEntorno de análisis estadístico R.\nPositron.\n¿Qué es Quarto?\nCierre"
+  },
+  {
+    "objectID": "presentaciones/01-tecnologias.html#por-qué-adoptar-la-reproducibilidad",
+    "href": "presentaciones/01-tecnologias.html#por-qué-adoptar-la-reproducibilidad",
+    "title": "Análisis de Datos y Reportes Reproducibles",
+    "section": "¿Por qué adoptar la reproducibilidad?",
+    "text": "¿Por qué adoptar la reproducibilidad?\n\nLa reproducibilidad permite que otra persona (o uno mismo, meses después) obtenga los mismos resultados a partir de los mismos datos y código.\nEvita el problema de “funcionaba en mi computadora” al documentar el entorno y los pasos exactos del análisis.\nReduce errores de manipulación manual (copiar y pegar, editar celdas a mano) que son difíciles de rastrear.\nFacilita la revisión y auditoría de los resultados por terceros (colegas, revisores, público).\nPermite actualizar el análisis fácilmente cuando llegan datos nuevos, sin repetir el trabajo desde cero.\nEvita la pérdida de trabajo y la confusión de versiones (archivos como “final_v2_definitivo-este-sí.xlsx”)."
+  },
+  {
+    "objectID": "presentaciones/01-tecnologias.html#qué-es-git-control-de-versiones",
+    "href": "presentaciones/01-tecnologias.html#qué-es-git-control-de-versiones",
+    "title": "Análisis de Datos y Reportes Reproducibles",
+    "section": "¿Qué es Git (control de versiones)?",
+    "text": "¿Qué es Git (control de versiones)?\n\nSistema para registrar el historial de cambios de un directorio de proyecto (código, texto, datos).\nPermite volver a versiones anteriores en cualquier momento.\nCada cambio queda documentado: quién, qué y por qué (commits).\nEl historial se organiza como una línea de commits encadenados, cada uno con su “padre”.\nLas ramas (branches) son líneas de desarrollo paralelas.\nmain suele ser la rama principal; se crean otras para features o pruebas sin afectarla.\nLos cambios de una rama se integran a otra mediante merge (o pull request en GitHub).\nGitHub es una plataforma para alojar y compartir repositorios de git en la nube."
+  },
+  {
+    "objectID": "presentaciones/01-tecnologias.html#inicializar-un-repositorio-y-subirlo-a-github",
+    "href": "presentaciones/01-tecnologias.html#inicializar-un-repositorio-y-subirlo-a-github",
+    "title": "Análisis de Datos y Reportes Reproducibles",
+    "section": "Inicializar un repositorio y subirlo a GitHub",
+    "text": "Inicializar un repositorio y subirlo a GitHub\ngit init\ngit add .\ngit commit -m \"Commit inicial\"\ngit remote add origin mi-repositorio-en-github.git\ngit branch -M main\ngit push -u origin main"
+  },
+  {
+    "objectID": "presentaciones/01-tecnologias.html#el-entorno-de-análisis-r",
+    "href": "presentaciones/01-tecnologias.html#el-entorno-de-análisis-r",
+    "title": "Análisis de Datos y Reportes Reproducibles",
+    "section": "El entorno de análisis R",
+    "text": "El entorno de análisis R\nR es un conjunto integrado de herramientas de software para la manipulación de datos, cálculo y visualización gráfica. Incluye:\n\nUna eficaz herramienta para el manejo y almacenamiento de datos,\nUn conjunto de operadores para cálculos en matrices,\nUna colección grande, coherente e integrada de herramientas intermedias para el análisis de datos,\nherramientas gráficas para el análisis y visualización de datos, ya sea en pantalla o en copia impresa, y\nUn lenguaje de programación bien desarrollado, simple y eficaz que incluye condicionales, bucles, funciones recursivas definidas y herramientas para ingreso y salida de información.\nUn ambiente en el que se han implementado funciones estadísticas."
+  },
+  {
+    "objectID": "presentaciones/01-tecnologias.html#positron",
+    "href": "presentaciones/01-tecnologias.html#positron",
+    "title": "Análisis de Datos y Reportes Reproducibles",
+    "section": "Positron",
+    "text": "Positron\n\nPositron es un ambiente para trabajar con código (Integrated Development Environment —IDE—) moderno y con capacidad para ser extendido dirigido al trabajo de ciencia de datos, construido sobre la plataforma de Code OSS (la versión de fuente abierta de Visual Studio Code). Combina el poder de un ambiente de trabajo poderoso con herramientas explícitas para el trabajo de ciencia de datos con R y Python."
+  },
+  {
+    "objectID": "presentaciones/01-tecnologias.html#qué-es-quarto",
+    "href": "presentaciones/01-tecnologias.html#qué-es-quarto",
+    "title": "Análisis de Datos y Reportes Reproducibles",
+    "section": "¿Qué es Quarto?",
+    "text": "¿Qué es Quarto?\n\nUn sistema de publicación científica y técnica de fuente abierta.\nPermite combinar texto en markdown, código (R, Python, Julia, entre otros) y sus resultados en un mismo documento.\nUn mismo archivo fuente se puede convertir a múltiples formatos: HTML, PDF, Word, presentaciones, sitios web, dashboards.\nEl código se ejecuta al momento de generar el documento, por lo que el texto, las cifras y los gráficos siempre reflejan los datos actuales.\nEs la herramienta con la que construimos este sitio: la memoria de cálculo, el reporte, el dashboard y esta misma presentación.\nAsí logramos que el análisis sea reproducible: cualquier persona puede tomar el mismo código y los mismos datos y obtener exactamente los mismos resultados."
+  },
+  {
+    "objectID": "presentaciones/01-tecnologias.html#section-1",
+    "href": "presentaciones/01-tecnologias.html#section-1",
+    "title": "Análisis de Datos y Reportes Reproducibles",
     "section": "",
-    "text": "Este sitio ilustra un paradigma de análisis reproducible construido enteramente con Quarto y tecnologías de fuente abierta. La idea central es que un mismo documento combine texto, código y resultados, de modo que cualquier persona pueda revisar, ejecutar de nuevo y entender cómo se llegó a cada cifra o gráfico.\nEn resumen, el sitio contiene:"
-  },
-  {
-    "objectID": "about.html",
-    "href": "about.html",
-    "title": "Acerca de",
-    "section": "",
-    "text": "Este sitio muestra las funcionalidades básicas de Quarto para un paradigma de análisis de datos reproducibles."
-  },
-  {
-    "objectID": "documentos/reporte.html",
-    "href": "documentos/reporte.html",
-    "title": "Un Lindo Reporte Ficticio",
-    "section": "",
-    "text": "El crecimiento económico de los países centroamericanos ha estado marcado en los últimos años por una combinación de choques externos y procesos de recuperación pospandemia, lo cual hace relevante contar con ejercicios periódicos de seguimiento estadístico. Panamá en particular ha mostrado un desempeño singular dentro de la región debido a su condición de economía de servicios y centro logístico, por lo que este reporte ficticio ilustra, a manera de ejemplo, cómo se documentaría un análisis reproducible que combina fuentes de datos internacionales, ejercicios de clasificación biológica y datos geoespaciales dentro de un mismo documento de Quarto.",
-    "crumbs": [
-      "Un Lindo Reporte Ficticio"
-    ]
-  },
-  {
-    "objectID": "documentos/reporte.html#una-mirada-a-la-naturaleza",
-    "href": "documentos/reporte.html#una-mirada-a-la-naturaleza",
-    "title": "Un Lindo Reporte Ficticio",
-    "section": "Una mirada a la naturaleza",
-    "text": "Una mirada a la naturaleza\nComo segundo ejercicio ilustrativo, se exploró la relación entre el largo y el grosor del pico en la base de datos de pingüinos (Horst et al., 2020), diferenciando por especie. La Figura 2 muestra una agrupación relativamente clara de las tres especies en este espacio bivariado, lo cual es consistente con el uso frecuente de este conjunto de datos como ejemplo pedagógico de clasificación.\n\n\n\n\n\n\n\n\nFigura 2: Largo y grosor del pico de pingüinos, por especie",
-    "crumbs": [
-      "Un Lindo Reporte Ficticio"
-    ]
-  },
-  {
-    "objectID": "documentos/reporte.html#la-perspectiva-geográfica",
-    "href": "documentos/reporte.html#la-perspectiva-geográfica",
-    "title": "Un Lindo Reporte Ficticio",
-    "section": "La perspectiva geográfica",
-    "text": "La perspectiva geográfica\nPor último, la Figura 3 presenta la división administrativa de primer nivel de Panamá, generada a partir de datos geoespaciales, la cual serviría como base cartográfica para futuros análisis territoriales.\n\n\n\n\n\n\n\n\nFigura 3: División administrativa de primer nivel de Panamá",
-    "crumbs": [
-      "Un Lindo Reporte Ficticio"
-    ]
-  },
-  {
-    "objectID": "documentos/reporte.html#referencias",
-    "href": "documentos/reporte.html#referencias",
-    "title": "Un Lindo Reporte Ficticio",
-    "section": "Referencias",
-    "text": "Referencias\n\n\nArel-Bundock, V. (2026). WDI: World Development Indicators and Other World Bank Data. https://doi.org/10.32614/CRAN.package.WDI\n\n\nHorst, A. M., Hill, A. P. y Gorman, K. B. (2020). palmerpenguins: Palmer Archipelago (Antarctica) penguin data. https://doi.org/10.5281/zenodo.3960218",
-    "crumbs": [
-      "Un Lindo Reporte Ficticio"
-    ]
-  },
-  {
-    "objectID": "presentaciones.html",
-    "href": "presentaciones.html",
-    "title": "Presentaciones",
-    "section": "",
-    "text": "Esta página reúne las presentaciones utilizadas en el curso. Cada una está pensada como un recurso complementario a los reportes y a la memoria de cálculo, enfocado en explicar de forma visual y progresiva los conceptos y herramientas que se van utilizando a lo largo de las sesiones."
-  },
-  {
-    "objectID": "presentaciones.html#sobre-esta-presentación",
-    "href": "presentaciones.html#sobre-esta-presentación",
-    "title": "Presentaciones",
-    "section": "Sobre esta presentación",
-    "text": "Sobre esta presentación\nLa presentación embebida a continuación introduce las tecnologías que usaremos durante el curso: control de versiones con git y GitHub, el entorno de análisis estadístico R, el editor Positron y el sistema de publicación Quarto. Estas herramientas conforman la base de un flujo de trabajo reproducible que emplearemos en el resto de los ejercicios."
+    "text": "¡Gracias!"
   },
   {
     "objectID": "sesiones/index.html",
@@ -179,96 +249,5 @@
     "title": "R En Vivo",
     "section": "",
     "text": "Encuestas de Hogares\n\n\n\nciencia de datos\n\nrstats\n\nanálisis reproducible\n\nencuestas\n\ndplyr\n\n\n\nExplorando datos con R y dplyr\n\n\n\n\n\n6 ago 2026\n\n\nRenato Vargas\n\n\n\n\n\nNo hay resultados"
-  },
-  {
-    "objectID": "sesiones/posts/0001-encuestas/index.html",
-    "href": "sesiones/posts/0001-encuestas/index.html",
-    "title": "Encuestas de Hogares",
-    "section": "",
-    "text": "# Limpiar el área de trabajo\nrm(list = ls()) \n\n# Cargar librerías\nlibrary(tidyverse) # Cargar dplyr y sus amigos\nlibrary(gt) # tablas en html\nlibrary(haven) # importar datos de SPSS y Stata"
-  },
-  {
-    "objectID": "sesiones/posts/0001-encuestas/index.html#los-datos",
-    "href": "sesiones/posts/0001-encuestas/index.html#los-datos",
-    "title": "Encuestas de Hogares",
-    "section": "Los Datos",
-    "text": "Los Datos\nEn esta sesión utilizaremos los datos reales de la Encuesta Nacional de Hogares (ENAHO) de Perú, que se encuentran disponibles en el repositorio de datos Instituto Nacional de Estadística e Informática (INEI). Los datos de la ENAHO son una fuente valiosa para analizar las condiciones de vida de los hogares peruanos. Utilizaremos los datos más recientes disponibles, que corresponden al primer trimestre de 2026. Entre los datos disponibles, hay muchos módulos y nosotros nos concentraremos solo en algunos:\n\nCaracterísticas de la Vivienda y del Hogar: datos SPSS | preguntas módulo vivienda.\nCaracterísticas de los Miembros del Hogar: datos SPSS | preguntas módulo personas.\nEducación: datos SPSS | preguntas módulo educación.\nSumarias (variables calculadas): datos SPSS | metodología de cálculo.\n\nAdemás es muy importante tener acceso al diccionario que explica las variables, el cual el INEI incluye con las descargas.\n\nDiccionario de todas las bases de datos: descargar.\n\nContinuaremos con la carga de los datos de la ENAHO y la exploración inicial de los mismos. Asegúrate de tener los archivos descargados y ubicados en el directorio correcto para poder acceder a ellos sin problemas.\nPara esto utilizamos el paquete haven que permite importar datos de SPSS (y Stata), que son los formatos en los que se encuentran los datos de la ENAHO. A continuación, cargamos las bases de datos de personas y viviendas.\n\nviviendas &lt;- read_spss(\"datos/per_enaho/Enaho01-2025-100-viviendas.sav\")\npersonas &lt;- read_spss(\"datos/per_enaho/Enaho01-2025-200-personas.sav\")\neducacion &lt;- read_spss(\"datos/per_enaho/Enaho01A-2025-300-educacion.sav\")\ncalculadas &lt;- read_spss(\"datos/per_enaho/Sumaria-2025.sav\")"
-  },
-  {
-    "objectID": "presentaciones/01-tecnologias.html",
-    "href": "presentaciones/01-tecnologias.html",
-    "title": "Análisis de Datos y Reportes Reproducibles",
-    "section": "",
-    "text": "¿Por qué adoptar la reproducibilidad?\nGit (Control de Versiones).\nEntorno de análisis estadístico R.\nPositron.\n¿Qué es Quarto?\nCierre"
-  },
-  {
-    "objectID": "index.html#sesiones-de-r-en-vivo",
-    "href": "index.html#sesiones-de-r-en-vivo",
-    "title": "R En Vivo",
-    "section": "Sesiones de R En Vivo",
-    "text": "Sesiones de R En Vivo"
-  },
-  {
-    "objectID": "sesiones/posts/0001-encuestas/index.html#el-paquete-dplyr",
-    "href": "sesiones/posts/0001-encuestas/index.html#el-paquete-dplyr",
-    "title": "Encuestas de Hogares",
-    "section": "El paquete dplyr",
-    "text": "El paquete dplyr\nEl paquete dplyr es parte del conjunto de paquetes de la colección tidyverse y proporciona un conjunto de funciones para manipular y transformar datos de manera eficiente y legible. Está basado en la filosofía de la gramática de datos, lo que permite expresar operaciones complejas de manera concisa y clara. Algunas de las funciones más utilizadas han sido concebidas como verbos que describen la acción que se desea realizar sobre los datos, como:\n\nselect() (seleccionar)\nfilter() (filtrar)\nmutate() (mutar o crear nuevas variables en función de otras)\nsummarise() (resumir)\narrange() (ordenar).\n\nAdemás, dplyr permite encadenar operaciones utilizando el operador |&gt;, lo que facilita la lectura y comprensión del flujo de trabajo."
-  },
-  {
-    "objectID": "sesiones/posts/0001-encuestas/index.html#nuestra-tarea-ficticia-la-vulnerabilidad-de-los-hogares-peruanos",
-    "href": "sesiones/posts/0001-encuestas/index.html#nuestra-tarea-ficticia-la-vulnerabilidad-de-los-hogares-peruanos",
-    "title": "Encuestas de Hogares",
-    "section": "Nuestra tarea ficticia: La vulnerabilidad de los hogares peruanos",
-    "text": "Nuestra tarea ficticia: La vulnerabilidad de los hogares peruanos\nImaginemos que somos analistas de datos y nos han solicitado que estimemos el número de peruanos bajo circunstancias vulnerables ante eventos climáticos extremos. Para esto, utilizamos ideas de Doan et al. (2023) en las que entendemos que la “vulnerabilidad de un hogar ante un evento climático extremo dependerá de las características del hogar que determinan el impacto inicial del evento y la capacidad del hogar para afrontarlo (…). Esto se refleja en la definición del IPCC: la vulnerabilidad incluye tanto ‘la sensibilidad o susceptibilidad al daño’ como ‘la falta de capacidad para afrontar y adaptarse’”. Es decir que los resultados de dos vecinos que se enfrentan a un evento natural extremo pueden ser radicalmente diferentes, dependiendo de los medios que tengan para prepararse, hacer frente y recuperarse de ese evento.\nDoan et al. (2023) identifican una serie de dimensiones de la vulnerabilidad1. Tenemos, por ejemplo:\n\nIngreso/gasto.\nEducación.\nAcceso a agua.\nAcceso a saneamiento.\nMateriales de construcción.\nProtección social.\nServicios financieros (bancarización).\n\nEs importante tener\nEmpezamos por cargar nuestras librerías y los datos de la ENAHO. Asegúrate de tener instalados los paquetes necesarios antes de continuar.\n\n# Limpiar el área de trabajo\nrm(list = ls()) \n\n# Cargar librerías\nlibrary(tidyverse)\nlibrary(gt)\nlibrary(haven) # importar datos de SPSS y Stata\n\nContinuaremos con la carga de los datos de la ENAHO y la exploración inicial de los mismos. Asegúrate de tener los archivos descargados y ubicados en el directorio correcto para poder acceder a ellos sin problemas.\nPara esto utilizamos el paquete haven que permite importar datos de SPSS (y Stata), que son los formatos en los que se encuentran los datos de la ENAHO. A continuación, cargamos las bases de datos de personas y viviendas.\n\nviviendas &lt;- read_spss(\"datos/per_enaho/Enaho01-2025-100-viviendas.sav\")\npersonas &lt;- read_spss(\"datos/per_enaho/Enaho01-2025-200-personas.sav\")\neducacion &lt;- read_spss(\"datos/per_enaho/Enaho01A-2025-300-educacion.sav\")\ncalculadas &lt;- read_spss(\"datos/per_enaho/Sumaria-2025.sav\")\n\nEs interesante notar que si unimos las variables CONGLOME, VIVIENDA, y HOGAR de la base de datos de personas para crear un identificador único, tenemos 33702 hogares (que corresponde también al número de observaciones de la base de datos calculada). Sin embargo, los hogares pueden tener hasta 6 núcleos familiares, según la variable P203A teniendo múltiples jefes de hogar (o de núcleo) dentro de cada familia (Variable P203B). Eso nos da un total de 41067 núcleos familares en la encuesta.\n\nno_hogares &lt;- personas |&gt; \n  select(\n    CONGLOME,\n    VIVIENDA,\n    HOGAR,\n    ESTRATO,\n    FACPOB07\n  ) |&gt; \n  mutate(\n    ID = str_c(\n      CONGLOME,\n      VIVIENDA,\n      HOGAR\n    )\n  ) |&gt; \n  group_by(\n    ID\n  ) |&gt; \n  summarise(\n    no_viviendas = sum(n(), na.rm = T)\n  )\n\nHacemos un ejercicio similar conla base de viviendas, para ver si hay una vivienda para cada hogar. La base de datos de viviendas tiene 44599 observaciones, mientras que tenemos un total de 33702 hogares. Existe una vivienda por cada hogar, pero no tenemos hogares para todas las viviendas, lo que es interesante también.\n\ningreso_publico &lt;- viviendas |&gt; \n  select(\n    CONGLOME,\n    VIVIENDA,\n    HOGAR,\n    FACTOR07\n  ) |&gt; \n    mutate(\n    ID = str_c(\n      CONGLOME,\n      VIVIENDA,\n      HOGAR\n    ),\n    ones =1\n  ) |&gt; \n  group_by(\n    ID\n  ) |&gt; \n  summarise(\n    no_viviendas = sum(n(), na.rm = T),\n    ones = sum(ones, na.rm = T)\n  )\n\n\nunidas &lt;- \n  no_hogares |&gt; \n  left_join(ingreso_publico, join_by(ID))"
-  },
-  {
-    "objectID": "sesiones/posts/0001-encuestas/index.html#referencias",
-    "href": "sesiones/posts/0001-encuestas/index.html#referencias",
-    "title": "Encuestas de Hogares",
-    "section": "Referencias",
-    "text": "Referencias\n\n\nDoan, M. K., Hill, R., Hallegatte, S., Corral Rodas, P. A., Brunckhorst, B. J., Nguyen, M., Freije-Rodriguez, S. y Naikal, E. (2023). Counting People Exposed to, Vulnerable to, or at High Risk From Climate Shocks: A Methodology. https://documents.worldbank.org/en/publication/documents-reports/documentdetail/099602511292336760/IDU07639ca570f3cb048db09bf60fc2cc82df22d"
-  },
-  {
-    "objectID": "sesiones/posts/0001-encuestas/index.html#footnotes",
-    "href": "sesiones/posts/0001-encuestas/index.html#footnotes",
-    "title": "Encuestas de Hogares",
-    "section": "Notas",
-    "text": "Notas\n\n\nEllos le llaman “factores”, pero dado que la palabra factores tiene una connotación especial en R, nosotros utilizaremos la denominación dimensiones.↩︎"
-  },
-  {
-    "objectID": "sesiones/posts/0001-encuestas/index.html#metodología",
-    "href": "sesiones/posts/0001-encuestas/index.html#metodología",
-    "title": "Encuestas de Hogares",
-    "section": "Metodología",
-    "text": "Metodología\nImaginemos que somos analistas de datos y nos han solicitado que estimemos el número de peruanos bajo circunstancias vulnerables ante eventos climáticos extremos. Para esto, utilizamos ideas de Doan et al. (2023) en las que entendemos que la “vulnerabilidad de un hogar ante un evento climático extremo dependerá de las características del hogar que determinan el impacto inicial del evento y la capacidad del hogar para afrontarlo (…). Esto se refleja en la definición del IPCC: la vulnerabilidad incluye tanto ‘la sensibilidad o susceptibilidad al daño’ como ‘la falta de capacidad para afrontar y adaptarse’”. Es decir que los resultados de dos vecinos que se enfrentan a un evento natural extremo pueden ser radicalmente diferentes, dependiendo de los medios que tengan para prepararse, hacer frente y recuperarse de ese evento.\nDoan et al. (2023) identifican una serie de dimensiones de la vulnerabilidad1. Tenemos, por ejemplo:\n\nIngreso/gasto.\nEducación.\nAcceso a agua.\nAcceso a saneamiento.\nMateriales de construcción.\nProtección social.\nServicios financieros (bancarización)."
-  },
-  {
-    "objectID": "sesiones/posts/0001-encuestas/index.html#identificando-las-dimensiones",
-    "href": "sesiones/posts/0001-encuestas/index.html#identificando-las-dimensiones",
-    "title": "Encuestas de Hogares",
-    "section": "Identificando las dimensiones",
-    "text": "Identificando las dimensiones\nEmpezamos por cargar nuestras librerías y los datos de la ENAHO. Asegúrate de tener instalados los paquetes necesarios antes de continuar."
-  },
-  {
-    "objectID": "sesiones/posts/0001-encuestas/index.html#datos",
-    "href": "sesiones/posts/0001-encuestas/index.html#datos",
-    "title": "Encuestas de Hogares",
-    "section": "Datos",
-    "text": "Datos\nEs interesante notar que si unimos las variables CONGLOME, VIVIENDA, y HOGAR de la base de datos de personas para crear un identificador único, tenemos 33,702 hogares (que corresponde también al número de observaciones de la base de datos calculada). Sin embargo, los hogares pueden tener hasta 6 núcleos familiares, según la variable P203A teniendo múltiples jefes de hogar (o de núcleo) dentro de cada familia (Variable P203B). Eso nos da un total de 44,537 núcleos familares en la encuesta.\n\n# Cálculo rápido de hogares según la base de datos de personas\nlength(\n  unique(\n    paste0(\n      personas$CONGLOME,\n      personas$VIVIENDA,\n      personas$HOGAR\n      # ,personas$P203A # número de núcleo\n    )\n  )\n)\n\n[1] 33702\n\n\nHacemos un ejercicio similar conla base de viviendas, para ver si hay una vivienda para cada hogar. La base de datos de viviendas tiene 44599 observaciones, mientras que tenemos un total de 33702 hogares. Existe una vivienda por cada hogar, pero no tenemos hogares para todas las viviendas, lo que es interesante también. Esto probablemente está relacionado con la variable de la base de datos viviendas, P22 (Ademas de esta vivienda ¿existe otra vivienda en la que Ud.o algun miembro de su hogar viven regularmente?).\n\nlength(\n  unique(\n    paste0(\n      viviendas$CONGLOME,\n      viviendas$VIVIENDA,\n      viviendas$HOGAR\n    )\n  )\n)\n\n[1] 44599\n\nunique(viviendas$P22)\n\n&lt;labelled&lt;double&gt;[3]&gt;: Ademas de esta vivienda, Existe otra vivienda en la que Ud.o algun miembro de su hogar viven regularmente\n[1]  2 NA  1\n\nLabels:\n value label\n     1    Si\n     2    No\n\ntable(as_factor(viviendas$P22))\n\n\n   Si    No \n 3306 30396"
-  },
-  {
-    "objectID": "sesiones/posts/0001-encuestas/index.html#particularidades-de-los-datos-antes-de-empezar",
-    "href": "sesiones/posts/0001-encuestas/index.html#particularidades-de-los-datos-antes-de-empezar",
-    "title": "Encuestas de Hogares",
-    "section": "Particularidades de los datos antes de empezar",
-    "text": "Particularidades de los datos antes de empezar\nEs interesante notar que si unimos las variables CONGLOME, VIVIENDA, y HOGAR de la base de datos de personas para crear un identificador único, tenemos 33,702 hogares (que corresponde también al número de observaciones de la base de datos calculada). Sin embargo, los hogares pueden tener hasta 6 núcleos familiares, según la variable P203A teniendo múltiples jefes de hogar (o de núcleo) dentro de cada familia (Variable P203B). Eso nos da un total de 44,537 núcleos familares en la encuesta.\n\n# Cálculo rápido de hogares según la base de datos de personas\nlength(\n  unique(\n    paste0(\n      personas$CONGLOME,\n      personas$VIVIENDA,\n      personas$HOGAR\n      # ,personas$P203A # número de núcleo\n    )\n  )\n)\n\n[1] 33702\n\n\nHacemos un ejercicio similar conla base de viviendas, para ver si hay una vivienda para cada hogar. La base de datos de viviendas tiene 44599 observaciones, mientras que tenemos un total de 33702 hogares. Existe una vivienda por cada hogar, pero no tenemos hogares para todas las viviendas, lo que es interesante también. Esto probablemente está relacionado con la variable de la base de datos viviendas, P22 (Ademas de esta vivienda ¿existe otra vivienda en la que Ud.o algun miembro de su hogar viven regularmente?).\n\nlength(\n  unique(\n    paste0(\n      viviendas$CONGLOME,\n      viviendas$VIVIENDA,\n      viviendas$HOGAR\n    )\n  )\n)\n\n[1] 44599\n\nunique(viviendas$P22)\n\n&lt;labelled&lt;double&gt;[3]&gt;: Ademas de esta vivienda, Existe otra vivienda en la que Ud.o algun miembro de su hogar viven regularmente\n[1]  2 NA  1\n\nLabels:\n value label\n     1    Si\n     2    No\n\ntable(as_factor(viviendas$P22))\n\n\n   Si    No \n 3306 30396"
-  },
-  {
-    "objectID": "sesiones/posts/0001-encuestas/index.html#identificando-las-dimensiones-con-select",
-    "href": "sesiones/posts/0001-encuestas/index.html#identificando-las-dimensiones-con-select",
-    "title": "Encuestas de Hogares",
-    "section": "Identificando las dimensiones con select",
-    "text": "Identificando las dimensiones con select\nVamos a crear una serie de bases de datos acotadas con solo las variables necesarias para cada dimensión a partir de las bases de datos cargadas.\n\nCalculadas\n\ndim_calculadas &lt;- calculadas |&gt; \n  select(\n    # Variables para ID\n    CONGLOME,\n    VIVIENDA,\n    HOGAR,\n    # Características varias\n    DOMINIO,\n    MIEPERHO,\n    TOTMIEHO,\n    PERCEPHO,\n    # Ingresos y gastos\n    INGHOG2D,\n    GASHOG2D,\n    # Pobreza\n    LD,\n    LINPE,\n    LINEA,\n    LINEAV,\n    POBREZA,\n    POBREZAV,\n    ESTRSOCIAL,\n    # Factor de expansión\n    FACTOR07\n  )\n\n\n\nEducación\n\ndim_educacion &lt;- educacion |&gt; \n  select(\n    # ID\n    CONGLOME,\n    VIVIENDA,\n    HOGAR,\n    CODPERSO,\n    # Nivel educativo\n    P301A,\n    # Factores de expansión\n    FACTOR07,\n    FACTORA07\n  )"
   }
 ]

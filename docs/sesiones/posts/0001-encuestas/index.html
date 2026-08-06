@@ -208,12 +208,28 @@ div.csl-indent {
   <li><a href="#nuestra-tarea-ficticia-la-vulnerabilidad-de-los-hogares-peruanos" id="toc-nuestra-tarea-ficticia-la-vulnerabilidad-de-los-hogares-peruanos" class="nav-link" data-scroll-target="#nuestra-tarea-ficticia-la-vulnerabilidad-de-los-hogares-peruanos">Nuestra tarea ficticia: La vulnerabilidad de los hogares peruanos</a>
   <ul class="collapse">
   <li><a href="#metodología" id="toc-metodología" class="nav-link" data-scroll-target="#metodología">Metodología</a></li>
-  <li><a href="#particularidades-de-los-datos-antes-de-empezar" id="toc-particularidades-de-los-datos-antes-de-empezar" class="nav-link" data-scroll-target="#particularidades-de-los-datos-antes-de-empezar">Particularidades de los datos antes de empezar</a></li>
-  <li><a href="#identificando-las-dimensiones-con-select" id="toc-identificando-las-dimensiones-con-select" class="nav-link" data-scroll-target="#identificando-las-dimensiones-con-select">Identificando las dimensiones con select</a>
+  <li><a href="#particularidades-de-los-datos-antes-de-empezar" id="toc-particularidades-de-los-datos-antes-de-empezar" class="nav-link" data-scroll-target="#particularidades-de-los-datos-antes-de-empezar">Particularidades de los datos antes de empezar</a>
   <ul class="collapse">
-  <li><a href="#calculadas" id="toc-calculadas" class="nav-link" data-scroll-target="#calculadas">Calculadas</a></li>
-  <li><a href="#educación" id="toc-educación" class="nav-link" data-scroll-target="#educación">Educación</a></li>
+  <li><a href="#base-de-datos-de-variables-calculadas" id="toc-base-de-datos-de-variables-calculadas" class="nav-link" data-scroll-target="#base-de-datos-de-variables-calculadas">Base de datos de variables calculadas</a></li>
+  <li><a href="#base-de-datos-de-educación" id="toc-base-de-datos-de-educación" class="nav-link" data-scroll-target="#base-de-datos-de-educación">Base de datos de educación</a></li>
+  <li><a href="#base-de-datos-de-viviendas" id="toc-base-de-datos-de-viviendas" class="nav-link" data-scroll-target="#base-de-datos-de-viviendas">Base de datos de viviendas</a></li>
   </ul></li>
+  <li><a href="#preparando-nuestras-variables-con-mutate" id="toc-preparando-nuestras-variables-con-mutate" class="nav-link" data-scroll-target="#preparando-nuestras-variables-con-mutate">Preparando nuestras variables con <code>mutate()</code></a>
+  <ul class="collapse">
+  <li><a href="#ingreso" id="toc-ingreso" class="nav-link" data-scroll-target="#ingreso">Ingreso</a></li>
+  <li><a href="#protección-social" id="toc-protección-social" class="nav-link" data-scroll-target="#protección-social">Protección social</a></li>
+  <li><a href="#educación" id="toc-educación" class="nav-link" data-scroll-target="#educación">Educación</a></li>
+  <li><a href="#agua" id="toc-agua" class="nav-link" data-scroll-target="#agua">Agua</a></li>
+  <li><a href="#electricidad" id="toc-electricidad" class="nav-link" data-scroll-target="#electricidad">Electricidad</a></li>
+  <li><a href="#saneamiento" id="toc-saneamiento" class="nav-link" data-scroll-target="#saneamiento">Saneamiento</a></li>
+  <li><a href="#materiales-de-construcción" id="toc-materiales-de-construcción" class="nav-link" data-scroll-target="#materiales-de-construcción">Materiales de construcción</a></li>
+  </ul></li>
+  <li><a href="#uniendo-las-bases-de-datos-con-left_join" id="toc-uniendo-las-bases-de-datos-con-left_join" class="nav-link" data-scroll-target="#uniendo-las-bases-de-datos-con-left_join">Uniendo las bases de datos con <code>left_join()</code></a></li>
+  </ul></li>
+  <li><a href="#resultados-por-área-geográfica-viviendasdominio" id="toc-resultados-por-área-geográfica-viviendasdominio" class="nav-link" data-scroll-target="#resultados-por-área-geográfica-viviendasdominio">Resultados por área geográfica (<code>viviendas$DOMINIO</code>)</a></li>
+  <li><a href="#exportando-resultados-a-excel" id="toc-exportando-resultados-a-excel" class="nav-link" data-scroll-target="#exportando-resultados-a-excel">Exportando resultados a Excel</a>
+  <ul class="collapse">
+  <li><a href="#incluyendo-la-fila-de-totales-en-la-exportación" id="toc-incluyendo-la-fila-de-totales-en-la-exportación" class="nav-link" data-scroll-target="#incluyendo-la-fila-de-totales-en-la-exportación">Incluyendo la fila de totales en la exportación</a></li>
   </ul></li>
   <li><a href="#referencias" id="toc-referencias" class="nav-link" data-scroll-target="#referencias">Referencias</a></li>
   </ul>
@@ -272,7 +288,8 @@ div.csl-indent {
 <span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Cargar librerías</span></span>
 <span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse) <span class="co"># Cargar dplyr y sus amigos</span></span>
 <span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(gt) <span class="co"># tablas en html</span></span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(haven) <span class="co"># importar datos de SPSS y Stata</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(haven) <span class="co"># importar datos de SPSS y Stata</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(openxlsx) <span class="co"># exportar resultados a Excel</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <section id="introducción" class="level1">
 <h1>Introducción</h1>
@@ -282,8 +299,8 @@ div.csl-indent {
 <li><a href="https://positron.posit.co/download.html">Positron</a>.</li>
 </ul>
 <p>Las encuestas de hogares cobraron importancia en Latinoamérica en los 80 gracias al trabajo de Angus Deaton y John Muellbauer, quienes desarrollaron métodos para analizar datos de consumo y bienestar, con apoyo del Banco Mundial. Estas encuestas permiten obtener información detallada sobre las condiciones de vida de los hogares, incluyendo ingresos, gastos, educación y salud.</p>
-<p>Quizá la fuente más relevante respecto del trabajo de Deaton es su libro <em><strong>The Analysis of Household Surveys: A Microeconometric Approach to Development Policy</strong></em>. En este libro, Deaton presenta un enfoque microeconómico para analizar datos de encuestas de hogares y cómo estos datos pueden ser utilizados para informar políticas de desarrollo y que recientemente tiene <a href="https://documents.worldbank.org/en/publication/documents-reports/documentdetail/593871468777303124">una nueva edición</a> (Deaton, 2023). Este trabajo le supuso el Premio Nobel de Economía en 2015 por su análisis de consumo, pobreza y bienestar. El libro tenía la particularidad que contaba con el código de Stata para replicar los análisis, lo cual fue un gran aporte a la ciencia reproducible y con lo que aprendimos muchos de nosotros.</p>
-<p>En esta sesión, sin embargo, no profundizaremos en los métodos econométricos, sino que nos centraremos en cómo manipular y analizar los datos de encuestas de hogares utilizando R y <code>dplyr</code>, pues el objetivo es aprender a extraer información útil de los datos y cómo presentarla de manera clara y reproducible.</p>
+<p>Quizá las fuentes más relevante respecto del trabajo de Deaton para nuestros fines son sus libros <em><strong>The Analysis of Household Surveys: A Microeconometric Approach to Development Policy</strong></em> <span class="citation" data-cites="deaton1997">(<a href="#ref-deaton1997" role="doc-biblioref">Deaton, 1997</a>)</span> y <em><strong>Guidelines for Constructing Consumption Aggregates for Welfare Analysis. New York: World Bank Press</strong></em> <span class="citation" data-cites="deatonzaidi2002">(<a href="#ref-deatonzaidi2002" role="doc-biblioref">Deaton y Zaidi, 2002</a>)</span>. En el primer libro, Deaton presenta un enfoque microeconómico para analizar datos de encuestas de hogares y cómo estos datos pueden ser utilizados para informar políticas de desarrollo y que recientemente tiene <a href="https://documents.worldbank.org/en/publication/documents-reports/documentdetail/593871468777303124">una nueva edición</a> (Deaton, 2023). En el segundo, se detalla la metodología que han seguido los institutos de estadística de la región para crear agregados de consumo que sirven para medir la pobreza. Este cuerpo de trabajo le supuso el Premio Nobel de Economía a Deaton en 2015 por su análisis de consumo, pobreza y bienestar. Ambos libros tienen la particularidad que cuentan con el código de Stata para replicar los análisis, lo cual fue un gran aporte a la ciencia reproducible y con lo que aprendimos muchos de nosotros.</p>
+<p>En esta sesión, sin embargo, no profundizaremos en los métodos econométricos, sino que nos centraremos en cómo acceder a los datos de encuestas de hogares utilizando R y <code>dplyr</code>, pues el objetivo es aprender a extraer información útil de los datos y cómo presentarla de manera clara y reproducible.</p>
 <section id="los-datos" class="level2">
 <h2 class="anchored" data-anchor-id="los-datos">Los Datos</h2>
 <p>En esta sesión utilizaremos los datos reales de la Encuesta Nacional de Hogares (ENAHO) de Perú, que se encuentran disponibles en el <a href="https://proyectos.inei.gob.pe/microdatos/">repositorio de datos Instituto Nacional de Estadística e Informática (INEI)</a>. Los datos de la ENAHO son una fuente valiosa para analizar las condiciones de vida de los hogares peruanos. Utilizaremos los datos más recientes disponibles, que corresponden al primer trimestre de 2026. Entre los datos disponibles, hay muchos módulos y nosotros nos concentraremos solo en algunos:</p>
@@ -302,8 +319,8 @@ div.csl-indent {
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>viviendas <span class="ot">&lt;-</span> <span class="fu">read_spss</span>(<span class="st">"datos/per_enaho/Enaho01-2025-100-viviendas.sav"</span>)</span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>personas <span class="ot">&lt;-</span> <span class="fu">read_spss</span>(<span class="st">"datos/per_enaho/Enaho01-2025-200-personas.sav"</span>)</span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>educacion <span class="ot">&lt;-</span> <span class="fu">read_spss</span>(<span class="st">"datos/per_enaho/Enaho01A-2025-300-educacion.sav"</span>)</span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>calculadas <span class="ot">&lt;-</span> <span class="fu">read_spss</span>(<span class="st">"datos/per_enaho/Sumaria-2025.sav"</span>)</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>calculadas <span class="ot">&lt;-</span> <span class="fu">read_spss</span>(<span class="st">"datos/per_enaho/Sumaria-2025.sav"</span>)</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>educacion <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="st">"datos/per_enaho/Enaho01A-2025-300-educacion.RDS"</span>) <span class="co"># La cargamos en formato RDS por tamaño</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 </section>
 <section id="el-paquete-dplyr" class="level2">
@@ -332,7 +349,6 @@ div.csl-indent {
 <li>Acceso a saneamiento.</li>
 <li>Materiales de construcción.</li>
 <li>Protección social.</li>
-<li>Servicios financieros (bancarización).</li>
 </ul>
 </section>
 <section id="particularidades-de-los-datos-antes-de-empezar" class="level2">
@@ -354,94 +370,1628 @@ div.csl-indent {
 <pre><code>[1] 33702</code></pre>
 </div>
 </div>
-<p>Hacemos un ejercicio similar conla base de viviendas, para ver si hay una vivienda para cada hogar. La base de datos de viviendas tiene 44599 observaciones, mientras que tenemos un total de 33702 hogares. Existe una vivienda por cada hogar, pero no tenemos hogares para todas las viviendas, lo que es interesante también. Esto probablemente está relacionado con la variable de la base de datos <code>viviendas</code>, <code>P22</code> (Ademas de esta vivienda ¿existe otra vivienda en la que Ud.o algun miembro de su hogar viven regularmente?).</p>
+<section id="base-de-datos-de-variables-calculadas" class="level3">
+<h3 class="anchored" data-anchor-id="base-de-datos-de-variables-calculadas">Base de datos de variables calculadas</h3>
+<p>En esta base de datos obtenemos información sobre ingreso. Según <span class="citation" data-cites="doan2023">Doan et&nbsp;al. (<a href="#ref-doan2023" role="doc-biblioref">2023</a>)</span>, ser vulnerable en esta dimensión es tener un ingreso por debajo de 1.5 la línea de pobreza general. En Perú, el INEI muy eficiente ya hizo este trabajo por nosotros a través de la variable <code>POBREZAV</code>. De lo contrario, tendríamos que tomar la variable de gasto anualizada <code>GASHOG2D</code>, dividirla entre 12 (meses) y compararla contra la línea de pobreza <code>LINEA</code> multiplicada por 1.5<a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a>.</p>
+<p>“Otra dimensión de la incapacidad para afrontar shocks es el acceso al apoyo público. Existe evidencia considerable de que las transferencias monetarias ayudan a los hogares a gestionar shocks (…) utilizando información sobre la cobertura actual, ya que es más probable que el apoyo esté disponible en respuesta a un desastre en lugares donde las tasas de cobertura [de programas de transferencias] previas al desastre son altas” <span class="citation" data-cites="doan2023">(<a href="#ref-doan2023" role="doc-biblioref">Doan et&nbsp;al., 2023</a>)</span>. En la base de datos <code>calculadas</code>, la variable <code>INGTPUHD</code> muestra los hogares que efectivamente recibieron beneficios de protección social.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">length</span>(</span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">unique</span>(</span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">paste0</span>(</span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>      viviendas<span class="sc">$</span>CONGLOME,</span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>      viviendas<span class="sc">$</span>VIVIENDA,</span>
-<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>      viviendas<span class="sc">$</span>HOGAR</span>
-<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>    )</span>
-<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] 44599</code></pre>
-</div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">unique</span>(viviendas<span class="sc">$</span>P22)</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>&lt;labelled&lt;double&gt;[3]&gt;: Ademas de esta vivienda, Existe otra vivienda en la que Ud.o algun miembro de su hogar viven regularmente
-[1]  2 NA  1
-
-Labels:
- value label
-     1    Si
-     2    No</code></pre>
-</div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">table</span>(<span class="fu">as_factor</span>(viviendas<span class="sc">$</span>P22))</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>
-   Si    No 
- 3306 30396 </code></pre>
-</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>dim_calculadas <span class="ot">&lt;-</span> calculadas <span class="sc">|&gt;</span> </span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>    CONGLOME,</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>    VIVIENDA,</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>    HOGAR,</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Características varias</span></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>    DOMINIO,</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>    MIEPERHO,</span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>    TOTMIEHO,</span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>    PERCEPHO,</span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Accceso a la seguridad social</span></span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>    <span class="co"># de programas: juntos, pensión 65,</span></span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>    <span class="co"># beca 18, bono del gas, bono </span></span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>    <span class="co"># electricidad, bono niño, bono</span></span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>    <span class="co"># onp para jubilados, programa</span></span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a>    <span class="co"># contigo y "otros".</span></span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a>    INGTPUHD,</span>
+<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a>    <span class="co">#Ingresos y gastos</span></span>
+<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a>    INGHOG2D,</span>
+<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a>    GASHOG2D,</span>
+<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Pobreza</span></span>
+<span id="cb5-22"><a href="#cb5-22" aria-hidden="true" tabindex="-1"></a>    LD,</span>
+<span id="cb5-23"><a href="#cb5-23" aria-hidden="true" tabindex="-1"></a>    LINPE,</span>
+<span id="cb5-24"><a href="#cb5-24" aria-hidden="true" tabindex="-1"></a>    LINEA,</span>
+<span id="cb5-25"><a href="#cb5-25" aria-hidden="true" tabindex="-1"></a>    LINEAV,</span>
+<span id="cb5-26"><a href="#cb5-26" aria-hidden="true" tabindex="-1"></a>    POBREZA,</span>
+<span id="cb5-27"><a href="#cb5-27" aria-hidden="true" tabindex="-1"></a>    POBREZAV,</span>
+<span id="cb5-28"><a href="#cb5-28" aria-hidden="true" tabindex="-1"></a>    ESTRSOCIAL,</span>
+<span id="cb5-29"><a href="#cb5-29" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Factor de expansión</span></span>
+<span id="cb5-30"><a href="#cb5-30" aria-hidden="true" tabindex="-1"></a>    FACTOR07</span>
+<span id="cb5-31"><a href="#cb5-31" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 </section>
-<section id="identificando-las-dimensiones-con-select" class="level2">
-<h2 class="anchored" data-anchor-id="identificando-las-dimensiones-con-select">Identificando las dimensiones con select</h2>
-<p>Vamos a crear una serie de bases de datos acotadas con solo las variables necesarias para cada dimensión a partir de las bases de datos cargadas.</p>
-<section id="calculadas" class="level3">
-<h3 class="anchored" data-anchor-id="calculadas">Calculadas</h3>
+<section id="base-de-datos-de-educación" class="level3">
+<h3 class="anchored" data-anchor-id="base-de-datos-de-educación">Base de datos de educación</h3>
+<p>De la base de datos de educación nos interesa únicamente el nivel educativo. La educación como medio para cambiar de fuente de sustento o para acceder a información y recursos se aproxima mediante una variable que refleja si el hogar cuenta con un adulto que haya completado la educación primaria. La base de datos de pobreza ya cuenta con el nivel educativo del jefe de hogar. Sin embargo, la metodología <span class="citation" data-cites="doan2023">(<a href="#ref-doan2023" role="doc-biblioref">Doan et&nbsp;al., 2023</a>)</span> requiere que cualquier miembro tenga al menos educación primaria, pues los miembros alfabetizados de la familia pueden cerrar la brecha de comprensión para los que no lo están, independientemente de si son jefes de hogar o no.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>dim_calculadas <span class="ot">&lt;-</span> calculadas <span class="sc">|&gt;</span> </span>
-<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(</span>
-<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Variables para ID</span></span>
-<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>    CONGLOME,</span>
-<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>    VIVIENDA,</span>
-<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>    HOGAR,</span>
-<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Características varias</span></span>
-<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>    DOMINIO,</span>
-<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>    MIEPERHO,</span>
-<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>    TOTMIEHO,</span>
-<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a>    PERCEPHO,</span>
-<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Ingresos y gastos</span></span>
-<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a>    INGHOG2D,</span>
-<span id="cb11-14"><a href="#cb11-14" aria-hidden="true" tabindex="-1"></a>    GASHOG2D,</span>
-<span id="cb11-15"><a href="#cb11-15" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Pobreza</span></span>
-<span id="cb11-16"><a href="#cb11-16" aria-hidden="true" tabindex="-1"></a>    LD,</span>
-<span id="cb11-17"><a href="#cb11-17" aria-hidden="true" tabindex="-1"></a>    LINPE,</span>
-<span id="cb11-18"><a href="#cb11-18" aria-hidden="true" tabindex="-1"></a>    LINEA,</span>
-<span id="cb11-19"><a href="#cb11-19" aria-hidden="true" tabindex="-1"></a>    LINEAV,</span>
-<span id="cb11-20"><a href="#cb11-20" aria-hidden="true" tabindex="-1"></a>    POBREZA,</span>
-<span id="cb11-21"><a href="#cb11-21" aria-hidden="true" tabindex="-1"></a>    POBREZAV,</span>
-<span id="cb11-22"><a href="#cb11-22" aria-hidden="true" tabindex="-1"></a>    ESTRSOCIAL,</span>
-<span id="cb11-23"><a href="#cb11-23" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Factor de expansión</span></span>
-<span id="cb11-24"><a href="#cb11-24" aria-hidden="true" tabindex="-1"></a>    FACTOR07</span>
-<span id="cb11-25"><a href="#cb11-25" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>dim_educacion <span class="ot">&lt;-</span> educacion <span class="sc">|&gt;</span> </span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>    <span class="co"># ID</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>    CONGLOME,</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>    VIVIENDA,</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>    HOGAR,</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>    CODPERSO,</span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Nivel educativo</span></span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>    P301A,</span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Factores de expansión</span></span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>    FACTOR07</span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</section>
+<section id="base-de-datos-de-viviendas" class="level3">
+<h3 class="anchored" data-anchor-id="base-de-datos-de-viviendas">Base de datos de viviendas</h3>
+<p>“Cuando ocurren los shocks, el acceso a servicios básicos es un determinante importante del impacto del shock sobre el bienestar. Por ejemplo, con <strong>acceso a agua potable mejorada</strong>, el agua contaminada por inundaciones y tormentas, o la falta de agua debido a la sequía, tiene un menor impacto. Sin embargo, es esencial reconocer que el indicador actual de acceso a agua potable mejorada, a menudo representado por pozos cubiertos en países de bajos ingresos, puede no reflejar suficientemente la susceptibilidad a la contaminación durante eventos extremos como inundaciones o sequías. Por lo tanto, es necesario un trabajo futuro que refine este indicador considerando un umbral potencialmente más alto. Métricas como ‘agua entubada mejorada’ pueden ofrecer una evaluación más precisa de la infraestructura que protege contra los riesgos relacionados con el agua en caso de shocks” <span class="citation" data-cites="doan2023">(<a href="#ref-doan2023" role="doc-biblioref">Doan et&nbsp;al., 2023</a>)</span>.</p>
+<p>Tomamos nota de esta advertencia y elegimos “1. Red publica, dentro de la vivienda” y “2. Red publica, fuera de la vivienda pero dentro del edificio”, a partir de las siguientes opciones posibles (de la pregunta <code>P110</code>):</p>
+<ol type="1">
+<li>Red publica, dentro de la vivienda</li>
+<li>Red publica, fuera de la vivienda pero dentro del edificio</li>
+<li>Pilon o pileta de uso publico</li>
+<li>Camion-cisterna u otro similar</li>
+<li>Pozo (agua subterranea)</li>
+<li>Manantial o puquio</li>
+<li>Otra</li>
+<li>Rio, acequia, lago, laguna</li>
+</ol>
+<p>Además lo aunamos a <code>P110A1</code> (El agua es potable: 1. Sí, 2. No.), para seleccionar como no vulnerables a quienes su agua sea potable.</p>
+<p>“Con <strong>acceso a electricidad</strong>, los hogares tienen más probabilidades de contar con activos como ventiladores que pueden ayudar con las olas de calor. Una discusión más completa está disponible en el informe Lifelines del Banco Mundial (Hallegatte et al., 2019). Si bien no constituyen una selección definitiva de activos e infraestructura relevantes para determinar la pérdida inicial del shock, estas medidas ofrecen una buena primera estimación para estimular la discusión” <span class="citation" data-cites="doan2023">(<a href="#ref-doan2023" role="doc-biblioref">Doan et&nbsp;al., 2023</a>)</span>. La variable <code>P1121</code> de la base de datos <code>viviendas</code> es una variable dummy que determina si el hogar tiene acceso a electricidad.</p>
+<p>Para esta variable (<code>P111A</code>, El baño o servicio higiénico que tiene su hogar está conectado a:) tenemos las siguientes categorías, de las cuales elegimos “Red pública de desagüe dentro de la vivienda” y “Red pública de desagüe fuera de la vivienda pero dentro del edificio” como acceso a saneamiento.</p>
+<ol type="1">
+<li>Red publica de desagüe dentro de la vivienda</li>
+<li>Red publica de desagüe fuera de la vivienda pero dentro del edificio</li>
+<li>Letrina (con tratamiento)</li>
+<li>Pozo septico, tanque septico o biodigestor</li>
+<li>Pozo ciego o negro</li>
+<li>Rio, acequia, canal o similar</li>
+<li>Otra</li>
+<li>Campo abierto o al aire libre</li>
+</ol>
+<p>Respecto de materiales de construcción, utilizamos la variable <code>P102</code> (El material predominante en las paredes exteriores es).</p>
+<ol type="1">
+<li>Ladrillo o bloque de cemento</li>
+<li>Piedra o sillar con cal o cemento</li>
+<li>Adobe</li>
+<li>Tapia</li>
+<li>Quincha (caña con barro)</li>
+<li>Piedra con barro</li>
+<li>Madera (pona, tornillo, etc)</li>
+<li>Triplay/calamina/estera</li>
+<li>Otro material</li>
+</ol>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>dim_viviendas <span class="ot">&lt;-</span> viviendas <span class="sc">|&gt;</span> </span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>    <span class="co"># ID</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>    CONGLOME,</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>    VIVIENDA,</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>    HOGAR,</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Ubicación</span></span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>    DOMINIO,</span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Agua</span></span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>    P110,</span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>    P110A1,</span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Electricidad</span></span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>    P1121,</span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Saneamiento</span></span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>    P111A,</span>
+<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Materiales de construcción</span></span>
+<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a>    P102,</span>
+<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Factor de expansión</span></span>
+<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a>    FACTOR07</span>
+<span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</section>
+</section>
+<section id="preparando-nuestras-variables-con-mutate" class="level2">
+<h2 class="anchored" data-anchor-id="preparando-nuestras-variables-con-mutate">Preparando nuestras variables con <code>mutate()</code></h2>
+<p>Con las dimensiones ya seleccionadas, usamos <code>mutate()</code> para crear, dentro de cada base de datos, una variable binaria por hogar (1 = vulnerable, 0 = no vulnerable) en cada dimensión. Como en este ejercicio no incluimos ninguna variable de bancarización o servicios financieros, dejamos esa séptima dimensión fuera y trabajamos con las seis restantes<a href="#fn3" class="footnote-ref" id="fnref3" role="doc-noteref"><sup>3</sup></a>.</p>
+<section id="ingreso" class="level3">
+<h3 class="anchored" data-anchor-id="ingreso">Ingreso</h3>
+<p>INEI ya construyó, a través de <code>POBREZAV</code>, una clasificación que distingue a los hogares vulnerables (bajo 1.5 veces la línea de pobreza) de los que no lo son, así que solo necesitamos convertirla en nuestra variable binaria.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>dim_calculadas <span class="ot">&lt;-</span> dim_calculadas <span class="sc">|&gt;</span> </span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">vulnerabilidad_ingreso =</span> <span class="fu">if_else</span>(</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>      <span class="fu">as_factor</span>(POBREZAV) <span class="sc">==</span> <span class="st">"No Vulnerable"</span>, <span class="dv">0</span>, <span class="dv">1</span></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</section>
+<section id="protección-social" class="level3">
+<h3 class="anchored" data-anchor-id="protección-social">Protección social</h3>
+<p>Consideramos que un hogar no es vulnerable en esta dimensión si recibió algún ingreso por transferencias públicas (<code>INGTPUHD</code> mayor a cero).</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>dim_calculadas <span class="ot">&lt;-</span> dim_calculadas <span class="sc">|&gt;</span> </span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">vulnerabilidad_proteccion =</span> <span class="fu">if_else</span>(</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>      INGTPUHD <span class="sc">&gt;</span> <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">1</span></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 </section>
 <section id="educación" class="level3">
 <h3 class="anchored" data-anchor-id="educación">Educación</h3>
+<p>Primero identificamos, a nivel de persona, quiénes completaron al menos la primaria. Luego colapsamos la base de datos de educación a nivel de hogar para saber si existe al menos un miembro educado.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>dim_educacion <span class="ot">&lt;-</span> educacion <span class="sc">|&gt;</span> </span>
-<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(</span>
-<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>    <span class="co"># ID</span></span>
-<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>    CONGLOME,</span>
-<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>    VIVIENDA,</span>
-<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>    HOGAR,</span>
-<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>    CODPERSO,</span>
-<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Nivel educativo</span></span>
-<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>    P301A,</span>
-<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Factores de expansión</span></span>
-<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a>    FACTOR07,</span>
-<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a>    FACTORA07</span>
-<span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>dim_educacion <span class="ot">&lt;-</span> dim_educacion <span class="sc">|&gt;</span> </span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">miembro_educado =</span> <span class="fu">if_else</span>(</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>      <span class="fu">as_factor</span>(P301A) <span class="sc">%in%</span> <span class="fu">c</span>(</span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>        <span class="st">"Sin nivel"</span>, </span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>        <span class="st">"Educacion inicial"</span>, </span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>        <span class="st">"Primaria incompleta"</span></span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>      ),</span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>      <span class="dv">0</span>, <span class="dv">1</span></span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a>vulnerabilidad_educacion <span class="ot">&lt;-</span> dim_educacion <span class="sc">|&gt;</span> </span>
+<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(CONGLOME, VIVIENDA, HOGAR) <span class="sc">|&gt;</span> </span>
+<span id="cb10-15"><a href="#cb10-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(</span>
+<span id="cb10-16"><a href="#cb10-16" aria-hidden="true" tabindex="-1"></a>    <span class="at">miembros_educados =</span> <span class="fu">sum</span>(miembro_educado, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb10-17"><a href="#cb10-17" aria-hidden="true" tabindex="-1"></a>    <span class="at">vulnerabilidad_educacion =</span> <span class="fu">if_else</span>(miembros_educados <span class="sc">==</span> <span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">0</span>),</span>
+<span id="cb10-18"><a href="#cb10-18" aria-hidden="true" tabindex="-1"></a>    <span class="at">.groups =</span> <span class="st">"drop"</span></span>
+<span id="cb10-19"><a href="#cb10-19" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span> </span>
+<span id="cb10-20"><a href="#cb10-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="sc">-</span>miembros_educados)</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 </section>
+<section id="agua" class="level3">
+<h3 class="anchored" data-anchor-id="agua">Agua</h3>
+<p>Como discutimos antes, un hogar no es vulnerable si tiene acceso a red pública de agua (dentro o fuera de la vivienda pero dentro del edificio) y, además, esa agua es potable.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>dim_viviendas <span class="ot">&lt;-</span> dim_viviendas <span class="sc">|&gt;</span> </span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">vulnerabilidad_agua =</span> <span class="fu">if_else</span>(</span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>      <span class="fu">as_factor</span>(P110) <span class="sc">%in%</span> <span class="fu">c</span>(</span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>        <span class="st">"Red publica, dentro de la vivienda"</span>,</span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>        <span class="st">"Red publica, fuera de la vivienda pero dentro del edificio"</span></span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>      ) <span class="sc">&amp;</span> <span class="fu">as_factor</span>(P110A1) <span class="sc">==</span> <span class="st">"Si"</span>,</span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>      <span class="dv">0</span>, <span class="dv">1</span></span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>La misma lógica, usando directamente los códigos numéricos de <code>P110</code> (1 y 2 son red pública) y <code>P110A1</code> (1 es “Sí”):</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="co"># dim_viviendas &lt;- dim_viviendas |&gt; </span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="co">#   mutate(</span></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a><span class="co">#     vulnerabilidad_agua = if_else(</span></span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a><span class="co">#       P110 %in% c(1, 2) &amp; P110A1 == 1,</span></span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a><span class="co">#       0, 1</span></span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a><span class="co">#     )</span></span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a><span class="co">#   )</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</section>
+<section id="electricidad" class="level3">
+<h3 class="anchored" data-anchor-id="electricidad">Electricidad</h3>
+<p>Un hogar es vulnerable si no cuenta con acceso a electricidad, según <code>P1121</code>.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>dim_viviendas <span class="ot">&lt;-</span> dim_viviendas <span class="sc">|&gt;</span> </span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">vulnerabilidad_electricidad =</span> <span class="fu">if_else</span>(</span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>      <span class="fu">as_factor</span>(P1121) <span class="sc">==</span> <span class="st">"Electricidad"</span>, <span class="dv">0</span>, <span class="dv">1</span></span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>La misma lógica, usando el código numérico de <code>P1121</code> (1 es “Electricidad”):</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="co"># dim_viviendas &lt;- dim_viviendas |&gt; </span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="co">#   mutate(</span></span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a><span class="co">#     vulnerabilidad_electricidad = if_else(</span></span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a><span class="co">#       P1121 == 1, 0, 1</span></span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a><span class="co">#     )</span></span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a><span class="co">#   )</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</section>
+<section id="saneamiento" class="level3">
+<h3 class="anchored" data-anchor-id="saneamiento">Saneamiento</h3>
+<p>Un hogar no es vulnerable si su servicio higiénico está conectado a la red pública de desagüe, dentro o fuera de la vivienda pero dentro del edificio.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>dim_viviendas <span class="ot">&lt;-</span> dim_viviendas <span class="sc">|&gt;</span> </span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">vulnerabilidad_saneamiento =</span> <span class="fu">if_else</span>(</span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>      <span class="fu">as_factor</span>(P111A) <span class="sc">%in%</span> <span class="fu">c</span>(</span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>        <span class="st">"Red publica de desagüe dentro de la vivienda"</span>,</span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>        <span class="st">"Red publica de desagüe fuera de la vivienda pero dentro del edificio"</span></span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>      ),</span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a>      <span class="dv">0</span>, <span class="dv">1</span></span>
+<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>La misma lógica, usando directamente los códigos numéricos de <code>P111A</code> (1 y 2 son red pública de desagüe):</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="co"># dim_viviendas &lt;- dim_viviendas |&gt; </span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="co">#   mutate(</span></span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a><span class="co">#     vulnerabilidad_saneamiento = if_else(</span></span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a><span class="co">#       P111A %in% c(1, 2),</span></span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a><span class="co">#       0, 1</span></span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a><span class="co">#     )</span></span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a><span class="co">#   )</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</section>
+<section id="materiales-de-construcción" class="level3">
+<h3 class="anchored" data-anchor-id="materiales-de-construcción">Materiales de construcción</h3>
+<p>Consideramos como no vulnerables únicamente a los hogares cuyas paredes exteriores son de ladrillo, bloque de cemento, piedra o sillar con cal o cemento.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>dim_viviendas <span class="ot">&lt;-</span> dim_viviendas <span class="sc">|&gt;</span> </span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">vulnerabilidad_construccion =</span> <span class="fu">if_else</span>(</span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>      <span class="fu">as_factor</span>(P102) <span class="sc">%in%</span> <span class="fu">c</span>(</span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>        <span class="st">"Ladrillo o bloque de cemento"</span>,</span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>        <span class="st">"Piedra o sillar con cal o cemento"</span></span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>      ),</span>
+<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a>      <span class="dv">0</span>, <span class="dv">1</span></span>
+<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>La misma lógica, usando directamente los códigos numéricos de <code>P102</code> (1 y 2 son ladrillo/bloque de cemento y piedra o sillar):</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="co"># dim_viviendas &lt;- dim_viviendas |&gt; </span></span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="co">#   mutate(</span></span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a><span class="co">#     vulnerabilidad_construccion = if_else(</span></span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a><span class="co">#       P102 %in% c(1, 2),</span></span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a><span class="co">#       0, 1</span></span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a><span class="co">#     )</span></span>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a><span class="co">#   )</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</section>
+</section>
+<section id="uniendo-las-bases-de-datos-con-left_join" class="level2">
+<h2 class="anchored" data-anchor-id="uniendo-las-bases-de-datos-con-left_join">Uniendo las bases de datos con <code>left_join()</code></h2>
+<p>Ya con las seis dimensiones calculadas, unimos todo a nivel de hogar con <code>left_join()</code>, usando <code>CONGLOME</code>, <code>VIVIENDA</code> y <code>HOGAR</code> como llaves. Partimos de la base de datos calculada, que ya trae el tamaño del hogar (<code>MIEPERHO</code>) y el factor de expansión (<code>FACTOR07</code>), y evitamos duplicar columnas como <code>DOMINIO</code> o <code>FACTOR07</code> que ya vienen de ahí.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>hogares_vulnerables <span class="ot">&lt;-</span> dim_calculadas <span class="sc">|&gt;</span> </span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(</span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>    dim_viviendas <span class="sc">|&gt;</span> <span class="fu">select</span>(<span class="sc">-</span>DOMINIO, <span class="sc">-</span>FACTOR07),</span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">join_by</span>(CONGLOME, VIVIENDA, HOGAR)</span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span> </span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(</span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a>    vulnerabilidad_educacion,</span>
+<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a>    <span class="fu">join_by</span>(CONGLOME, VIVIENDA, HOGAR)</span>
+<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</section>
+</section>
+<section id="resultados-por-área-geográfica-viviendasdominio" class="level1">
+<h1>Resultados por área geográfica (<code>viviendas$DOMINIO</code>)</h1>
+<p>Para expresar la vulnerabilidad en número de personas (y no de hogares), multiplicamos el factor de expansión (<code>FACTOR07</code>) por el tamaño del hogar (<code>MIEPERHO</code>) y por cada variable de vulnerabilidad. Con esto, la siguiente tabla muestra la población total de cada dominio como referencia, junto con el número de personas vulnerables en cada dimensión, y una fila con los totales nacionales.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>tabla_dominio <span class="ot">&lt;-</span> hogares_vulnerables <span class="sc">|&gt;</span> </span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">Dominio =</span> <span class="fu">as_factor</span>(DOMINIO),</span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">personas =</span> FACTOR07 <span class="sc">*</span> MIEPERHO,</span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">Ingreso =</span> personas <span class="sc">*</span> vulnerabilidad_ingreso,</span>
+<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a>    Educación <span class="ot">=</span> personas <span class="sc">*</span> vulnerabilidad_educacion,</span>
+<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">Agua =</span> personas <span class="sc">*</span> vulnerabilidad_agua,</span>
+<span id="cb20-8"><a href="#cb20-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">Electricidad =</span> personas <span class="sc">*</span> vulnerabilidad_electricidad,</span>
+<span id="cb20-9"><a href="#cb20-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">Saneamiento =</span> personas <span class="sc">*</span> vulnerabilidad_saneamiento,</span>
+<span id="cb20-10"><a href="#cb20-10" aria-hidden="true" tabindex="-1"></a>    Construcción <span class="ot">=</span> personas <span class="sc">*</span> vulnerabilidad_construccion,</span>
+<span id="cb20-11"><a href="#cb20-11" aria-hidden="true" tabindex="-1"></a>    <span class="st">`</span><span class="at">Protección social</span><span class="st">`</span> <span class="ot">=</span> personas <span class="sc">*</span> vulnerabilidad_proteccion</span>
+<span id="cb20-12"><a href="#cb20-12" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span> </span>
+<span id="cb20-13"><a href="#cb20-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(Dominio) <span class="sc">|&gt;</span> </span>
+<span id="cb20-14"><a href="#cb20-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(</span>
+<span id="cb20-15"><a href="#cb20-15" aria-hidden="true" tabindex="-1"></a>    <span class="st">`</span><span class="at">Población total</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">sum</span>(personas, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb20-16"><a href="#cb20-16" aria-hidden="true" tabindex="-1"></a>    <span class="at">Ingreso =</span> <span class="fu">sum</span>(Ingreso, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb20-17"><a href="#cb20-17" aria-hidden="true" tabindex="-1"></a>    Educación <span class="ot">=</span> <span class="fu">sum</span>(Educación, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb20-18"><a href="#cb20-18" aria-hidden="true" tabindex="-1"></a>    <span class="at">Agua =</span> <span class="fu">sum</span>(Agua, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb20-19"><a href="#cb20-19" aria-hidden="true" tabindex="-1"></a>    <span class="at">Electricidad =</span> <span class="fu">sum</span>(Electricidad, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb20-20"><a href="#cb20-20" aria-hidden="true" tabindex="-1"></a>    <span class="at">Saneamiento =</span> <span class="fu">sum</span>(Saneamiento, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb20-21"><a href="#cb20-21" aria-hidden="true" tabindex="-1"></a>    Construcción <span class="ot">=</span> <span class="fu">sum</span>(Construcción, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb20-22"><a href="#cb20-22" aria-hidden="true" tabindex="-1"></a>    <span class="st">`</span><span class="at">Protección social</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">sum</span>(<span class="st">`</span><span class="at">Protección social</span><span class="st">`</span>, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb20-23"><a href="#cb20-23" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb20-24"><a href="#cb20-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-25"><a href="#cb20-25" aria-hidden="true" tabindex="-1"></a>tabla_dominio <span class="sc">|&gt;</span> </span>
+<span id="cb20-26"><a href="#cb20-26" aria-hidden="true" tabindex="-1"></a>  <span class="fu">gt</span>() <span class="sc">|&gt;</span> </span>
+<span id="cb20-27"><a href="#cb20-27" aria-hidden="true" tabindex="-1"></a>  <span class="fu">fmt_number</span>(</span>
+<span id="cb20-28"><a href="#cb20-28" aria-hidden="true" tabindex="-1"></a>    <span class="at">columns =</span> <span class="fu">where</span>(is.numeric),</span>
+<span id="cb20-29"><a href="#cb20-29" aria-hidden="true" tabindex="-1"></a>    <span class="at">decimals =</span> <span class="dv">0</span>,</span>
+<span id="cb20-30"><a href="#cb20-30" aria-hidden="true" tabindex="-1"></a>    <span class="at">use_seps =</span> <span class="cn">TRUE</span></span>
+<span id="cb20-31"><a href="#cb20-31" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span> </span>
+<span id="cb20-32"><a href="#cb20-32" aria-hidden="true" tabindex="-1"></a>  <span class="fu">grand_summary_rows</span>(</span>
+<span id="cb20-33"><a href="#cb20-33" aria-hidden="true" tabindex="-1"></a>    <span class="at">columns =</span> <span class="fu">where</span>(is.numeric),</span>
+<span id="cb20-34"><a href="#cb20-34" aria-hidden="true" tabindex="-1"></a>    <span class="at">fns =</span> <span class="fu">list</span>(<span class="at">label =</span> <span class="st">"Total"</span>, <span class="at">id =</span> <span class="st">"totales"</span>, <span class="at">fn =</span> <span class="st">"sum"</span>),</span>
+<span id="cb20-35"><a href="#cb20-35" aria-hidden="true" tabindex="-1"></a>    <span class="at">fmt =</span> <span class="sc">~</span> <span class="fu">fmt_number</span>(., <span class="at">decimals =</span> <span class="dv">0</span>, <span class="at">use_seps =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb20-36"><a href="#cb20-36" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div id="tbl-vulnerabilidad-dominio" class="cell quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-vulnerabilidad-dominio-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Tabla&nbsp;1: Número de personas vulnerables por dominio y dimensión
+</figcaption>
+<div aria-describedby="tbl-vulnerabilidad-dominio-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="cell-output-display">
+<div id="pfhyvulzbr" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#pfhyvulzbr table {
+  font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#pfhyvulzbr thead, #pfhyvulzbr tbody, #pfhyvulzbr tfoot, #pfhyvulzbr tr, #pfhyvulzbr td, #pfhyvulzbr th {
+  border-style: none;
+}
+
+#pfhyvulzbr p {
+  margin: 0;
+  padding: 0;
+}
+
+#pfhyvulzbr .gt_table {
+  display: table;
+  border-collapse: collapse;
+  line-height: normal;
+  margin-left: auto;
+  margin-right: auto;
+  color: #333333;
+  font-size: 16px;
+  font-weight: normal;
+  font-style: normal;
+  background-color: #FFFFFF;
+  width: auto;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #A8A8A8;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #A8A8A8;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+}
+
+#pfhyvulzbr .gt_caption {
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+
+#pfhyvulzbr .gt_title {
+  color: #333333;
+  font-size: 125%;
+  font-weight: initial;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-color: #FFFFFF;
+  border-bottom-width: 0;
+}
+
+#pfhyvulzbr .gt_subtitle {
+  color: #333333;
+  font-size: 85%;
+  font-weight: initial;
+  padding-top: 3px;
+  padding-bottom: 5px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-color: #FFFFFF;
+  border-top-width: 0;
+}
+
+#pfhyvulzbr .gt_heading {
+  background-color: #FFFFFF;
+  text-align: center;
+  border-bottom-color: #FFFFFF;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#pfhyvulzbr .gt_bottom_border {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#pfhyvulzbr .gt_col_headings {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#pfhyvulzbr .gt_col_heading {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 6px;
+  padding-left: 5px;
+  padding-right: 5px;
+  overflow-x: hidden;
+}
+
+#pfhyvulzbr .gt_column_spanner_outer {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  padding-top: 0;
+  padding-bottom: 0;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+#pfhyvulzbr .gt_column_spanner_outer:first-child {
+  padding-left: 0;
+}
+
+#pfhyvulzbr .gt_column_spanner_outer:last-child {
+  padding-right: 0;
+}
+
+#pfhyvulzbr .gt_column_spanner {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  overflow-x: hidden;
+  display: inline-block;
+  width: 100%;
+}
+
+#pfhyvulzbr .gt_spanner_row {
+  border-bottom-style: hidden;
+}
+
+#pfhyvulzbr .gt_group_heading {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  text-align: left;
+}
+
+#pfhyvulzbr .gt_empty_group_heading {
+  padding: 0.5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: middle;
+}
+
+#pfhyvulzbr .gt_from_md > :first-child {
+  margin-top: 0;
+}
+
+#pfhyvulzbr .gt_from_md > :last-child {
+  margin-bottom: 0;
+}
+
+#pfhyvulzbr .gt_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  margin: 10px;
+  border-top-style: solid;
+  border-top-width: 1px;
+  border-top-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  overflow-x: hidden;
+}
+
+#pfhyvulzbr .gt_stub {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#pfhyvulzbr .gt_stub_row_group {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+  vertical-align: top;
+}
+
+#pfhyvulzbr .gt_row_group_first td {
+  border-top-width: 2px;
+}
+
+#pfhyvulzbr .gt_row_group_first th {
+  border-top-width: 2px;
+}
+
+#pfhyvulzbr .gt_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#pfhyvulzbr .gt_first_summary_row {
+  border-top-style: solid;
+  border-top-color: #D3D3D3;
+}
+
+#pfhyvulzbr .gt_first_summary_row.thick {
+  border-top-width: 2px;
+}
+
+#pfhyvulzbr .gt_last_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#pfhyvulzbr .gt_grand_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#pfhyvulzbr .gt_first_grand_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-style: double;
+  border-top-width: 6px;
+  border-top-color: #D3D3D3;
+}
+
+#pfhyvulzbr .gt_last_grand_summary_row_top {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: double;
+  border-bottom-width: 6px;
+  border-bottom-color: #D3D3D3;
+}
+
+#pfhyvulzbr .gt_striped {
+  background-color: rgba(128, 128, 128, 0.05);
+}
+
+#pfhyvulzbr .gt_table_body {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#pfhyvulzbr .gt_footnotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#pfhyvulzbr .gt_footnote {
+  margin: 0px;
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#pfhyvulzbr .gt_sourcenotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#pfhyvulzbr .gt_sourcenote {
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#pfhyvulzbr .gt_left {
+  text-align: left;
+}
+
+#pfhyvulzbr .gt_center {
+  text-align: center;
+}
+
+#pfhyvulzbr .gt_right {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+#pfhyvulzbr .gt_font_normal {
+  font-weight: normal;
+}
+
+#pfhyvulzbr .gt_font_bold {
+  font-weight: bold;
+}
+
+#pfhyvulzbr .gt_font_italic {
+  font-style: italic;
+}
+
+#pfhyvulzbr .gt_super {
+  font-size: 65%;
+}
+
+#pfhyvulzbr .gt_footnote_marks {
+  font-size: 75%;
+  vertical-align: 0.4em;
+  position: initial;
+}
+
+#pfhyvulzbr .gt_asterisk {
+  font-size: 100%;
+  vertical-align: 0;
+}
+
+#pfhyvulzbr .gt_indent_1 {
+  text-indent: 5px;
+}
+
+#pfhyvulzbr .gt_indent_2 {
+  text-indent: 10px;
+}
+
+#pfhyvulzbr .gt_indent_3 {
+  text-indent: 15px;
+}
+
+#pfhyvulzbr .gt_indent_4 {
+  text-indent: 20px;
+}
+
+#pfhyvulzbr .gt_indent_5 {
+  text-indent: 25px;
+}
+
+#pfhyvulzbr .katex-display {
+  display: inline-flex !important;
+  margin-bottom: 0.75em !important;
+}
+
+#pfhyvulzbr div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
+  height: 0px !important;
+}
+</style>
+
+<table class="gt_table cell caption-top table table-sm table-striped small" data-quarto-bootstrap="false">
+<thead>
+<tr class="gt_col_headings header">
+<th id="a::stub" class="gt_col_heading gt_columns_bottom_border gt_left" data-quarto-table-cell-role="th" scope="col"></th>
+<th id="Dominio" class="gt_col_heading gt_columns_bottom_border gt_center" data-quarto-table-cell-role="th" scope="col">dominio</th>
+<th id="Población-total" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">Población total</th>
+<th id="Ingreso" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">Ingreso</th>
+<th id="Educación" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">Educación</th>
+<th id="Agua" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">Agua</th>
+<th id="Electricidad" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">Electricidad</th>
+<th id="Saneamiento" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">Saneamiento</th>
+<th id="Construcción" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">Construcción</th>
+<th id="Protección-social" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">Protección social</th>
+</tr>
+</thead>
+<tbody class="gt_table_body">
+<tr class="odd">
+<th id="stub_1_1" class="gt_row gt_left gt_stub" data-quarto-table-cell-role="th" scope="row"></th>
+<td class="gt_row gt_center" headers="stub_1_1 Dominio">Costa Norte</td>
+<td class="gt_row gt_right" headers="stub_1_1 Población total">5,182,069</td>
+<td class="gt_row gt_right" headers="stub_1_1 Ingreso">2,737,999</td>
+<td class="gt_row gt_right" headers="stub_1_1 Educación">183,312</td>
+<td class="gt_row gt_right" headers="stub_1_1 Agua">1,229,943</td>
+<td class="gt_row gt_right" headers="stub_1_1 Electricidad">73,808</td>
+<td class="gt_row gt_right" headers="stub_1_1 Saneamiento">1,361,132</td>
+<td class="gt_row gt_right" headers="stub_1_1 Construcción">1,974,707</td>
+<td class="gt_row gt_right" headers="stub_1_1 Protección social">3,419,068</td>
+</tr>
+<tr class="even">
+<th id="stub_1_2" class="gt_row gt_left gt_stub" data-quarto-table-cell-role="th" scope="row"></th>
+<td class="gt_row gt_center" headers="stub_1_2 Dominio">Costa Centro</td>
+<td class="gt_row gt_right" headers="stub_1_2 Población total">2,333,748</td>
+<td class="gt_row gt_right" headers="stub_1_2 Ingreso">1,117,158</td>
+<td class="gt_row gt_right" headers="stub_1_2 Educación">43,398</td>
+<td class="gt_row gt_right" headers="stub_1_2 Agua">407,271</td>
+<td class="gt_row gt_right" headers="stub_1_2 Electricidad">55,056</td>
+<td class="gt_row gt_right" headers="stub_1_2 Saneamiento">506,574</td>
+<td class="gt_row gt_right" headers="stub_1_2 Construcción">729,678</td>
+<td class="gt_row gt_right" headers="stub_1_2 Protección social">1,836,971</td>
+</tr>
+<tr class="odd">
+<th id="stub_1_3" class="gt_row gt_left gt_stub" data-quarto-table-cell-role="th" scope="row"></th>
+<td class="gt_row gt_center" headers="stub_1_3 Dominio">Costa Sur</td>
+<td class="gt_row gt_right" headers="stub_1_3 Población total">708,243</td>
+<td class="gt_row gt_right" headers="stub_1_3 Ingreso">344,154</td>
+<td class="gt_row gt_right" headers="stub_1_3 Educación">19,799</td>
+<td class="gt_row gt_right" headers="stub_1_3 Agua">131,115</td>
+<td class="gt_row gt_right" headers="stub_1_3 Electricidad">11,513</td>
+<td class="gt_row gt_right" headers="stub_1_3 Saneamiento">129,818</td>
+<td class="gt_row gt_right" headers="stub_1_3 Construcción">146,314</td>
+<td class="gt_row gt_right" headers="stub_1_3 Protección social">555,191</td>
+</tr>
+<tr class="even">
+<th id="stub_1_4" class="gt_row gt_left gt_stub" data-quarto-table-cell-role="th" scope="row"></th>
+<td class="gt_row gt_center" headers="stub_1_4 Dominio">Sierra Norte</td>
+<td class="gt_row gt_right" headers="stub_1_4 Población total">1,912,495</td>
+<td class="gt_row gt_right" headers="stub_1_4 Ingreso">1,493,321</td>
+<td class="gt_row gt_right" headers="stub_1_4 Educación">230,948</td>
+<td class="gt_row gt_right" headers="stub_1_4 Agua">1,197,856</td>
+<td class="gt_row gt_right" headers="stub_1_4 Electricidad">118,758</td>
+<td class="gt_row gt_right" headers="stub_1_4 Saneamiento">1,091,246</td>
+<td class="gt_row gt_right" headers="stub_1_4 Construcción">1,416,172</td>
+<td class="gt_row gt_right" headers="stub_1_4 Protección social">780,167</td>
+</tr>
+<tr class="odd">
+<th id="stub_1_5" class="gt_row gt_left gt_stub" data-quarto-table-cell-role="th" scope="row"></th>
+<td class="gt_row gt_center" headers="stub_1_5 Dominio">Sierra Centro</td>
+<td class="gt_row gt_right" headers="stub_1_5 Población total">4,069,607</td>
+<td class="gt_row gt_right" headers="stub_1_5 Ingreso">2,700,903</td>
+<td class="gt_row gt_right" headers="stub_1_5 Educación">394,259</td>
+<td class="gt_row gt_right" headers="stub_1_5 Agua">2,292,173</td>
+<td class="gt_row gt_right" headers="stub_1_5 Electricidad">213,997</td>
+<td class="gt_row gt_right" headers="stub_1_5 Saneamiento">1,513,216</td>
+<td class="gt_row gt_right" headers="stub_1_5 Construcción">2,698,663</td>
+<td class="gt_row gt_right" headers="stub_1_5 Protección social">1,810,108</td>
+</tr>
+<tr class="even">
+<th id="stub_1_6" class="gt_row gt_left gt_stub" data-quarto-table-cell-role="th" scope="row"></th>
+<td class="gt_row gt_center" headers="stub_1_6 Dominio">Sierra Sur</td>
+<td class="gt_row gt_right" headers="stub_1_6 Población total">4,649,401</td>
+<td class="gt_row gt_right" headers="stub_1_6 Ingreso">2,828,370</td>
+<td class="gt_row gt_right" headers="stub_1_6 Educación">349,812</td>
+<td class="gt_row gt_right" headers="stub_1_6 Agua">1,959,007</td>
+<td class="gt_row gt_right" headers="stub_1_6 Electricidad">202,370</td>
+<td class="gt_row gt_right" headers="stub_1_6 Saneamiento">1,539,319</td>
+<td class="gt_row gt_right" headers="stub_1_6 Construcción">2,273,456</td>
+<td class="gt_row gt_right" headers="stub_1_6 Protección social">2,669,276</td>
+</tr>
+<tr class="odd">
+<th id="stub_1_7" class="gt_row gt_left gt_stub" data-quarto-table-cell-role="th" scope="row"></th>
+<td class="gt_row gt_center" headers="stub_1_7 Dominio">Selva</td>
+<td class="gt_row gt_right" headers="stub_1_7 Población total">4,367,681</td>
+<td class="gt_row gt_right" headers="stub_1_7 Ingreso">3,090,435</td>
+<td class="gt_row gt_right" headers="stub_1_7 Educación">194,326</td>
+<td class="gt_row gt_right" headers="stub_1_7 Agua">2,433,797</td>
+<td class="gt_row gt_right" headers="stub_1_7 Electricidad">465,946</td>
+<td class="gt_row gt_right" headers="stub_1_7 Saneamiento">2,493,210</td>
+<td class="gt_row gt_right" headers="stub_1_7 Construcción">2,603,147</td>
+<td class="gt_row gt_right" headers="stub_1_7 Protección social">2,234,513</td>
+</tr>
+<tr class="even">
+<th id="stub_1_8" class="gt_row gt_left gt_stub" data-quarto-table-cell-role="th" scope="row"></th>
+<td class="gt_row gt_center" headers="stub_1_8 Dominio">Lima Metropolitana</td>
+<td class="gt_row gt_right" headers="stub_1_8 Población total">11,633,464</td>
+<td class="gt_row gt_right" headers="stub_1_8 Ingreso">6,051,291</td>
+<td class="gt_row gt_right" headers="stub_1_8 Educación">85,861</td>
+<td class="gt_row gt_right" headers="stub_1_8 Agua">1,384,979</td>
+<td class="gt_row gt_right" headers="stub_1_8 Electricidad">30,816</td>
+<td class="gt_row gt_right" headers="stub_1_8 Saneamiento">1,236,527</td>
+<td class="gt_row gt_right" headers="stub_1_8 Construcción">2,026,732</td>
+<td class="gt_row gt_right" headers="stub_1_8 Protección social">9,149,202</td>
+</tr>
+<tr class="odd">
+<th id="grand_summary_stub_1" class="gt_row gt_left gt_stub gt_grand_summary_row gt_first_grand_summary_row gt_last_summary_row" data-quarto-table-cell-role="th" scope="row">Total</th>
+<td class="gt_row gt_center gt_grand_summary_row gt_first_grand_summary_row gt_last_summary_row" headers="grand_summary_stub_1 Dominio">—</td>
+<td class="gt_row gt_right gt_grand_summary_row gt_first_grand_summary_row gt_last_summary_row" headers="grand_summary_stub_1 Población total">34,856,707</td>
+<td class="gt_row gt_right gt_grand_summary_row gt_first_grand_summary_row gt_last_summary_row" headers="grand_summary_stub_1 Ingreso">20,363,631</td>
+<td class="gt_row gt_right gt_grand_summary_row gt_first_grand_summary_row gt_last_summary_row" headers="grand_summary_stub_1 Educación">1,501,716</td>
+<td class="gt_row gt_right gt_grand_summary_row gt_first_grand_summary_row gt_last_summary_row" headers="grand_summary_stub_1 Agua">11,036,141</td>
+<td class="gt_row gt_right gt_grand_summary_row gt_first_grand_summary_row gt_last_summary_row" headers="grand_summary_stub_1 Electricidad">1,172,266</td>
+<td class="gt_row gt_right gt_grand_summary_row gt_first_grand_summary_row gt_last_summary_row" headers="grand_summary_stub_1 Saneamiento">9,871,042</td>
+<td class="gt_row gt_right gt_grand_summary_row gt_first_grand_summary_row gt_last_summary_row" headers="grand_summary_stub_1 Construcción">13,868,869</td>
+<td class="gt_row gt_right gt_grand_summary_row gt_first_grand_summary_row gt_last_summary_row" headers="grand_summary_stub_1 Protección social">22,454,495</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+</figure>
+</div>
+</div>
+<p>Finalmente, contamos a las personas según el número de dimensiones en las que son vulnerables simultáneamente (de 0 a 7), por dominio geográfico, con la población total de cada dominio como referencia y una fila de totales nacionales.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>tabla_multidimensional <span class="ot">&lt;-</span> hogares_vulnerables <span class="sc">|&gt;</span> </span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">Dominio =</span> <span class="fu">as_factor</span>(DOMINIO),</span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">personas =</span> FACTOR07 <span class="sc">*</span> MIEPERHO,</span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">num_dimensiones =</span> <span class="fu">rowSums</span>(</span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a>      <span class="fu">across</span>(<span class="fu">starts_with</span>(<span class="st">"vulnerabilidad_"</span>)), <span class="at">na.rm =</span> <span class="cn">TRUE</span></span>
+<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span> </span>
+<span id="cb21-9"><a href="#cb21-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(Dominio, num_dimensiones) <span class="sc">|&gt;</span> </span>
+<span id="cb21-10"><a href="#cb21-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(</span>
+<span id="cb21-11"><a href="#cb21-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">personas =</span> <span class="fu">sum</span>(personas, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb21-12"><a href="#cb21-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">.groups =</span> <span class="st">"drop"</span></span>
+<span id="cb21-13"><a href="#cb21-13" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span> </span>
+<span id="cb21-14"><a href="#cb21-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_wider</span>(</span>
+<span id="cb21-15"><a href="#cb21-15" aria-hidden="true" tabindex="-1"></a>    <span class="at">names_from =</span> num_dimensiones,</span>
+<span id="cb21-16"><a href="#cb21-16" aria-hidden="true" tabindex="-1"></a>    <span class="at">names_prefix =</span> <span class="st">"Dimensiones: "</span>,</span>
+<span id="cb21-17"><a href="#cb21-17" aria-hidden="true" tabindex="-1"></a>    <span class="at">values_from =</span> personas,</span>
+<span id="cb21-18"><a href="#cb21-18" aria-hidden="true" tabindex="-1"></a>    <span class="at">values_fill =</span> <span class="dv">0</span></span>
+<span id="cb21-19"><a href="#cb21-19" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span> </span>
+<span id="cb21-20"><a href="#cb21-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb21-21"><a href="#cb21-21" aria-hidden="true" tabindex="-1"></a>    <span class="st">`</span><span class="at">Población total</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">rowSums</span>(</span>
+<span id="cb21-22"><a href="#cb21-22" aria-hidden="true" tabindex="-1"></a>      <span class="fu">across</span>(<span class="fu">starts_with</span>(<span class="st">"Dimensiones:"</span>)), <span class="at">na.rm =</span> <span class="cn">TRUE</span></span>
+<span id="cb21-23"><a href="#cb21-23" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb21-24"><a href="#cb21-24" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span> </span>
+<span id="cb21-25"><a href="#cb21-25" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(Dominio, <span class="st">`</span><span class="at">Población total</span><span class="st">`</span>, <span class="fu">everything</span>())</span>
+<span id="cb21-26"><a href="#cb21-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-27"><a href="#cb21-27" aria-hidden="true" tabindex="-1"></a>tabla_multidimensional <span class="sc">|&gt;</span> </span>
+<span id="cb21-28"><a href="#cb21-28" aria-hidden="true" tabindex="-1"></a>  <span class="fu">gt</span>() <span class="sc">|&gt;</span> </span>
+<span id="cb21-29"><a href="#cb21-29" aria-hidden="true" tabindex="-1"></a>  <span class="fu">fmt_number</span>(</span>
+<span id="cb21-30"><a href="#cb21-30" aria-hidden="true" tabindex="-1"></a>    <span class="at">columns =</span> <span class="fu">where</span>(is.numeric),</span>
+<span id="cb21-31"><a href="#cb21-31" aria-hidden="true" tabindex="-1"></a>    <span class="at">decimals =</span> <span class="dv">0</span>,</span>
+<span id="cb21-32"><a href="#cb21-32" aria-hidden="true" tabindex="-1"></a>    <span class="at">use_seps =</span> <span class="cn">TRUE</span></span>
+<span id="cb21-33"><a href="#cb21-33" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span> </span>
+<span id="cb21-34"><a href="#cb21-34" aria-hidden="true" tabindex="-1"></a>  <span class="fu">grand_summary_rows</span>(</span>
+<span id="cb21-35"><a href="#cb21-35" aria-hidden="true" tabindex="-1"></a>    <span class="at">columns =</span> <span class="fu">where</span>(is.numeric),</span>
+<span id="cb21-36"><a href="#cb21-36" aria-hidden="true" tabindex="-1"></a>    <span class="at">fns =</span> <span class="fu">list</span>(<span class="at">label =</span> <span class="st">"Total"</span>, <span class="at">id =</span> <span class="st">"totales"</span>, <span class="at">fn =</span> <span class="st">"sum"</span>),</span>
+<span id="cb21-37"><a href="#cb21-37" aria-hidden="true" tabindex="-1"></a>    <span class="at">fmt =</span> <span class="sc">~</span> <span class="fu">fmt_number</span>(., <span class="at">decimals =</span> <span class="dv">0</span>, <span class="at">use_seps =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb21-38"><a href="#cb21-38" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div id="tbl-vulnerabilidad-multiple" class="cell quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-vulnerabilidad-multiple-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Tabla&nbsp;2: Número de personas vulnerables en múltiples dimensiones, por dominio
+</figcaption>
+<div aria-describedby="tbl-vulnerabilidad-multiple-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="cell-output-display">
+<div id="fjyxggaumv" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#fjyxggaumv table {
+  font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#fjyxggaumv thead, #fjyxggaumv tbody, #fjyxggaumv tfoot, #fjyxggaumv tr, #fjyxggaumv td, #fjyxggaumv th {
+  border-style: none;
+}
+
+#fjyxggaumv p {
+  margin: 0;
+  padding: 0;
+}
+
+#fjyxggaumv .gt_table {
+  display: table;
+  border-collapse: collapse;
+  line-height: normal;
+  margin-left: auto;
+  margin-right: auto;
+  color: #333333;
+  font-size: 16px;
+  font-weight: normal;
+  font-style: normal;
+  background-color: #FFFFFF;
+  width: auto;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #A8A8A8;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #A8A8A8;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+}
+
+#fjyxggaumv .gt_caption {
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+
+#fjyxggaumv .gt_title {
+  color: #333333;
+  font-size: 125%;
+  font-weight: initial;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-color: #FFFFFF;
+  border-bottom-width: 0;
+}
+
+#fjyxggaumv .gt_subtitle {
+  color: #333333;
+  font-size: 85%;
+  font-weight: initial;
+  padding-top: 3px;
+  padding-bottom: 5px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-color: #FFFFFF;
+  border-top-width: 0;
+}
+
+#fjyxggaumv .gt_heading {
+  background-color: #FFFFFF;
+  text-align: center;
+  border-bottom-color: #FFFFFF;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#fjyxggaumv .gt_bottom_border {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#fjyxggaumv .gt_col_headings {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#fjyxggaumv .gt_col_heading {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 6px;
+  padding-left: 5px;
+  padding-right: 5px;
+  overflow-x: hidden;
+}
+
+#fjyxggaumv .gt_column_spanner_outer {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  padding-top: 0;
+  padding-bottom: 0;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+#fjyxggaumv .gt_column_spanner_outer:first-child {
+  padding-left: 0;
+}
+
+#fjyxggaumv .gt_column_spanner_outer:last-child {
+  padding-right: 0;
+}
+
+#fjyxggaumv .gt_column_spanner {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  overflow-x: hidden;
+  display: inline-block;
+  width: 100%;
+}
+
+#fjyxggaumv .gt_spanner_row {
+  border-bottom-style: hidden;
+}
+
+#fjyxggaumv .gt_group_heading {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  text-align: left;
+}
+
+#fjyxggaumv .gt_empty_group_heading {
+  padding: 0.5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: middle;
+}
+
+#fjyxggaumv .gt_from_md > :first-child {
+  margin-top: 0;
+}
+
+#fjyxggaumv .gt_from_md > :last-child {
+  margin-bottom: 0;
+}
+
+#fjyxggaumv .gt_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  margin: 10px;
+  border-top-style: solid;
+  border-top-width: 1px;
+  border-top-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  overflow-x: hidden;
+}
+
+#fjyxggaumv .gt_stub {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#fjyxggaumv .gt_stub_row_group {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+  vertical-align: top;
+}
+
+#fjyxggaumv .gt_row_group_first td {
+  border-top-width: 2px;
+}
+
+#fjyxggaumv .gt_row_group_first th {
+  border-top-width: 2px;
+}
+
+#fjyxggaumv .gt_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#fjyxggaumv .gt_first_summary_row {
+  border-top-style: solid;
+  border-top-color: #D3D3D3;
+}
+
+#fjyxggaumv .gt_first_summary_row.thick {
+  border-top-width: 2px;
+}
+
+#fjyxggaumv .gt_last_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#fjyxggaumv .gt_grand_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#fjyxggaumv .gt_first_grand_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-style: double;
+  border-top-width: 6px;
+  border-top-color: #D3D3D3;
+}
+
+#fjyxggaumv .gt_last_grand_summary_row_top {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: double;
+  border-bottom-width: 6px;
+  border-bottom-color: #D3D3D3;
+}
+
+#fjyxggaumv .gt_striped {
+  background-color: rgba(128, 128, 128, 0.05);
+}
+
+#fjyxggaumv .gt_table_body {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#fjyxggaumv .gt_footnotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#fjyxggaumv .gt_footnote {
+  margin: 0px;
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#fjyxggaumv .gt_sourcenotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#fjyxggaumv .gt_sourcenote {
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#fjyxggaumv .gt_left {
+  text-align: left;
+}
+
+#fjyxggaumv .gt_center {
+  text-align: center;
+}
+
+#fjyxggaumv .gt_right {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+#fjyxggaumv .gt_font_normal {
+  font-weight: normal;
+}
+
+#fjyxggaumv .gt_font_bold {
+  font-weight: bold;
+}
+
+#fjyxggaumv .gt_font_italic {
+  font-style: italic;
+}
+
+#fjyxggaumv .gt_super {
+  font-size: 65%;
+}
+
+#fjyxggaumv .gt_footnote_marks {
+  font-size: 75%;
+  vertical-align: 0.4em;
+  position: initial;
+}
+
+#fjyxggaumv .gt_asterisk {
+  font-size: 100%;
+  vertical-align: 0;
+}
+
+#fjyxggaumv .gt_indent_1 {
+  text-indent: 5px;
+}
+
+#fjyxggaumv .gt_indent_2 {
+  text-indent: 10px;
+}
+
+#fjyxggaumv .gt_indent_3 {
+  text-indent: 15px;
+}
+
+#fjyxggaumv .gt_indent_4 {
+  text-indent: 20px;
+}
+
+#fjyxggaumv .gt_indent_5 {
+  text-indent: 25px;
+}
+
+#fjyxggaumv .katex-display {
+  display: inline-flex !important;
+  margin-bottom: 0.75em !important;
+}
+
+#fjyxggaumv div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
+  height: 0px !important;
+}
+</style>
+
+<table class="gt_table cell caption-top table table-sm table-striped small" data-quarto-bootstrap="false">
+<thead>
+<tr class="gt_col_headings header">
+<th id="a::stub" class="gt_col_heading gt_columns_bottom_border gt_left" data-quarto-table-cell-role="th" scope="col"></th>
+<th id="Dominio" class="gt_col_heading gt_columns_bottom_border gt_center" data-quarto-table-cell-role="th" scope="col">dominio</th>
+<th id="Población-total" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">Población total</th>
+<th id="Dimensiones:-0" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">Dimensiones: 0</th>
+<th id="Dimensiones:-1" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">Dimensiones: 1</th>
+<th id="Dimensiones:-2" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">Dimensiones: 2</th>
+<th id="Dimensiones:-3" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">Dimensiones: 3</th>
+<th id="Dimensiones:-4" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">Dimensiones: 4</th>
+<th id="Dimensiones:-5" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">Dimensiones: 5</th>
+<th id="Dimensiones:-6" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">Dimensiones: 6</th>
+<th id="Dimensiones:-7" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">Dimensiones: 7</th>
+</tr>
+</thead>
+<tbody class="gt_table_body">
+<tr class="odd">
+<th id="stub_1_1" class="gt_row gt_left gt_stub" data-quarto-table-cell-role="th" scope="row"></th>
+<td class="gt_row gt_center" headers="stub_1_1 Dominio">Costa Norte</td>
+<td class="gt_row gt_right" headers="stub_1_1 Población total">5,182,069</td>
+<td class="gt_row gt_right" headers="stub_1_1 Dimensiones: 0">380,521</td>
+<td class="gt_row gt_right" headers="stub_1_1 Dimensiones: 1">1,540,914</td>
+<td class="gt_row gt_right" headers="stub_1_1 Dimensiones: 2">1,478,364</td>
+<td class="gt_row gt_right" headers="stub_1_1 Dimensiones: 3">933,486</td>
+<td class="gt_row gt_right" headers="stub_1_1 Dimensiones: 4">588,956</td>
+<td class="gt_row gt_right" headers="stub_1_1 Dimensiones: 5">235,619</td>
+<td class="gt_row gt_right" headers="stub_1_1 Dimensiones: 6">21,510</td>
+<td class="gt_row gt_right" headers="stub_1_1 Dimensiones: 7">2,698</td>
+</tr>
+<tr class="even">
+<th id="stub_1_2" class="gt_row gt_left gt_stub" data-quarto-table-cell-role="th" scope="row"></th>
+<td class="gt_row gt_center" headers="stub_1_2 Dominio">Costa Centro</td>
+<td class="gt_row gt_right" headers="stub_1_2 Población total">2,333,748</td>
+<td class="gt_row gt_right" headers="stub_1_2 Dimensiones: 0">182,768</td>
+<td class="gt_row gt_right" headers="stub_1_2 Dimensiones: 1">763,961</td>
+<td class="gt_row gt_right" headers="stub_1_2 Dimensiones: 2">717,865</td>
+<td class="gt_row gt_right" headers="stub_1_2 Dimensiones: 3">335,943</td>
+<td class="gt_row gt_right" headers="stub_1_2 Dimensiones: 4">200,615</td>
+<td class="gt_row gt_right" headers="stub_1_2 Dimensiones: 5">109,636</td>
+<td class="gt_row gt_right" headers="stub_1_2 Dimensiones: 6">22,769</td>
+<td class="gt_row gt_right" headers="stub_1_2 Dimensiones: 7">191</td>
+</tr>
+<tr class="odd">
+<th id="stub_1_3" class="gt_row gt_left gt_stub" data-quarto-table-cell-role="th" scope="row"></th>
+<td class="gt_row gt_center" headers="stub_1_3 Dominio">Costa Sur</td>
+<td class="gt_row gt_right" headers="stub_1_3 Población total">708,243</td>
+<td class="gt_row gt_right" headers="stub_1_3 Dimensiones: 0">56,503</td>
+<td class="gt_row gt_right" headers="stub_1_3 Dimensiones: 1">250,495</td>
+<td class="gt_row gt_right" headers="stub_1_3 Dimensiones: 2">225,988</td>
+<td class="gt_row gt_right" headers="stub_1_3 Dimensiones: 3">92,894</td>
+<td class="gt_row gt_right" headers="stub_1_3 Dimensiones: 4">57,350</td>
+<td class="gt_row gt_right" headers="stub_1_3 Dimensiones: 5">23,052</td>
+<td class="gt_row gt_right" headers="stub_1_3 Dimensiones: 6">1,633</td>
+<td class="gt_row gt_right" headers="stub_1_3 Dimensiones: 7">328</td>
+</tr>
+<tr class="even">
+<th id="stub_1_4" class="gt_row gt_left gt_stub" data-quarto-table-cell-role="th" scope="row"></th>
+<td class="gt_row gt_center" headers="stub_1_4 Dominio">Sierra Norte</td>
+<td class="gt_row gt_right" headers="stub_1_4 Población total">1,912,495</td>
+<td class="gt_row gt_right" headers="stub_1_4 Dimensiones: 0">28,648</td>
+<td class="gt_row gt_right" headers="stub_1_4 Dimensiones: 1">191,019</td>
+<td class="gt_row gt_right" headers="stub_1_4 Dimensiones: 2">336,144</td>
+<td class="gt_row gt_right" headers="stub_1_4 Dimensiones: 3">389,082</td>
+<td class="gt_row gt_right" headers="stub_1_4 Dimensiones: 4">613,247</td>
+<td class="gt_row gt_right" headers="stub_1_4 Dimensiones: 5">287,035</td>
+<td class="gt_row gt_right" headers="stub_1_4 Dimensiones: 6">61,484</td>
+<td class="gt_row gt_right" headers="stub_1_4 Dimensiones: 7">5,836</td>
+</tr>
+<tr class="odd">
+<th id="stub_1_5" class="gt_row gt_left gt_stub" data-quarto-table-cell-role="th" scope="row"></th>
+<td class="gt_row gt_center" headers="stub_1_5 Dominio">Sierra Centro</td>
+<td class="gt_row gt_right" headers="stub_1_5 Población total">4,069,607</td>
+<td class="gt_row gt_right" headers="stub_1_5 Dimensiones: 0">127,178</td>
+<td class="gt_row gt_right" headers="stub_1_5 Dimensiones: 1">586,764</td>
+<td class="gt_row gt_right" headers="stub_1_5 Dimensiones: 2">980,401</td>
+<td class="gt_row gt_right" headers="stub_1_5 Dimensiones: 3">1,012,753</td>
+<td class="gt_row gt_right" headers="stub_1_5 Dimensiones: 4">881,550</td>
+<td class="gt_row gt_right" headers="stub_1_5 Dimensiones: 5">382,211</td>
+<td class="gt_row gt_right" headers="stub_1_5 Dimensiones: 6">91,007</td>
+<td class="gt_row gt_right" headers="stub_1_5 Dimensiones: 7">7,742</td>
+</tr>
+<tr class="even">
+<th id="stub_1_6" class="gt_row gt_left gt_stub" data-quarto-table-cell-role="th" scope="row"></th>
+<td class="gt_row gt_center" headers="stub_1_6 Dominio">Sierra Sur</td>
+<td class="gt_row gt_right" headers="stub_1_6 Población total">4,649,401</td>
+<td class="gt_row gt_right" headers="stub_1_6 Dimensiones: 0">218,702</td>
+<td class="gt_row gt_right" headers="stub_1_6 Dimensiones: 1">1,019,883</td>
+<td class="gt_row gt_right" headers="stub_1_6 Dimensiones: 2">1,181,200</td>
+<td class="gt_row gt_right" headers="stub_1_6 Dimensiones: 3">955,126</td>
+<td class="gt_row gt_right" headers="stub_1_6 Dimensiones: 4">864,885</td>
+<td class="gt_row gt_right" headers="stub_1_6 Dimensiones: 5">347,552</td>
+<td class="gt_row gt_right" headers="stub_1_6 Dimensiones: 6">57,726</td>
+<td class="gt_row gt_right" headers="stub_1_6 Dimensiones: 7">4,327</td>
+</tr>
+<tr class="odd">
+<th id="stub_1_7" class="gt_row gt_left gt_stub" data-quarto-table-cell-role="th" scope="row"></th>
+<td class="gt_row gt_center" headers="stub_1_7 Dominio">Selva</td>
+<td class="gt_row gt_right" headers="stub_1_7 Población total">4,367,681</td>
+<td class="gt_row gt_right" headers="stub_1_7 Dimensiones: 0">121,670</td>
+<td class="gt_row gt_right" headers="stub_1_7 Dimensiones: 1">612,802</td>
+<td class="gt_row gt_right" headers="stub_1_7 Dimensiones: 2">823,832</td>
+<td class="gt_row gt_right" headers="stub_1_7 Dimensiones: 3">973,402</td>
+<td class="gt_row gt_right" headers="stub_1_7 Dimensiones: 4">1,048,962</td>
+<td class="gt_row gt_right" headers="stub_1_7 Dimensiones: 5">595,587</td>
+<td class="gt_row gt_right" headers="stub_1_7 Dimensiones: 6">179,062</td>
+<td class="gt_row gt_right" headers="stub_1_7 Dimensiones: 7">12,364</td>
+</tr>
+<tr class="even">
+<th id="stub_1_8" class="gt_row gt_left gt_stub" data-quarto-table-cell-role="th" scope="row"></th>
+<td class="gt_row gt_center" headers="stub_1_8 Dominio">Lima Metropolitana</td>
+<td class="gt_row gt_right" headers="stub_1_8 Población total">11,633,464</td>
+<td class="gt_row gt_right" headers="stub_1_8 Dimensiones: 0">1,172,220</td>
+<td class="gt_row gt_right" headers="stub_1_8 Dimensiones: 1">4,492,306</td>
+<td class="gt_row gt_right" headers="stub_1_8 Dimensiones: 2">3,930,663</td>
+<td class="gt_row gt_right" headers="stub_1_8 Dimensiones: 3">1,019,150</td>
+<td class="gt_row gt_right" headers="stub_1_8 Dimensiones: 4">554,303</td>
+<td class="gt_row gt_right" headers="stub_1_8 Dimensiones: 5">451,823</td>
+<td class="gt_row gt_right" headers="stub_1_8 Dimensiones: 6">13,000</td>
+<td class="gt_row gt_right" headers="stub_1_8 Dimensiones: 7">0</td>
+</tr>
+<tr class="odd">
+<th id="grand_summary_stub_1" class="gt_row gt_left gt_stub gt_grand_summary_row gt_first_grand_summary_row gt_last_summary_row" data-quarto-table-cell-role="th" scope="row">Total</th>
+<td class="gt_row gt_center gt_grand_summary_row gt_first_grand_summary_row gt_last_summary_row" headers="grand_summary_stub_1 Dominio">—</td>
+<td class="gt_row gt_right gt_grand_summary_row gt_first_grand_summary_row gt_last_summary_row" headers="grand_summary_stub_1 Población total">34,856,707</td>
+<td class="gt_row gt_right gt_grand_summary_row gt_first_grand_summary_row gt_last_summary_row" headers="grand_summary_stub_1 Dimensiones: 0">2,288,209</td>
+<td class="gt_row gt_right gt_grand_summary_row gt_first_grand_summary_row gt_last_summary_row" headers="grand_summary_stub_1 Dimensiones: 1">9,458,145</td>
+<td class="gt_row gt_right gt_grand_summary_row gt_first_grand_summary_row gt_last_summary_row" headers="grand_summary_stub_1 Dimensiones: 2">9,674,457</td>
+<td class="gt_row gt_right gt_grand_summary_row gt_first_grand_summary_row gt_last_summary_row" headers="grand_summary_stub_1 Dimensiones: 3">5,711,836</td>
+<td class="gt_row gt_right gt_grand_summary_row gt_first_grand_summary_row gt_last_summary_row" headers="grand_summary_stub_1 Dimensiones: 4">4,809,868</td>
+<td class="gt_row gt_right gt_grand_summary_row gt_first_grand_summary_row gt_last_summary_row" headers="grand_summary_stub_1 Dimensiones: 5">2,432,515</td>
+<td class="gt_row gt_right gt_grand_summary_row gt_first_grand_summary_row gt_last_summary_row" headers="grand_summary_stub_1 Dimensiones: 6">448,190</td>
+<td class="gt_row gt_right gt_grand_summary_row gt_first_grand_summary_row gt_last_summary_row" headers="grand_summary_stub_1 Dimensiones: 7">33,486</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+</figure>
+</div>
+</div>
+</section>
+<section id="exportando-resultados-a-excel" class="level1">
+<h1>Exportando resultados a Excel</h1>
+<p>Para compartir estos resultados con colegas que no trabajan en R, exportamos las dos tablas finales a un mismo archivo de Excel, cada una en su propia pestaña, utilizando el paquete <code>openxlsx</code>.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>libro <span class="ot">&lt;-</span> <span class="fu">createWorkbook</span>()</span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a><span class="fu">addWorksheet</span>(libro, <span class="st">"Por dominio"</span>)</span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a><span class="fu">addWorksheet</span>(libro, <span class="st">"Multidimensional"</span>)</span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a><span class="fu">writeData</span>(libro, <span class="st">"Por dominio"</span>, tabla_dominio)</span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a><span class="fu">writeData</span>(libro, <span class="st">"Multidimensional"</span>, tabla_multidimensional)</span>
+<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-8"><a href="#cb22-8" aria-hidden="true" tabindex="-1"></a><span class="fu">saveWorkbook</span>(</span>
+<span id="cb22-9"><a href="#cb22-9" aria-hidden="true" tabindex="-1"></a>  libro,</span>
+<span id="cb22-10"><a href="#cb22-10" aria-hidden="true" tabindex="-1"></a>  <span class="st">"salidas/sesiones/0001-encuestas/vulnerabilidad_enaho.xlsx"</span>,</span>
+<span id="cb22-11"><a href="#cb22-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">overwrite =</span> <span class="cn">TRUE</span></span>
+<span id="cb22-12"><a href="#cb22-12" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<section id="incluyendo-la-fila-de-totales-en-la-exportación" class="level2">
+<h2 class="anchored" data-anchor-id="incluyendo-la-fila-de-totales-en-la-exportación">Incluyendo la fila de totales en la exportación</h2>
+<p>La fila de totales que <code>grand_summary_rows()</code> agrega en pantalla vive únicamente en el objeto de <code>gt</code>, no en los data frames <code>tabla_dominio</code> y <code>tabla_multidimensional</code>, así que no aparece al exportar con <code>writeData()</code>. Para que el Excel también la tenga, calculamos esa fila directamente con <code>summarise()</code> y la agregamos a cada tabla con <code>bind_rows()</code>, antes de exportar a un nuevo archivo.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>tabla_dominio_totales <span class="ot">&lt;-</span> tabla_dominio <span class="sc">|&gt;</span> </span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">bind_rows</span>(</span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>    tabla_dominio <span class="sc">|&gt;</span> </span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>      <span class="fu">summarise</span>(</span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a>        <span class="fu">across</span>(<span class="fu">where</span>(is.numeric), sum),</span>
+<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a>        <span class="at">Dominio =</span> <span class="st">"Total"</span></span>
+<span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a>      )</span>
+<span id="cb23-8"><a href="#cb23-8" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb23-9"><a href="#cb23-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-10"><a href="#cb23-10" aria-hidden="true" tabindex="-1"></a>tabla_multidimensional_totales <span class="ot">&lt;-</span> tabla_multidimensional <span class="sc">|&gt;</span> </span>
+<span id="cb23-11"><a href="#cb23-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">bind_rows</span>(</span>
+<span id="cb23-12"><a href="#cb23-12" aria-hidden="true" tabindex="-1"></a>    tabla_multidimensional <span class="sc">|&gt;</span> </span>
+<span id="cb23-13"><a href="#cb23-13" aria-hidden="true" tabindex="-1"></a>      <span class="fu">summarise</span>(</span>
+<span id="cb23-14"><a href="#cb23-14" aria-hidden="true" tabindex="-1"></a>        <span class="fu">across</span>(<span class="fu">where</span>(is.numeric), sum),</span>
+<span id="cb23-15"><a href="#cb23-15" aria-hidden="true" tabindex="-1"></a>        <span class="at">Dominio =</span> <span class="st">"Total"</span></span>
+<span id="cb23-16"><a href="#cb23-16" aria-hidden="true" tabindex="-1"></a>      )</span>
+<span id="cb23-17"><a href="#cb23-17" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb23-18"><a href="#cb23-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-19"><a href="#cb23-19" aria-hidden="true" tabindex="-1"></a>libro_totales <span class="ot">&lt;-</span> <span class="fu">createWorkbook</span>()</span>
+<span id="cb23-20"><a href="#cb23-20" aria-hidden="true" tabindex="-1"></a><span class="fu">addWorksheet</span>(libro_totales, <span class="st">"Por dominio"</span>)</span>
+<span id="cb23-21"><a href="#cb23-21" aria-hidden="true" tabindex="-1"></a><span class="fu">addWorksheet</span>(libro_totales, <span class="st">"Multidimensional"</span>)</span>
+<span id="cb23-22"><a href="#cb23-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-23"><a href="#cb23-23" aria-hidden="true" tabindex="-1"></a><span class="fu">writeData</span>(libro_totales, <span class="st">"Por dominio"</span>, tabla_dominio_totales)</span>
+<span id="cb23-24"><a href="#cb23-24" aria-hidden="true" tabindex="-1"></a><span class="fu">writeData</span>(libro_totales, <span class="st">"Multidimensional"</span>, tabla_multidimensional_totales)</span>
+<span id="cb23-25"><a href="#cb23-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-26"><a href="#cb23-26" aria-hidden="true" tabindex="-1"></a><span class="fu">saveWorkbook</span>(</span>
+<span id="cb23-27"><a href="#cb23-27" aria-hidden="true" tabindex="-1"></a>  libro_totales,</span>
+<span id="cb23-28"><a href="#cb23-28" aria-hidden="true" tabindex="-1"></a>  <span class="st">"salidas/sesiones/0001-encuestas/vulnerabilidad_enaho_totales.xlsx"</span>,</span>
+<span id="cb23-29"><a href="#cb23-29" aria-hidden="true" tabindex="-1"></a>  <span class="at">overwrite =</span> <span class="cn">TRUE</span></span>
+<span id="cb23-30"><a href="#cb23-30" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
 </section>
 </section>
 <section id="referencias" class="level1 unnumbered">
 <h1 class="unnumbered">Referencias</h1>
 <div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" data-line-spacing="2" role="list">
+<div id="ref-deaton1997" class="csl-entry" role="listitem">
+Deaton, A. (1997). <em>The Analysis of Household Surveys: A Microeconometric Approach to Development Policy</em>. Johns Hopkins University Press (for The World Bank). <a href="https://documents1.worldbank.org/curated/en/593871468777303124/pdf/17140-PUB-revised-PUBLIC-9781464813313-Updated.pdf">https://documents1.worldbank.org/curated/en/593871468777303124/pdf/17140-PUB-revised-PUBLIC-9781464813313-Updated.pdf</a>
+</div>
+<div id="ref-deatonzaidi2002" class="csl-entry" role="listitem">
+Deaton, A. y Zaidi, S. (2002). <em>Guidelines for Constructing Consumption Aggregates for Welfare Analysis</em> (LSMS Working Paper N.º 135). The World Bank. <a href="http://hdl.handle.net/10986/14101">http://hdl.handle.net/10986/14101</a>
+</div>
 <div id="ref-doan2023" class="csl-entry" role="listitem">
 Doan, M. K., Hill, R., Hallegatte, S., Corral Rodas, P. A., Brunckhorst, B. J., Nguyen, M., Freije-Rodriguez, S. y Naikal, E. (2023). <em>Counting People Exposed to, Vulnerable to, or at High Risk From Climate Shocks: A Methodology</em>. <a href="https://documents.worldbank.org/en/publication/documents-reports/documentdetail/099602511292336760/IDU07639ca570f3cb048db09bf60fc2cc82df22d">https://documents.worldbank.org/en/publication/documents-reports/documentdetail/099602511292336760/IDU07639ca570f3cb048db09bf60fc2cc82df22d</a>
 </div>
@@ -455,6 +2005,8 @@ Doan, M. K., Hill, R., Hallegatte, S., Corral Rodas, P. A., Brunckhorst, B. J., 
 
 <ol>
 <li id="fn1"><p>Ellos le llaman “factores”, pero dado que la palabra <em>factores</em> tiene una connotación especial en R, nosotros utilizaremos la denominación <em>dimensiones</em>.<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn2"><p>Como ejercicio, puedes replicar ese cálculo y clasificación con las variables que incluimos aquí y lo que aprendamos más adelante con <code>mutate()</code>.<a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn3"><p>En otra sesión en vivo veremos cómo combinar esta vulnerabilidad con la exposición a eventos climáticos extremos (la otra cara de la moneda) para llegar al número de personas “en riesgo”.<a href="#fnref3" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
 </ol>
 </section></div></main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">

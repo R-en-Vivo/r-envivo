@@ -25,6 +25,7 @@ rm(list = ls())
 library(tidyverse) # Cargar dplyr y sus amigos
 library(gt) # tablas en html
 library(haven) # importar datos de SPSS y Stata
+library(openxlsx) # exportar resultados a Excel
 ```
 
 # Introducción
@@ -36,9 +37,9 @@ En esta sesión, exploraremos cómo trabajar con datos de encuestas de hogares u
 
 Las encuestas de hogares cobraron importancia en Latinoamérica en los 80 gracias al trabajo de Angus Deaton y John Muellbauer, quienes desarrollaron métodos para analizar datos de consumo y bienestar, con apoyo del Banco Mundial. Estas encuestas permiten obtener información detallada sobre las condiciones de vida de los hogares, incluyendo ingresos, gastos, educación y salud. 
 
-Quizá la fuente más relevante respecto del trabajo de Deaton es su libro _**The Analysis of Household Surveys: A Microeconometric Approach to Development Policy**_. En este libro, Deaton presenta un enfoque microeconómico para analizar datos de encuestas de hogares y cómo estos datos pueden ser utilizados para informar políticas de desarrollo y que recientemente tiene [una nueva edición](https://documents.worldbank.org/en/publication/documents-reports/documentdetail/593871468777303124) (Deaton, 2023). Este trabajo le supuso el Premio Nobel de Economía en 2015 por su análisis de consumo, pobreza y bienestar. El libro tenía la particularidad que contaba con el código de Stata para replicar los análisis, lo cual fue un gran aporte a la ciencia reproducible y con lo que aprendimos muchos de nosotros.
+Quizá las fuentes más relevante respecto del trabajo de Deaton para nuestros fines son sus libros _**The Analysis of Household Surveys: A Microeconometric Approach to Development Policy**_ [@deaton1997] y _**Guidelines for Constructing Consumption Aggregates for Welfare Analysis. New York: World Bank Press**_ [@deatonzaidi2002]. En el primer libro, Deaton presenta un enfoque microeconómico para analizar datos de encuestas de hogares y cómo estos datos pueden ser utilizados para informar políticas de desarrollo y que recientemente tiene [una nueva edición](https://documents.worldbank.org/en/publication/documents-reports/documentdetail/593871468777303124) (Deaton, 2023). En el segundo, se detalla la metodología que han seguido los institutos de estadística de la región para crear agregados de consumo que sirven para medir la pobreza. Este cuerpo de trabajo le supuso el Premio Nobel de Economía a Deaton en 2015 por su análisis de consumo, pobreza y bienestar. Ambos libros tienen la particularidad que cuentan con el código de Stata para replicar los análisis, lo cual fue un gran aporte a la ciencia reproducible y con lo que aprendimos muchos de nosotros.
 
-En esta sesión, sin embargo, no profundizaremos en los métodos econométricos, sino que nos centraremos en cómo manipular y analizar los datos de encuestas de hogares utilizando R y `dplyr`, pues el objetivo es aprender a extraer información útil de los datos y cómo presentarla de manera clara y reproducible.
+En esta sesión, sin embargo, no profundizaremos en los métodos econométricos, sino que nos centraremos en cómo acceder a los datos de encuestas de hogares utilizando R y `dplyr`, pues el objetivo es aprender a extraer información útil de los datos y cómo presentarla de manera clara y reproducible.
 
 ## Los Datos
 
@@ -90,11 +91,10 @@ Imaginemos que somos analistas de datos y nos han solicitado que estimemos el n�
 - Acceso a saneamiento.
 - Materiales de construcción.
 - Protección social.
-- Servicios financieros (bancarización).
 
 ## Particularidades de los datos antes de empezar
 
-Es interesante notar que si unimos las variables `CONGLOME`, `VIVIENDA`, y `HOGAR` de la base de datos de `personas` para crear un identificador único, tenemos 33,702 hogares (que corresponde también al número de observaciones de la base de datos calculada). Sin embargo, los hogares pueden tener hasta 6 núcleos familiares, según la variable `P203A` teniendo múltiples jefes de hogar (o de núcleo) dentro de cada familia (Variable `P203B`). Eso nos da un total de 44,537 núcleos familares en la encuesta.
+Es interesante notar que si unimos las variables `CONGLOME`, `VIVIENDA`, y `HOGAR` de la base de datos de `personas` para crear un identificador único, tenemos 33,702 hogares (que corresponde también al número de observaciones de la base de datos calculada). Sin embargo, los hogares pueden tener hasta 6 núcleos familiares, según la variable `P203A` teniendo múltiples jefes de hogar (o de núcleo) dentro de cada familia (Variable `P203B`). Eso nos da un total de 44,537 núcleos familares en la encuesta. 
 
 ```{r}
 # Cálculo rápido de hogares según la base de datos de personas
@@ -110,33 +110,17 @@ length(
 )
 ```
 
-Hacemos un ejercicio similar conla base de viviendas, para ver si hay una vivienda para cada hogar. La base de datos de viviendas tiene 44599 observaciones, mientras que tenemos un total de 33702 hogares. Existe una vivienda por cada hogar, pero no tenemos hogares para todas las viviendas, lo que es interesante también. Esto probablemente está relacionado con la variable de la base de datos `viviendas`,  `P22` (Ademas de esta vivienda ¿existe otra vivienda en la que Ud.o algun miembro de su hogar viven regularmente?).
 
-```{r}
-length(
-  unique(
-    paste0(
-      viviendas$CONGLOME,
-      viviendas$VIVIENDA,
-      viviendas$HOGAR
-    )
-  )
-)
+### Base de datos de variables calculadas
 
-unique(viviendas$P22)
-table(as_factor(viviendas$P22))
-```
+En esta base de datos obtenemos información sobre ingreso. Según @doan2023[], ser vulnerable en esta dimensión es tener un ingreso por debajo de 1.5 la línea de pobreza general. En Perú, el INEI muy eficiente ya hizo este trabajo por nosotros a través de la variable `POBREZAV`. De lo contrario, tendríamos que tomar la variable de gasto anualizada `GASHOG2D`, dividirla entre 12 (meses) y compararla contra la línea de pobreza `LINEA` multiplicada por 1.5^[Como ejercicio, puedes replicar ese cálculo y clasificación con las variables que incluimos aquí y lo que aprendamos más adelante con `mutate()`.].
 
-## Identificando las dimensiones con select
+"Otra dimensión de la incapacidad para afrontar shocks es el acceso al apoyo público. Existe evidencia considerable de que las transferencias monetarias ayudan a los hogares a gestionar shocks (…) utilizando información sobre la cobertura actual, ya que es más probable que el apoyo esté disponible en respuesta a un desastre en lugares donde las tasas de cobertura [de programas de transferencias] previas al desastre son altas" [@doan2023]. En la base de datos `calculadas`, la variable `INGTPUHD` muestra los hogares que efectivamente recibieron beneficios de protección social.
 
-Vamos a crear una serie de bases de datos acotadas con solo las variables necesarias para cada dimensión a partir de las bases de datos cargadas.
-
-### Calculadas
 
 ```{r}
 dim_calculadas <- calculadas |> 
   select(
-    # Variables para ID
     CONGLOME,
     VIVIENDA,
     HOGAR,
@@ -145,7 +129,14 @@ dim_calculadas <- calculadas |>
     MIEPERHO,
     TOTMIEHO,
     PERCEPHO,
-    # Ingresos y gastos
+    # Accceso a la seguridad social
+    # de programas: juntos, pensión 65,
+    # beca 18, bono del gas, bono 
+    # electricidad, bono niño, bono
+    # onp para jubilados, programa
+    # contigo y "otros".
+    INGTPUHD,
+    #Ingresos y gastos
     INGHOG2D,
     GASHOG2D,
     # Pobreza
@@ -161,7 +152,9 @@ dim_calculadas <- calculadas |>
   )
 ```
 
-### Educación
+### Base de datos de educación
+
+De la base de datos de educación nos interesa únicamente el nivel educativo. La educación como medio para cambiar de fuente de sustento o para acceder a información y recursos se aproxima mediante una variable que refleja si el hogar cuenta con un adulto que haya completado la educación primaria. La base de datos de pobreza ya cuenta con el nivel educativo del jefe de hogar. Sin embargo, la metodología [@doan2023] requiere que cualquier miembro tenga al menos educación primaria, pues los miembros alfabetizados de la familia pueden cerrar la brecha de comprensión para los que no lo están, independientemente de si son jefes de hogar o no.
 
 ```{r}
 dim_educacion <- educacion |> 
@@ -174,13 +167,414 @@ dim_educacion <- educacion |>
     # Nivel educativo
     P301A,
     # Factores de expansión
-    FACTOR07,
-    FACTORA07
+    FACTOR07
   )
 ```
 
+### Base de datos de viviendas
+
+"Cuando ocurren los shocks, el acceso a servicios básicos es un determinante importante del impacto del shock sobre el bienestar. Por ejemplo, con **acceso a agua potable mejorada**, el agua contaminada por inundaciones y tormentas, o la falta de agua debido a la sequía, tiene un menor impacto. Sin embargo, es esencial reconocer que el indicador actual de acceso a agua potable mejorada, a menudo representado por pozos cubiertos en países de bajos ingresos, puede no reflejar suficientemente la susceptibilidad a la contaminación durante eventos extremos como inundaciones o sequías. Por lo tanto, es necesario un trabajo futuro que refine este indicador considerando un umbral potencialmente más alto. Métricas como 'agua entubada mejorada' pueden ofrecer una evaluación más precisa de la infraestructura que protege contra los riesgos relacionados con el agua en caso de shocks" [@doan2023].
+
+Tomamos nota de esta advertencia y elegimos "1. Red publica, dentro de la vivienda" y "2. Red publica, fuera de la vivienda pero dentro del edificio", a partir de las siguientes opciones posibles (de la pregunta `P110`):
+
+1. Red publica, dentro de la vivienda
+2. Red publica, fuera de la vivienda pero dentro del edificio
+3. Pilon o pileta de uso publico
+4. Camion-cisterna u otro similar
+5. Pozo (agua subterranea)
+6. Manantial o puquio
+7. Otra
+8. Rio, acequia, lago, laguna
+
+Además lo aunamos a `P110A1` (El agua es potable: 1. Sí, 2. No.), para seleccionar como no vulnerables a quienes su agua sea potable.
+
+"Con **acceso a electricidad**, los hogares tienen más probabilidades de contar con activos como ventiladores que pueden ayudar con las olas de calor. Una discusión más completa está disponible en el informe Lifelines del Banco Mundial (Hallegatte et al., 2019). Si bien no constituyen una selección definitiva de activos e infraestructura relevantes para determinar la pérdida inicial del shock, estas medidas ofrecen una buena primera estimación para estimular la discusión" [@doan2023]. La variable `P1121` de la base de datos `viviendas` es una variable dummy que determina si el hogar tiene acceso a electricidad.
+
+Para esta variable (`P111A`, El baño o servicio higiénico que tiene su hogar está conectado a:) tenemos las siguientes categorías, de las cuales elegimos "Red pública de desagüe dentro de la vivienda" y "Red pública de desagüe fuera de la vivienda pero dentro del edificio" como acceso a saneamiento.
+
+1. Red publica de desagüe dentro de la vivienda
+2. Red publica de desagüe fuera de la vivienda pero dentro del edificio
+3. Letrina (con tratamiento)
+4. Pozo septico, tanque septico o biodigestor
+5. Pozo ciego o negro
+6. Rio, acequia, canal o similar
+7. Otra
+9. Campo abierto o al aire libre
+
+Respecto de materiales de construcción, utilizamos la variable `P102` (El material predominante en las paredes exteriores es).
+
+1. Ladrillo o bloque de cemento
+2. Piedra o sillar con cal o cemento
+3. Adobe
+4. Tapia
+5. Quincha (caña con barro)
+6. Piedra con barro
+7. Madera (pona, tornillo, etc)
+8. Triplay/calamina/estera
+9. Otro material
+
+```{r}
+dim_viviendas <- viviendas |> 
+  select(
+    # ID
+    CONGLOME,
+    VIVIENDA,
+    HOGAR,
+    # Ubicación
+    DOMINIO,
+    # Agua
+    P110,
+    P110A1,
+    # Electricidad
+    P1121,
+    # Saneamiento
+    P111A,
+    # Materiales de construcción
+    P102,
+    # Factor de expansión
+    FACTOR07
+  )
+```
+
+## Preparando nuestras variables con `mutate()`
+
+Con las dimensiones ya seleccionadas, usamos `mutate()` para crear, dentro de cada base de datos, una variable binaria por hogar (1 = vulnerable, 0 = no vulnerable) en cada dimensión. Como en este ejercicio no incluimos ninguna variable de bancarización o servicios financieros, dejamos esa séptima dimensión fuera y trabajamos con las seis restantes^[En otra sesión en vivo veremos cómo combinar esta vulnerabilidad con la exposición a eventos climáticos extremos (la otra cara de la moneda) para llegar al número de personas "en riesgo".].
+
+### Ingreso
+
+INEI ya construyó, a través de `POBREZAV`, una clasificación que distingue a los hogares vulnerables (bajo 1.5 veces la línea de pobreza) de los que no lo son, así que solo necesitamos convertirla en nuestra variable binaria.
+
+```{r}
+dim_calculadas <- dim_calculadas |> 
+  mutate(
+    vulnerabilidad_ingreso = if_else(
+      as_factor(POBREZAV) == "No Vulnerable", 0, 1
+    )
+  )
+```
+
+### Protección social
+
+Consideramos que un hogar no es vulnerable en esta dimensión si recibió algún ingreso por transferencias públicas (`INGTPUHD` mayor a cero).
+
+```{r}
+dim_calculadas <- dim_calculadas |> 
+  mutate(
+    vulnerabilidad_proteccion = if_else(
+      INGTPUHD > 0, 0, 1
+    )
+  )
+```
+
+### Educación
+
+Primero identificamos, a nivel de persona, quiénes completaron al menos la primaria. Luego colapsamos la base de datos de educación a nivel de hogar para saber si existe al menos un miembro educado.
+
+```{r}
+dim_educacion <- dim_educacion |> 
+  mutate(
+    miembro_educado = if_else(
+      as_factor(P301A) %in% c(
+        "Sin nivel", 
+        "Educacion inicial", 
+        "Primaria incompleta"
+      ),
+      0, 1
+    )
+  )
+
+vulnerabilidad_educacion <- dim_educacion |> 
+  group_by(CONGLOME, VIVIENDA, HOGAR) |> 
+  summarise(
+    miembros_educados = sum(miembro_educado, na.rm = TRUE),
+    vulnerabilidad_educacion = if_else(miembros_educados == 0, 1, 0),
+    .groups = "drop"
+  ) |> 
+  select(-miembros_educados)
+```
+
+### Agua
+
+Como discutimos antes, un hogar no es vulnerable si tiene acceso a red pública de agua (dentro o fuera de la vivienda pero dentro del edificio) y, además, esa agua es potable.
+
+```{r}
+dim_viviendas <- dim_viviendas |> 
+  mutate(
+    vulnerabilidad_agua = if_else(
+      as_factor(P110) %in% c(
+        "Red publica, dentro de la vivienda",
+        "Red publica, fuera de la vivienda pero dentro del edificio"
+      ) & as_factor(P110A1) == "Si",
+      0, 1
+    )
+  )
+```
+
+La misma lógica, usando directamente los códigos numéricos de `P110` (1 y 2 son red pública) y `P110A1` (1 es "Sí"):
+
+```{r}
+# dim_viviendas <- dim_viviendas |> 
+#   mutate(
+#     vulnerabilidad_agua = if_else(
+#       P110 %in% c(1, 2) & P110A1 == 1,
+#       0, 1
+#     )
+#   )
+```
+
+### Electricidad
+
+Un hogar es vulnerable si no cuenta con acceso a electricidad, según `P1121`.
+
+```{r}
+dim_viviendas <- dim_viviendas |> 
+  mutate(
+    vulnerabilidad_electricidad = if_else(
+      as_factor(P1121) == "Electricidad", 0, 1
+    )
+  )
+```
+
+La misma lógica, usando el código numérico de `P1121` (1 es "Electricidad"):
+
+```{r}
+# dim_viviendas <- dim_viviendas |> 
+#   mutate(
+#     vulnerabilidad_electricidad = if_else(
+#       P1121 == 1, 0, 1
+#     )
+#   )
+```
+
+### Saneamiento
+
+Un hogar no es vulnerable si su servicio higiénico está conectado a la red pública de desagüe, dentro o fuera de la vivienda pero dentro del edificio.
+
+```{r}
+dim_viviendas <- dim_viviendas |> 
+  mutate(
+    vulnerabilidad_saneamiento = if_else(
+      as_factor(P111A) %in% c(
+        "Red publica de desagüe dentro de la vivienda",
+        "Red publica de desagüe fuera de la vivienda pero dentro del edificio"
+      ),
+      0, 1
+    )
+  )
+```
+
+La misma lógica, usando directamente los códigos numéricos de `P111A` (1 y 2 son red pública de desagüe):
+
+```{r}
+# dim_viviendas <- dim_viviendas |> 
+#   mutate(
+#     vulnerabilidad_saneamiento = if_else(
+#       P111A %in% c(1, 2),
+#       0, 1
+#     )
+#   )
+```
+
+### Materiales de construcción
+
+Consideramos como no vulnerables únicamente a los hogares cuyas paredes exteriores son de ladrillo, bloque de cemento, piedra o sillar con cal o cemento.
+
+```{r}
+dim_viviendas <- dim_viviendas |> 
+  mutate(
+    vulnerabilidad_construccion = if_else(
+      as_factor(P102) %in% c(
+        "Ladrillo o bloque de cemento",
+        "Piedra o sillar con cal o cemento"
+      ),
+      0, 1
+    )
+  )
+```
+
+La misma lógica, usando directamente los códigos numéricos de `P102` (1 y 2 son ladrillo/bloque de cemento y piedra o sillar):
+
+```{r}
+# dim_viviendas <- dim_viviendas |> 
+#   mutate(
+#     vulnerabilidad_construccion = if_else(
+#       P102 %in% c(1, 2),
+#       0, 1
+#     )
+#   )
+```
+
+## Uniendo las bases de datos con `left_join()`
+
+Ya con las seis dimensiones calculadas, unimos todo a nivel de hogar con `left_join()`, usando `CONGLOME`, `VIVIENDA` y `HOGAR` como llaves. Partimos de la base de datos calculada, que ya trae el tamaño del hogar (`MIEPERHO`) y el factor de expansión (`FACTOR07`), y evitamos duplicar columnas como `DOMINIO` o `FACTOR07` que ya vienen de ahí.
+
+```{r}
+hogares_vulnerables <- dim_calculadas |> 
+  left_join(
+    dim_viviendas |> select(-DOMINIO, -FACTOR07),
+    join_by(CONGLOME, VIVIENDA, HOGAR)
+  ) |> 
+  left_join(
+    vulnerabilidad_educacion,
+    join_by(CONGLOME, VIVIENDA, HOGAR)
+  )
+```
+
+
+# Resultados por área geográfica (`viviendas$DOMINIO`)
+
+Para expresar la vulnerabilidad en número de personas (y no de hogares), multiplicamos el factor de expansión (`FACTOR07`) por el tamaño del hogar (`MIEPERHO`) y por cada variable de vulnerabilidad. Con esto, la siguiente tabla muestra la población total de cada dominio como referencia, junto con el número de personas vulnerables en cada dimensión, y una fila con los totales nacionales.
+
+```{r}
+#| label: tbl-vulnerabilidad-dominio
+#| tbl-cap: "Número de personas vulnerables por dominio y dimensión"
+
+tabla_dominio <- hogares_vulnerables |> 
+  mutate(
+    Dominio = as_factor(DOMINIO),
+    personas = FACTOR07 * MIEPERHO,
+    Ingreso = personas * vulnerabilidad_ingreso,
+    Educación = personas * vulnerabilidad_educacion,
+    Agua = personas * vulnerabilidad_agua,
+    Electricidad = personas * vulnerabilidad_electricidad,
+    Saneamiento = personas * vulnerabilidad_saneamiento,
+    Construcción = personas * vulnerabilidad_construccion,
+    `Protección social` = personas * vulnerabilidad_proteccion
+  ) |> 
+  group_by(Dominio) |> 
+  summarise(
+    `Población total` = sum(personas, na.rm = TRUE),
+    Ingreso = sum(Ingreso, na.rm = TRUE),
+    Educación = sum(Educación, na.rm = TRUE),
+    Agua = sum(Agua, na.rm = TRUE),
+    Electricidad = sum(Electricidad, na.rm = TRUE),
+    Saneamiento = sum(Saneamiento, na.rm = TRUE),
+    Construcción = sum(Construcción, na.rm = TRUE),
+    `Protección social` = sum(`Protección social`, na.rm = TRUE)
+  )
+
+tabla_dominio |> 
+  gt() |> 
+  fmt_number(
+    columns = where(is.numeric),
+    decimals = 0,
+    use_seps = TRUE
+  ) |> 
+  grand_summary_rows(
+    columns = where(is.numeric),
+    fns = list(label = "Total", id = "totales", fn = "sum"),
+    fmt = ~ fmt_number(., decimals = 0, use_seps = TRUE)
+  )
+```
+
+Finalmente, contamos a las personas según el número de dimensiones en las que son vulnerables simultáneamente (de 0 a 7), por dominio geográfico, con la población total de cada dominio como referencia y una fila de totales nacionales.
+
+```{r}
+#| label: tbl-vulnerabilidad-multiple
+#| tbl-cap: "Número de personas vulnerables en múltiples dimensiones, por dominio"
+
+tabla_multidimensional <- hogares_vulnerables |> 
+  mutate(
+    Dominio = as_factor(DOMINIO),
+    personas = FACTOR07 * MIEPERHO,
+    num_dimensiones = rowSums(
+      across(starts_with("vulnerabilidad_")), na.rm = TRUE
+    )
+  ) |> 
+  group_by(Dominio, num_dimensiones) |> 
+  summarise(
+    personas = sum(personas, na.rm = TRUE),
+    .groups = "drop"
+  ) |> 
+  pivot_wider(
+    names_from = num_dimensiones,
+    names_prefix = "Dimensiones: ",
+    values_from = personas,
+    values_fill = 0
+  ) |> 
+  mutate(
+    `Población total` = rowSums(
+      across(starts_with("Dimensiones:")), na.rm = TRUE
+    )
+  ) |> 
+  select(Dominio, `Población total`, everything())
+
+tabla_multidimensional |> 
+  gt() |> 
+  fmt_number(
+    columns = where(is.numeric),
+    decimals = 0,
+    use_seps = TRUE
+  ) |> 
+  grand_summary_rows(
+    columns = where(is.numeric),
+    fns = list(label = "Total", id = "totales", fn = "sum"),
+    fmt = ~ fmt_number(., decimals = 0, use_seps = TRUE)
+  )
+```
+
+# Exportando resultados a Excel
+
+Para compartir estos resultados con colegas que no trabajan en R, exportamos las dos tablas finales a un mismo archivo de Excel, cada una en su propia pestaña, utilizando el paquete `openxlsx`.
+
+```{r}
+#| label: exportar-excel
+
+libro <- createWorkbook()
+addWorksheet(libro, "Por dominio")
+addWorksheet(libro, "Multidimensional")
+
+writeData(libro, "Por dominio", tabla_dominio)
+writeData(libro, "Multidimensional", tabla_multidimensional)
+
+saveWorkbook(
+  libro,
+  "salidas/sesiones/0001-encuestas/vulnerabilidad_enaho.xlsx",
+  overwrite = TRUE
+)
+```
+
+## Incluyendo la fila de totales en la exportación
+
+La fila de totales que `grand_summary_rows()` agrega en pantalla vive únicamente en el objeto de `gt`, no en los data frames `tabla_dominio` y `tabla_multidimensional`, así que no aparece al exportar con `writeData()`. Para que el Excel también la tenga, calculamos esa fila directamente con `summarise()` y la agregamos a cada tabla con `bind_rows()`, antes de exportar a un nuevo archivo.
+
+```{r}
+#| label: exportar-excel-totales
+
+tabla_dominio_totales <- tabla_dominio |> 
+  bind_rows(
+    tabla_dominio |> 
+      summarise(
+        across(where(is.numeric), sum),
+        Dominio = "Total"
+      )
+  )
+
+tabla_multidimensional_totales <- tabla_multidimensional |> 
+  bind_rows(
+    tabla_multidimensional |> 
+      summarise(
+        across(where(is.numeric), sum),
+        Dominio = "Total"
+      )
+  )
+
+libro_totales <- createWorkbook()
+addWorksheet(libro_totales, "Por dominio")
+addWorksheet(libro_totales, "Multidimensional")
+
+writeData(libro_totales, "Por dominio", tabla_dominio_totales)
+writeData(libro_totales, "Multidimensional", tabla_multidimensional_totales)
+
+saveWorkbook(
+  libro_totales,
+  "salidas/sesiones/0001-encuestas/vulnerabilidad_enaho_totales.xlsx",
+  overwrite = TRUE
+)
+```
 
 # Referencias {.unnumbered}
 
 ::: {#refs}
 :::
+
