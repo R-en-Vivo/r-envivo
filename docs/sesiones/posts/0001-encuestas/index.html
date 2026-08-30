@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="es" xml:lang="es"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.9.38">
+<meta name="generator" content="quarto-1.10.18">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -14,10 +14,13 @@
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
 */
-code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
-div.columns{display: flex; gap: min(4vw, 1.5em);}
-div.column{flex: auto; overflow-x: auto;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
 div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
 ul.task-list{list-style: none;}
 ul.task-list li input[type="checkbox"] {
@@ -96,10 +99,10 @@ div.csl-indent {
 <script src="../../../site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="../../../site_libs/quarto-html/anchor.min.js"></script>
 <link href="../../../site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="../../../site_libs/quarto-html/quarto-syntax-highlighting-15634bcf2e68342d4ad2dfa704d543f6.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="../../../site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="../../../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../../../site_libs/bootstrap/bootstrap-6417478169390d5200ae675d66b5a4f4.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="../../../site_libs/bootstrap/bootstrap-629c56ba100745318e9dcb35146191d0.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -154,7 +157,7 @@ div.csl-indent {
 <span class="menu-text">Inicio</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="../../../sesiones"> 
+    <a class="nav-link" href="../../../sesiones/index.html"> 
 <span class="menu-text">Sesiones</span></a>
   </li>  
   <li class="nav-item dropdown ">
@@ -228,7 +231,7 @@ div.csl-indent {
   </ul></li>
   <li><a href="#uniendo-las-bases-de-datos-con-left_join" id="toc-uniendo-las-bases-de-datos-con-left_join" class="nav-link" data-scroll-target="#uniendo-las-bases-de-datos-con-left_join">Uniendo las bases de datos con <code>left_join()</code></a></li>
   </ul></li>
-  <li><a href="#resultados-por-área-geográfica-viviendasdominio" id="toc-resultados-por-área-geográfica-viviendasdominio" class="nav-link" data-scroll-target="#resultados-por-área-geográfica-viviendasdominio">Resultados por área geográfica (<code>viviendas$DOMINIO</code>)</a></li>
+  <li><a href="#resultados-por-área-geográfica" id="toc-resultados-por-área-geográfica" class="nav-link" data-scroll-target="#resultados-por-área-geográfica">Resultados por área geográfica</a></li>
   <li><a href="#exportando-resultados-a-excel" id="toc-exportando-resultados-a-excel" class="nav-link" data-scroll-target="#exportando-resultados-a-excel">Exportando resultados a Excel</a>
   <ul class="collapse">
   <li><a href="#incluyendo-la-fila-de-totales-en-la-exportación" id="toc-incluyendo-la-fila-de-totales-en-la-exportación" class="nav-link" data-scroll-target="#incluyendo-la-fila-de-totales-en-la-exportación">Incluyendo la fila de totales en la exportación</a></li>
@@ -312,17 +315,26 @@ div.csl-indent {
 <p>En esta sesión, sin embargo, no profundizaremos en los métodos econométricos, sino que nos centraremos en cómo acceder a los datos de encuestas de hogares utilizando R y <code>dplyr</code>, pues el objetivo es aprender a extraer información útil de los datos y cómo presentarla de manera clara y reproducible.</p>
 <section id="los-datos" class="level2">
 <h2 class="anchored" data-anchor-id="los-datos">Los Datos</h2>
-<p>En esta sesión utilizaremos los datos reales de la Encuesta Nacional de Hogares (ENAHO) de Perú, que se encuentran disponibles en el <a href="https://proyectos.inei.gob.pe/microdatos/">repositorio de datos Instituto Nacional de Estadística e Informática (INEI)</a>. Los datos de la ENAHO son una fuente valiosa para analizar las condiciones de vida de los hogares peruanos. Utilizaremos los datos más recientes disponibles, que corresponden al primer trimestre de 2026. Entre los datos disponibles, hay muchos módulos y nosotros nos concentraremos solo en algunos:</p>
+<p>En esta sesión utilizaremos los datos reales de la Encuesta Nacional de Hogares (ENAHO) de Perú, que se encuentran disponibles en el <a href="https://proyectos.inei.gob.pe/microdatos/">repositorio de datos Instituto Nacional de Estadística e Informática (INEI)</a>. Los datos de la ENAHO son una fuente valiosa para analizar las condiciones de vida de los hogares peruanos. Utilizaremos los datos más recientes disponibles con cálculos de pobreza y agregado de consumo, que corresponden al año 2025. Entre los datos disponibles, hay muchos módulos y nosotros nos concentraremos solo en algunos. Además es muy importante tener acceso al diccionario que explica las variables, el cual el INEI incluye con las descargas.</p>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Tip
+</div>
+</div>
+<div class="callout-body-container callout-body">
 <ul>
 <li>Características de la Vivienda y del Hogar: <a href="https://github.com/R-en-Vivo/r-envivo/raw/refs/heads/main/datos/per_enaho/Enaho01-2025-100-viviendas.sav">datos SPSS</a> | <a href="https://github.com/R-en-Vivo/r-envivo/raw/refs/heads/main/datos/per_enaho/CED-01-100-2025-vivienda.pdf">preguntas módulo vivienda</a>.</li>
 <li>Características de los Miembros del Hogar: <a href="https://github.com/R-en-Vivo/r-envivo/raw/refs/heads/main/datos/per_enaho/Enaho01-2025-200-personas.sav">datos SPSS</a> | <a href="https://github.com/R-en-Vivo/r-envivo/raw/refs/heads/main/datos/per_enaho/CED-01-100-2025-vivienda.pdf">preguntas módulo personas</a>.</li>
 <li>Educación: <a href="https://github.com/R-en-Vivo/r-envivo/raw/refs/heads/main/datos/per_enaho/Enaho01-2025-100-educacion.sav">datos SPSS</a> | <a href="https://github.com/R-en-Vivo/r-envivo/raw/refs/heads/main/datos/per_enaho/CED-01A-300-2025-educacion.pdf">preguntas módulo educación</a>.</li>
 <li>Sumarias (variables calculadas): <a href="https://github.com/R-en-Vivo/r-envivo/raw/refs/heads/main/datos/per_enaho/Sumaria-2025.sav">datos SPSS</a> | <a href="https://github.com/R-en-Vivo/r-envivo/raw/refs/heads/main/datos/per_enaho/Sumaria_2025.pdf">metodología de cálculo</a>.</li>
-</ul>
-<p>Además es muy importante tener acceso al diccionario que explica las variables, el cual el INEI incluye con las descargas.</p>
-<ul>
 <li>Diccionario de todas las bases de datos: <a href="https://github.com/R-en-Vivo/r-envivo/raw/refs/heads/main/datos/per_enaho/Diccionario_2025.pdf">descargar</a>.</li>
 </ul>
+</div>
+</div>
 <p>Continuaremos con la carga de los datos de la ENAHO y la exploración inicial de los mismos. Asegúrate de tener los archivos descargados y ubicados en el directorio correcto para poder acceder a ellos sin problemas.</p>
 <p>Para esto utilizamos el paquete <code>haven</code> que permite importar datos de SPSS (y Stata), que son los formatos en los que se encuentran los datos de la ENAHO. A continuación, cargamos las bases de datos de personas y viviendas.</p>
 <div class="cell">
@@ -665,48 +677,52 @@ div.csl-indent {
 <span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a>    <span class="fu">join_by</span>(CONGLOME, VIVIENDA, HOGAR)</span>
 <span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
+<p>Para poder usar nuestra base de datos en un futuro, la guardamos como objeto RDS, que es un formato eficientemente comprimido para representar datos de R.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="fu">saveRDS</span>(hogares_vulnerables, <span class="at">file =</span> <span class="st">"salidas/sesiones/0001-encuestas/hogares_vulnerables.RDS"</span>)</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
 </section>
 </section>
-<section id="resultados-por-área-geográfica-viviendasdominio" class="level1">
-<h1>Resultados por área geográfica (<code>viviendas$DOMINIO</code>)</h1>
+<section id="resultados-por-área-geográfica" class="level1">
+<h1>Resultados por área geográfica</h1>
 <p>Para expresar la vulnerabilidad en número de personas (y no de hogares), multiplicamos el factor de expansión (<code>FACTOR07</code>) por el tamaño del hogar (<code>MIEPERHO</code>) y por cada variable de vulnerabilidad. Con esto, la siguiente tabla muestra la población total de cada dominio como referencia, junto con el número de personas vulnerables en cada dimensión, y una fila con los totales nacionales.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>tabla_dominio <span class="ot">&lt;-</span> hogares_vulnerables <span class="sc">|&gt;</span> </span>
-<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
-<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">Dominio =</span> <span class="fu">as_factor</span>(DOMINIO),</span>
-<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">personas =</span> FACTOR07 <span class="sc">*</span> MIEPERHO,</span>
-<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">Ingreso =</span> personas <span class="sc">*</span> vulnerabilidad_ingreso,</span>
-<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a>    Educación <span class="ot">=</span> personas <span class="sc">*</span> vulnerabilidad_educacion,</span>
-<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">Agua =</span> personas <span class="sc">*</span> vulnerabilidad_agua,</span>
-<span id="cb20-8"><a href="#cb20-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">Electricidad =</span> personas <span class="sc">*</span> vulnerabilidad_electricidad,</span>
-<span id="cb20-9"><a href="#cb20-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">Saneamiento =</span> personas <span class="sc">*</span> vulnerabilidad_saneamiento,</span>
-<span id="cb20-10"><a href="#cb20-10" aria-hidden="true" tabindex="-1"></a>    Construcción <span class="ot">=</span> personas <span class="sc">*</span> vulnerabilidad_construccion,</span>
-<span id="cb20-11"><a href="#cb20-11" aria-hidden="true" tabindex="-1"></a>    <span class="st">`</span><span class="at">Protección social</span><span class="st">`</span> <span class="ot">=</span> personas <span class="sc">*</span> vulnerabilidad_proteccion</span>
-<span id="cb20-12"><a href="#cb20-12" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span> </span>
-<span id="cb20-13"><a href="#cb20-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(Dominio) <span class="sc">|&gt;</span> </span>
-<span id="cb20-14"><a href="#cb20-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(</span>
-<span id="cb20-15"><a href="#cb20-15" aria-hidden="true" tabindex="-1"></a>    <span class="st">`</span><span class="at">Población total</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">sum</span>(personas, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
-<span id="cb20-16"><a href="#cb20-16" aria-hidden="true" tabindex="-1"></a>    <span class="at">Ingreso =</span> <span class="fu">sum</span>(Ingreso, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
-<span id="cb20-17"><a href="#cb20-17" aria-hidden="true" tabindex="-1"></a>    Educación <span class="ot">=</span> <span class="fu">sum</span>(Educación, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
-<span id="cb20-18"><a href="#cb20-18" aria-hidden="true" tabindex="-1"></a>    <span class="at">Agua =</span> <span class="fu">sum</span>(Agua, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
-<span id="cb20-19"><a href="#cb20-19" aria-hidden="true" tabindex="-1"></a>    <span class="at">Electricidad =</span> <span class="fu">sum</span>(Electricidad, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
-<span id="cb20-20"><a href="#cb20-20" aria-hidden="true" tabindex="-1"></a>    <span class="at">Saneamiento =</span> <span class="fu">sum</span>(Saneamiento, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
-<span id="cb20-21"><a href="#cb20-21" aria-hidden="true" tabindex="-1"></a>    Construcción <span class="ot">=</span> <span class="fu">sum</span>(Construcción, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
-<span id="cb20-22"><a href="#cb20-22" aria-hidden="true" tabindex="-1"></a>    <span class="st">`</span><span class="at">Protección social</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">sum</span>(<span class="st">`</span><span class="at">Protección social</span><span class="st">`</span>, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb20-23"><a href="#cb20-23" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb20-24"><a href="#cb20-24" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-25"><a href="#cb20-25" aria-hidden="true" tabindex="-1"></a>tabla_dominio <span class="sc">|&gt;</span> </span>
-<span id="cb20-26"><a href="#cb20-26" aria-hidden="true" tabindex="-1"></a>  <span class="fu">gt</span>() <span class="sc">|&gt;</span> </span>
-<span id="cb20-27"><a href="#cb20-27" aria-hidden="true" tabindex="-1"></a>  <span class="fu">fmt_number</span>(</span>
-<span id="cb20-28"><a href="#cb20-28" aria-hidden="true" tabindex="-1"></a>    <span class="at">columns =</span> <span class="fu">where</span>(is.numeric),</span>
-<span id="cb20-29"><a href="#cb20-29" aria-hidden="true" tabindex="-1"></a>    <span class="at">decimals =</span> <span class="dv">0</span>,</span>
-<span id="cb20-30"><a href="#cb20-30" aria-hidden="true" tabindex="-1"></a>    <span class="at">use_seps =</span> <span class="cn">TRUE</span></span>
-<span id="cb20-31"><a href="#cb20-31" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span> </span>
-<span id="cb20-32"><a href="#cb20-32" aria-hidden="true" tabindex="-1"></a>  <span class="fu">grand_summary_rows</span>(</span>
-<span id="cb20-33"><a href="#cb20-33" aria-hidden="true" tabindex="-1"></a>    <span class="at">columns =</span> <span class="fu">where</span>(is.numeric),</span>
-<span id="cb20-34"><a href="#cb20-34" aria-hidden="true" tabindex="-1"></a>    <span class="at">fns =</span> <span class="fu">list</span>(<span class="at">label =</span> <span class="st">"Total"</span>, <span class="at">id =</span> <span class="st">"totales"</span>, <span class="at">fn =</span> <span class="st">"sum"</span>),</span>
-<span id="cb20-35"><a href="#cb20-35" aria-hidden="true" tabindex="-1"></a>    <span class="at">fmt =</span> <span class="sc">~</span> <span class="fu">fmt_number</span>(., <span class="at">decimals =</span> <span class="dv">0</span>, <span class="at">use_seps =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb20-36"><a href="#cb20-36" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>tabla_dominio <span class="ot">&lt;-</span> hogares_vulnerables <span class="sc">|&gt;</span> </span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">Dominio =</span> <span class="fu">as_factor</span>(DOMINIO),</span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">personas =</span> FACTOR07 <span class="sc">*</span> MIEPERHO,</span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">Ingreso =</span> personas <span class="sc">*</span> vulnerabilidad_ingreso,</span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a>    Educación <span class="ot">=</span> personas <span class="sc">*</span> vulnerabilidad_educacion,</span>
+<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">Agua =</span> personas <span class="sc">*</span> vulnerabilidad_agua,</span>
+<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">Electricidad =</span> personas <span class="sc">*</span> vulnerabilidad_electricidad,</span>
+<span id="cb21-9"><a href="#cb21-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">Saneamiento =</span> personas <span class="sc">*</span> vulnerabilidad_saneamiento,</span>
+<span id="cb21-10"><a href="#cb21-10" aria-hidden="true" tabindex="-1"></a>    Construcción <span class="ot">=</span> personas <span class="sc">*</span> vulnerabilidad_construccion,</span>
+<span id="cb21-11"><a href="#cb21-11" aria-hidden="true" tabindex="-1"></a>    <span class="st">`</span><span class="at">Protección social</span><span class="st">`</span> <span class="ot">=</span> personas <span class="sc">*</span> vulnerabilidad_proteccion</span>
+<span id="cb21-12"><a href="#cb21-12" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span> </span>
+<span id="cb21-13"><a href="#cb21-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(Dominio) <span class="sc">|&gt;</span> </span>
+<span id="cb21-14"><a href="#cb21-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(</span>
+<span id="cb21-15"><a href="#cb21-15" aria-hidden="true" tabindex="-1"></a>    <span class="st">`</span><span class="at">Población total</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">sum</span>(personas, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb21-16"><a href="#cb21-16" aria-hidden="true" tabindex="-1"></a>    <span class="at">Ingreso =</span> <span class="fu">sum</span>(Ingreso, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb21-17"><a href="#cb21-17" aria-hidden="true" tabindex="-1"></a>    Educación <span class="ot">=</span> <span class="fu">sum</span>(Educación, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb21-18"><a href="#cb21-18" aria-hidden="true" tabindex="-1"></a>    <span class="at">Agua =</span> <span class="fu">sum</span>(Agua, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb21-19"><a href="#cb21-19" aria-hidden="true" tabindex="-1"></a>    <span class="at">Electricidad =</span> <span class="fu">sum</span>(Electricidad, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb21-20"><a href="#cb21-20" aria-hidden="true" tabindex="-1"></a>    <span class="at">Saneamiento =</span> <span class="fu">sum</span>(Saneamiento, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb21-21"><a href="#cb21-21" aria-hidden="true" tabindex="-1"></a>    Construcción <span class="ot">=</span> <span class="fu">sum</span>(Construcción, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb21-22"><a href="#cb21-22" aria-hidden="true" tabindex="-1"></a>    <span class="st">`</span><span class="at">Protección social</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">sum</span>(<span class="st">`</span><span class="at">Protección social</span><span class="st">`</span>, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb21-23"><a href="#cb21-23" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb21-24"><a href="#cb21-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-25"><a href="#cb21-25" aria-hidden="true" tabindex="-1"></a>tabla_dominio <span class="sc">|&gt;</span> </span>
+<span id="cb21-26"><a href="#cb21-26" aria-hidden="true" tabindex="-1"></a>  <span class="fu">gt</span>() <span class="sc">|&gt;</span> </span>
+<span id="cb21-27"><a href="#cb21-27" aria-hidden="true" tabindex="-1"></a>  <span class="fu">fmt_number</span>(</span>
+<span id="cb21-28"><a href="#cb21-28" aria-hidden="true" tabindex="-1"></a>    <span class="at">columns =</span> <span class="fu">where</span>(is.numeric),</span>
+<span id="cb21-29"><a href="#cb21-29" aria-hidden="true" tabindex="-1"></a>    <span class="at">decimals =</span> <span class="dv">0</span>,</span>
+<span id="cb21-30"><a href="#cb21-30" aria-hidden="true" tabindex="-1"></a>    <span class="at">use_seps =</span> <span class="cn">TRUE</span></span>
+<span id="cb21-31"><a href="#cb21-31" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span> </span>
+<span id="cb21-32"><a href="#cb21-32" aria-hidden="true" tabindex="-1"></a>  <span class="fu">grand_summary_rows</span>(</span>
+<span id="cb21-33"><a href="#cb21-33" aria-hidden="true" tabindex="-1"></a>    <span class="at">columns =</span> <span class="fu">where</span>(is.numeric),</span>
+<span id="cb21-34"><a href="#cb21-34" aria-hidden="true" tabindex="-1"></a>    <span class="at">fns =</span> <span class="fu">list</span>(<span class="at">label =</span> <span class="st">"Total"</span>, <span class="at">id =</span> <span class="st">"totales"</span>, <span class="at">fn =</span> <span class="st">"sum"</span>),</span>
+<span id="cb21-35"><a href="#cb21-35" aria-hidden="true" tabindex="-1"></a>    <span class="at">fmt =</span> <span class="sc">~</span> <span class="fu">fmt_number</span>(., <span class="at">decimals =</span> <span class="dv">0</span>, <span class="at">use_seps =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb21-36"><a href="#cb21-36" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <div id="tbl-vulnerabilidad-dominio" class="cell quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-tbl figure">
 <figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-vulnerabilidad-dominio-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
@@ -714,23 +730,40 @@ Tabla&nbsp;1: Número de personas vulnerables por dominio y dimensión
 </figcaption>
 <div aria-describedby="tbl-vulnerabilidad-dominio-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="cell-output-display">
+<<<<<<< HEAD
 <div id="bkxrcpfauy" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
 <style>#bkxrcpfauy table {
+=======
+<div id="trjkttfumm" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#trjkttfumm table {
+>>>>>>> 55301ab (remove large file)
   font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
+<<<<<<< HEAD
 #bkxrcpfauy thead, #bkxrcpfauy tbody, #bkxrcpfauy tfoot, #bkxrcpfauy tr, #bkxrcpfauy td, #bkxrcpfauy th {
   border-style: none;
 }
 
 #bkxrcpfauy p {
+=======
+#trjkttfumm thead, #trjkttfumm tbody, #trjkttfumm tfoot, #trjkttfumm tr, #trjkttfumm td, #trjkttfumm th {
+  border-style: none;
+}
+
+#trjkttfumm p {
+>>>>>>> 55301ab (remove large file)
   margin: 0;
   padding: 0;
 }
 
+<<<<<<< HEAD
 #bkxrcpfauy .gt_table {
+=======
+#trjkttfumm .gt_table {
+>>>>>>> 55301ab (remove large file)
   display: table;
   border-collapse: collapse;
   line-height: normal;
@@ -756,12 +789,20 @@ Tabla&nbsp;1: Número de personas vulnerables por dominio y dimensión
   border-left-color: #D3D3D3;
 }
 
+<<<<<<< HEAD
 #bkxrcpfauy .gt_caption {
+=======
+#trjkttfumm .gt_caption {
+>>>>>>> 55301ab (remove large file)
   padding-top: 4px;
   padding-bottom: 4px;
 }
 
+<<<<<<< HEAD
 #bkxrcpfauy .gt_title {
+=======
+#trjkttfumm .gt_title {
+>>>>>>> 55301ab (remove large file)
   color: #333333;
   font-size: 125%;
   font-weight: initial;
@@ -773,7 +814,11 @@ Tabla&nbsp;1: Número de personas vulnerables por dominio y dimensión
   border-bottom-width: 0;
 }
 
+<<<<<<< HEAD
 #bkxrcpfauy .gt_subtitle {
+=======
+#trjkttfumm .gt_subtitle {
+>>>>>>> 55301ab (remove large file)
   color: #333333;
   font-size: 85%;
   font-weight: initial;
@@ -785,7 +830,11 @@ Tabla&nbsp;1: Número de personas vulnerables por dominio y dimensión
   border-top-width: 0;
 }
 
+<<<<<<< HEAD
 #bkxrcpfauy .gt_heading {
+=======
+#trjkttfumm .gt_heading {
+>>>>>>> 55301ab (remove large file)
   background-color: #FFFFFF;
   text-align: center;
   border-bottom-color: #FFFFFF;
@@ -797,13 +846,21 @@ Tabla&nbsp;1: Número de personas vulnerables por dominio y dimensión
   border-right-color: #D3D3D3;
 }
 
+<<<<<<< HEAD
 #bkxrcpfauy .gt_bottom_border {
+=======
+#trjkttfumm .gt_bottom_border {
+>>>>>>> 55301ab (remove large file)
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
 }
 
+<<<<<<< HEAD
 #bkxrcpfauy .gt_col_headings {
+=======
+#trjkttfumm .gt_col_headings {
+>>>>>>> 55301ab (remove large file)
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -818,7 +875,11 @@ Tabla&nbsp;1: Número de personas vulnerables por dominio y dimensión
   border-right-color: #D3D3D3;
 }
 
+<<<<<<< HEAD
 #bkxrcpfauy .gt_col_heading {
+=======
+#trjkttfumm .gt_col_heading {
+>>>>>>> 55301ab (remove large file)
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -838,7 +899,11 @@ Tabla&nbsp;1: Número de personas vulnerables por dominio y dimensión
   overflow-x: hidden;
 }
 
+<<<<<<< HEAD
 #bkxrcpfauy .gt_column_spanner_outer {
+=======
+#trjkttfumm .gt_column_spanner_outer {
+>>>>>>> 55301ab (remove large file)
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -850,6 +915,7 @@ Tabla&nbsp;1: Número de personas vulnerables por dominio y dimensión
   padding-right: 4px;
 }
 
+<<<<<<< HEAD
 #bkxrcpfauy .gt_column_spanner_outer:first-child {
   padding-left: 0;
 }
@@ -859,6 +925,17 @@ Tabla&nbsp;1: Número de personas vulnerables por dominio y dimensión
 }
 
 #bkxrcpfauy .gt_column_spanner {
+=======
+#trjkttfumm .gt_column_spanner_outer:first-child {
+  padding-left: 0;
+}
+
+#trjkttfumm .gt_column_spanner_outer:last-child {
+  padding-right: 0;
+}
+
+#trjkttfumm .gt_column_spanner {
+>>>>>>> 55301ab (remove large file)
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
@@ -870,11 +947,19 @@ Tabla&nbsp;1: Número de personas vulnerables por dominio y dimensión
   width: 100%;
 }
 
+<<<<<<< HEAD
 #bkxrcpfauy .gt_spanner_row {
   border-bottom-style: hidden;
 }
 
 #bkxrcpfauy .gt_group_heading {
+=======
+#trjkttfumm .gt_spanner_row {
+  border-bottom-style: hidden;
+}
+
+#trjkttfumm .gt_group_heading {
+>>>>>>> 55301ab (remove large file)
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -900,7 +985,11 @@ Tabla&nbsp;1: Número de personas vulnerables por dominio y dimensión
   text-align: left;
 }
 
+<<<<<<< HEAD
 #bkxrcpfauy .gt_empty_group_heading {
+=======
+#trjkttfumm .gt_empty_group_heading {
+>>>>>>> 55301ab (remove large file)
   padding: 0.5px;
   color: #333333;
   background-color: #FFFFFF;
@@ -915,6 +1004,7 @@ Tabla&nbsp;1: Número de personas vulnerables por dominio y dimensión
   vertical-align: middle;
 }
 
+<<<<<<< HEAD
 #bkxrcpfauy .gt_from_md > :first-child {
   margin-top: 0;
 }
@@ -924,6 +1014,17 @@ Tabla&nbsp;1: Número de personas vulnerables por dominio y dimensión
 }
 
 #bkxrcpfauy .gt_row {
+=======
+#trjkttfumm .gt_from_md > :first-child {
+  margin-top: 0;
+}
+
+#trjkttfumm .gt_from_md > :last-child {
+  margin-bottom: 0;
+}
+
+#trjkttfumm .gt_row {
+>>>>>>> 55301ab (remove large file)
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -942,7 +1043,11 @@ Tabla&nbsp;1: Número de personas vulnerables por dominio y dimensión
   overflow-x: hidden;
 }
 
+<<<<<<< HEAD
 #bkxrcpfauy .gt_stub {
+=======
+#trjkttfumm .gt_stub {
+>>>>>>> 55301ab (remove large file)
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -955,7 +1060,11 @@ Tabla&nbsp;1: Número de personas vulnerables por dominio y dimensión
   padding-right: 5px;
 }
 
+<<<<<<< HEAD
 #bkxrcpfauy .gt_stub_row_group {
+=======
+#trjkttfumm .gt_stub_row_group {
+>>>>>>> 55301ab (remove large file)
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -969,6 +1078,7 @@ Tabla&nbsp;1: Número de personas vulnerables por dominio y dimensión
   vertical-align: top;
 }
 
+<<<<<<< HEAD
 #bkxrcpfauy .gt_row_group_first td {
   border-top-width: 2px;
 }
@@ -978,6 +1088,17 @@ Tabla&nbsp;1: Número de personas vulnerables por dominio y dimensión
 }
 
 #bkxrcpfauy .gt_summary_row {
+=======
+#trjkttfumm .gt_row_group_first td {
+  border-top-width: 2px;
+}
+
+#trjkttfumm .gt_row_group_first th {
+  border-top-width: 2px;
+}
+
+#trjkttfumm .gt_summary_row {
+>>>>>>> 55301ab (remove large file)
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -987,16 +1108,28 @@ Tabla&nbsp;1: Número de personas vulnerables por dominio y dimensión
   padding-right: 5px;
 }
 
+<<<<<<< HEAD
 #bkxrcpfauy .gt_first_summary_row {
+=======
+#trjkttfumm .gt_first_summary_row {
+>>>>>>> 55301ab (remove large file)
   border-top-style: solid;
   border-top-color: #D3D3D3;
 }
 
+<<<<<<< HEAD
 #bkxrcpfauy .gt_first_summary_row.thick {
   border-top-width: 2px;
 }
 
 #bkxrcpfauy .gt_last_summary_row {
+=======
+#trjkttfumm .gt_first_summary_row.thick {
+  border-top-width: 2px;
+}
+
+#trjkttfumm .gt_last_summary_row {
+>>>>>>> 55301ab (remove large file)
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1006,7 +1139,11 @@ Tabla&nbsp;1: Número de personas vulnerables por dominio y dimensión
   border-bottom-color: #D3D3D3;
 }
 
+<<<<<<< HEAD
 #bkxrcpfauy .gt_grand_summary_row {
+=======
+#trjkttfumm .gt_grand_summary_row {
+>>>>>>> 55301ab (remove large file)
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -1016,7 +1153,11 @@ Tabla&nbsp;1: Número de personas vulnerables por dominio y dimensión
   padding-right: 5px;
 }
 
+<<<<<<< HEAD
 #bkxrcpfauy .gt_first_grand_summary_row {
+=======
+#trjkttfumm .gt_first_grand_summary_row {
+>>>>>>> 55301ab (remove large file)
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1026,7 +1167,11 @@ Tabla&nbsp;1: Número de personas vulnerables por dominio y dimensión
   border-top-color: #D3D3D3;
 }
 
+<<<<<<< HEAD
 #bkxrcpfauy .gt_last_grand_summary_row_top {
+=======
+#trjkttfumm .gt_last_grand_summary_row_top {
+>>>>>>> 55301ab (remove large file)
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1036,11 +1181,19 @@ Tabla&nbsp;1: Número de personas vulnerables por dominio y dimensión
   border-bottom-color: #D3D3D3;
 }
 
+<<<<<<< HEAD
 #bkxrcpfauy .gt_striped {
   background-color: rgba(128, 128, 128, 0.05);
 }
 
 #bkxrcpfauy .gt_table_body {
+=======
+#trjkttfumm .gt_striped {
+  background-color: rgba(128, 128, 128, 0.05);
+}
+
+#trjkttfumm .gt_table_body {
+>>>>>>> 55301ab (remove large file)
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -1049,7 +1202,11 @@ Tabla&nbsp;1: Número de personas vulnerables por dominio y dimensión
   border-bottom-color: #D3D3D3;
 }
 
+<<<<<<< HEAD
 #bkxrcpfauy .gt_footnotes {
+=======
+#trjkttfumm .gt_footnotes {
+>>>>>>> 55301ab (remove large file)
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -1063,7 +1220,11 @@ Tabla&nbsp;1: Número de personas vulnerables por dominio y dimensión
   border-right-color: #D3D3D3;
 }
 
+<<<<<<< HEAD
 #bkxrcpfauy .gt_footnote {
+=======
+#trjkttfumm .gt_footnote {
+>>>>>>> 55301ab (remove large file)
   margin: 0px;
   font-size: 90%;
   padding-top: 4px;
@@ -1072,7 +1233,11 @@ Tabla&nbsp;1: Número de personas vulnerables por dominio y dimensión
   padding-right: 5px;
 }
 
+<<<<<<< HEAD
 #bkxrcpfauy .gt_sourcenotes {
+=======
+#trjkttfumm .gt_sourcenotes {
+>>>>>>> 55301ab (remove large file)
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -1086,7 +1251,11 @@ Tabla&nbsp;1: Número de personas vulnerables por dominio y dimensión
   border-right-color: #D3D3D3;
 }
 
+<<<<<<< HEAD
 #bkxrcpfauy .gt_sourcenote {
+=======
+#trjkttfumm .gt_sourcenote {
+>>>>>>> 55301ab (remove large file)
   font-size: 90%;
   padding-top: 4px;
   padding-bottom: 4px;
@@ -1094,6 +1263,7 @@ Tabla&nbsp;1: Número de personas vulnerables por dominio y dimensión
   padding-right: 5px;
 }
 
+<<<<<<< HEAD
 #bkxrcpfauy .gt_left {
   text-align: left;
 }
@@ -1103,10 +1273,22 @@ Tabla&nbsp;1: Número de personas vulnerables por dominio y dimensión
 }
 
 #bkxrcpfauy .gt_right {
+=======
+#trjkttfumm .gt_left {
+  text-align: left;
+}
+
+#trjkttfumm .gt_center {
+  text-align: center;
+}
+
+#trjkttfumm .gt_right {
+>>>>>>> 55301ab (remove large file)
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
 
+<<<<<<< HEAD
 #bkxrcpfauy .gt_font_normal {
   font-weight: normal;
 }
@@ -1124,16 +1306,40 @@ Tabla&nbsp;1: Número de personas vulnerables por dominio y dimensión
 }
 
 #bkxrcpfauy .gt_footnote_marks {
+=======
+#trjkttfumm .gt_font_normal {
+  font-weight: normal;
+}
+
+#trjkttfumm .gt_font_bold {
+  font-weight: bold;
+}
+
+#trjkttfumm .gt_font_italic {
+  font-style: italic;
+}
+
+#trjkttfumm .gt_super {
+  font-size: 65%;
+}
+
+#trjkttfumm .gt_footnote_marks {
+>>>>>>> 55301ab (remove large file)
   font-size: 75%;
   vertical-align: 0.4em;
   position: initial;
 }
 
+<<<<<<< HEAD
 #bkxrcpfauy .gt_asterisk {
+=======
+#trjkttfumm .gt_asterisk {
+>>>>>>> 55301ab (remove large file)
   font-size: 100%;
   vertical-align: 0;
 }
 
+<<<<<<< HEAD
 #bkxrcpfauy .gt_indent_1 {
   text-indent: 5px;
 }
@@ -1155,11 +1361,38 @@ Tabla&nbsp;1: Número de personas vulnerables por dominio y dimensión
 }
 
 #bkxrcpfauy .katex-display {
+=======
+#trjkttfumm .gt_indent_1 {
+  text-indent: 5px;
+}
+
+#trjkttfumm .gt_indent_2 {
+  text-indent: 10px;
+}
+
+#trjkttfumm .gt_indent_3 {
+  text-indent: 15px;
+}
+
+#trjkttfumm .gt_indent_4 {
+  text-indent: 20px;
+}
+
+#trjkttfumm .gt_indent_5 {
+  text-indent: 25px;
+}
+
+#trjkttfumm .katex-display {
+>>>>>>> 55301ab (remove large file)
   display: inline-flex !important;
   margin-bottom: 0.75em !important;
 }
 
+<<<<<<< HEAD
 #bkxrcpfauy div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
+=======
+#trjkttfumm div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
+>>>>>>> 55301ab (remove large file)
   height: 0px !important;
 }
 </style>
@@ -1299,44 +1532,44 @@ Tabla&nbsp;1: Número de personas vulnerables por dominio y dimensión
 </div>
 <p>Finalmente, contamos a las personas según el número de dimensiones en las que son vulnerables simultáneamente (de 0 a 7), por dominio geográfico, con la población total de cada dominio como referencia y una fila de totales nacionales.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>tabla_multidimensional <span class="ot">&lt;-</span> hogares_vulnerables <span class="sc">|&gt;</span> </span>
-<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
-<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">Dominio =</span> <span class="fu">as_factor</span>(DOMINIO),</span>
-<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">personas =</span> FACTOR07 <span class="sc">*</span> MIEPERHO,</span>
-<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">num_dimensiones =</span> <span class="fu">rowSums</span>(</span>
-<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a>      <span class="fu">across</span>(<span class="fu">starts_with</span>(<span class="st">"vulnerabilidad_"</span>)), <span class="at">na.rm =</span> <span class="cn">TRUE</span></span>
-<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a>    )</span>
-<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span> </span>
-<span id="cb21-9"><a href="#cb21-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(Dominio, num_dimensiones) <span class="sc">|&gt;</span> </span>
-<span id="cb21-10"><a href="#cb21-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(</span>
-<span id="cb21-11"><a href="#cb21-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">personas =</span> <span class="fu">sum</span>(personas, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
-<span id="cb21-12"><a href="#cb21-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">.groups =</span> <span class="st">"drop"</span></span>
-<span id="cb21-13"><a href="#cb21-13" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span> </span>
-<span id="cb21-14"><a href="#cb21-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_wider</span>(</span>
-<span id="cb21-15"><a href="#cb21-15" aria-hidden="true" tabindex="-1"></a>    <span class="at">names_from =</span> num_dimensiones,</span>
-<span id="cb21-16"><a href="#cb21-16" aria-hidden="true" tabindex="-1"></a>    <span class="at">names_prefix =</span> <span class="st">"Dimensiones: "</span>,</span>
-<span id="cb21-17"><a href="#cb21-17" aria-hidden="true" tabindex="-1"></a>    <span class="at">values_from =</span> personas,</span>
-<span id="cb21-18"><a href="#cb21-18" aria-hidden="true" tabindex="-1"></a>    <span class="at">values_fill =</span> <span class="dv">0</span></span>
-<span id="cb21-19"><a href="#cb21-19" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span> </span>
-<span id="cb21-20"><a href="#cb21-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
-<span id="cb21-21"><a href="#cb21-21" aria-hidden="true" tabindex="-1"></a>    <span class="st">`</span><span class="at">Población total</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">rowSums</span>(</span>
-<span id="cb21-22"><a href="#cb21-22" aria-hidden="true" tabindex="-1"></a>      <span class="fu">across</span>(<span class="fu">starts_with</span>(<span class="st">"Dimensiones:"</span>)), <span class="at">na.rm =</span> <span class="cn">TRUE</span></span>
-<span id="cb21-23"><a href="#cb21-23" aria-hidden="true" tabindex="-1"></a>    )</span>
-<span id="cb21-24"><a href="#cb21-24" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span> </span>
-<span id="cb21-25"><a href="#cb21-25" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(Dominio, <span class="st">`</span><span class="at">Población total</span><span class="st">`</span>, <span class="fu">everything</span>())</span>
-<span id="cb21-26"><a href="#cb21-26" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb21-27"><a href="#cb21-27" aria-hidden="true" tabindex="-1"></a>tabla_multidimensional <span class="sc">|&gt;</span> </span>
-<span id="cb21-28"><a href="#cb21-28" aria-hidden="true" tabindex="-1"></a>  <span class="fu">gt</span>() <span class="sc">|&gt;</span> </span>
-<span id="cb21-29"><a href="#cb21-29" aria-hidden="true" tabindex="-1"></a>  <span class="fu">fmt_number</span>(</span>
-<span id="cb21-30"><a href="#cb21-30" aria-hidden="true" tabindex="-1"></a>    <span class="at">columns =</span> <span class="fu">where</span>(is.numeric),</span>
-<span id="cb21-31"><a href="#cb21-31" aria-hidden="true" tabindex="-1"></a>    <span class="at">decimals =</span> <span class="dv">0</span>,</span>
-<span id="cb21-32"><a href="#cb21-32" aria-hidden="true" tabindex="-1"></a>    <span class="at">use_seps =</span> <span class="cn">TRUE</span></span>
-<span id="cb21-33"><a href="#cb21-33" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span> </span>
-<span id="cb21-34"><a href="#cb21-34" aria-hidden="true" tabindex="-1"></a>  <span class="fu">grand_summary_rows</span>(</span>
-<span id="cb21-35"><a href="#cb21-35" aria-hidden="true" tabindex="-1"></a>    <span class="at">columns =</span> <span class="fu">where</span>(is.numeric),</span>
-<span id="cb21-36"><a href="#cb21-36" aria-hidden="true" tabindex="-1"></a>    <span class="at">fns =</span> <span class="fu">list</span>(<span class="at">label =</span> <span class="st">"Total"</span>, <span class="at">id =</span> <span class="st">"totales"</span>, <span class="at">fn =</span> <span class="st">"sum"</span>),</span>
-<span id="cb21-37"><a href="#cb21-37" aria-hidden="true" tabindex="-1"></a>    <span class="at">fmt =</span> <span class="sc">~</span> <span class="fu">fmt_number</span>(., <span class="at">decimals =</span> <span class="dv">0</span>, <span class="at">use_seps =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb21-38"><a href="#cb21-38" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>tabla_multidimensional <span class="ot">&lt;-</span> hogares_vulnerables <span class="sc">|&gt;</span> </span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">Dominio =</span> <span class="fu">as_factor</span>(DOMINIO),</span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">personas =</span> FACTOR07 <span class="sc">*</span> MIEPERHO,</span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">num_dimensiones =</span> <span class="fu">rowSums</span>(</span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a>      <span class="fu">across</span>(<span class="fu">starts_with</span>(<span class="st">"vulnerabilidad_"</span>)), <span class="at">na.rm =</span> <span class="cn">TRUE</span></span>
+<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb22-8"><a href="#cb22-8" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span> </span>
+<span id="cb22-9"><a href="#cb22-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(Dominio, num_dimensiones) <span class="sc">|&gt;</span> </span>
+<span id="cb22-10"><a href="#cb22-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(</span>
+<span id="cb22-11"><a href="#cb22-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">personas =</span> <span class="fu">sum</span>(personas, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb22-12"><a href="#cb22-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">.groups =</span> <span class="st">"drop"</span></span>
+<span id="cb22-13"><a href="#cb22-13" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span> </span>
+<span id="cb22-14"><a href="#cb22-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_wider</span>(</span>
+<span id="cb22-15"><a href="#cb22-15" aria-hidden="true" tabindex="-1"></a>    <span class="at">names_from =</span> num_dimensiones,</span>
+<span id="cb22-16"><a href="#cb22-16" aria-hidden="true" tabindex="-1"></a>    <span class="at">names_prefix =</span> <span class="st">"Dimensiones: "</span>,</span>
+<span id="cb22-17"><a href="#cb22-17" aria-hidden="true" tabindex="-1"></a>    <span class="at">values_from =</span> personas,</span>
+<span id="cb22-18"><a href="#cb22-18" aria-hidden="true" tabindex="-1"></a>    <span class="at">values_fill =</span> <span class="dv">0</span></span>
+<span id="cb22-19"><a href="#cb22-19" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span> </span>
+<span id="cb22-20"><a href="#cb22-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb22-21"><a href="#cb22-21" aria-hidden="true" tabindex="-1"></a>    <span class="st">`</span><span class="at">Población total</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">rowSums</span>(</span>
+<span id="cb22-22"><a href="#cb22-22" aria-hidden="true" tabindex="-1"></a>      <span class="fu">across</span>(<span class="fu">starts_with</span>(<span class="st">"Dimensiones:"</span>)), <span class="at">na.rm =</span> <span class="cn">TRUE</span></span>
+<span id="cb22-23"><a href="#cb22-23" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb22-24"><a href="#cb22-24" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span> </span>
+<span id="cb22-25"><a href="#cb22-25" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(Dominio, <span class="st">`</span><span class="at">Población total</span><span class="st">`</span>, <span class="fu">everything</span>())</span>
+<span id="cb22-26"><a href="#cb22-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-27"><a href="#cb22-27" aria-hidden="true" tabindex="-1"></a>tabla_multidimensional <span class="sc">|&gt;</span> </span>
+<span id="cb22-28"><a href="#cb22-28" aria-hidden="true" tabindex="-1"></a>  <span class="fu">gt</span>() <span class="sc">|&gt;</span> </span>
+<span id="cb22-29"><a href="#cb22-29" aria-hidden="true" tabindex="-1"></a>  <span class="fu">fmt_number</span>(</span>
+<span id="cb22-30"><a href="#cb22-30" aria-hidden="true" tabindex="-1"></a>    <span class="at">columns =</span> <span class="fu">where</span>(is.numeric),</span>
+<span id="cb22-31"><a href="#cb22-31" aria-hidden="true" tabindex="-1"></a>    <span class="at">decimals =</span> <span class="dv">0</span>,</span>
+<span id="cb22-32"><a href="#cb22-32" aria-hidden="true" tabindex="-1"></a>    <span class="at">use_seps =</span> <span class="cn">TRUE</span></span>
+<span id="cb22-33"><a href="#cb22-33" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span> </span>
+<span id="cb22-34"><a href="#cb22-34" aria-hidden="true" tabindex="-1"></a>  <span class="fu">grand_summary_rows</span>(</span>
+<span id="cb22-35"><a href="#cb22-35" aria-hidden="true" tabindex="-1"></a>    <span class="at">columns =</span> <span class="fu">where</span>(is.numeric),</span>
+<span id="cb22-36"><a href="#cb22-36" aria-hidden="true" tabindex="-1"></a>    <span class="at">fns =</span> <span class="fu">list</span>(<span class="at">label =</span> <span class="st">"Total"</span>, <span class="at">id =</span> <span class="st">"totales"</span>, <span class="at">fn =</span> <span class="st">"sum"</span>),</span>
+<span id="cb22-37"><a href="#cb22-37" aria-hidden="true" tabindex="-1"></a>    <span class="at">fmt =</span> <span class="sc">~</span> <span class="fu">fmt_number</span>(., <span class="at">decimals =</span> <span class="dv">0</span>, <span class="at">use_seps =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb22-38"><a href="#cb22-38" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <div id="tbl-vulnerabilidad-multiple" class="cell quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-tbl figure">
 <figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-vulnerabilidad-multiple-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
@@ -1344,23 +1577,40 @@ Tabla&nbsp;2: Número de personas vulnerables en múltiples dimensiones, por dom
 </figcaption>
 <div aria-describedby="tbl-vulnerabilidad-multiple-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="cell-output-display">
+<<<<<<< HEAD
 <div id="yjpsgyjsjr" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
 <style>#yjpsgyjsjr table {
+=======
+<div id="mhraxqwelb" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#mhraxqwelb table {
+>>>>>>> 55301ab (remove large file)
   font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
+<<<<<<< HEAD
 #yjpsgyjsjr thead, #yjpsgyjsjr tbody, #yjpsgyjsjr tfoot, #yjpsgyjsjr tr, #yjpsgyjsjr td, #yjpsgyjsjr th {
   border-style: none;
 }
 
 #yjpsgyjsjr p {
+=======
+#mhraxqwelb thead, #mhraxqwelb tbody, #mhraxqwelb tfoot, #mhraxqwelb tr, #mhraxqwelb td, #mhraxqwelb th {
+  border-style: none;
+}
+
+#mhraxqwelb p {
+>>>>>>> 55301ab (remove large file)
   margin: 0;
   padding: 0;
 }
 
+<<<<<<< HEAD
 #yjpsgyjsjr .gt_table {
+=======
+#mhraxqwelb .gt_table {
+>>>>>>> 55301ab (remove large file)
   display: table;
   border-collapse: collapse;
   line-height: normal;
@@ -1386,12 +1636,20 @@ Tabla&nbsp;2: Número de personas vulnerables en múltiples dimensiones, por dom
   border-left-color: #D3D3D3;
 }
 
+<<<<<<< HEAD
 #yjpsgyjsjr .gt_caption {
+=======
+#mhraxqwelb .gt_caption {
+>>>>>>> 55301ab (remove large file)
   padding-top: 4px;
   padding-bottom: 4px;
 }
 
+<<<<<<< HEAD
 #yjpsgyjsjr .gt_title {
+=======
+#mhraxqwelb .gt_title {
+>>>>>>> 55301ab (remove large file)
   color: #333333;
   font-size: 125%;
   font-weight: initial;
@@ -1403,7 +1661,11 @@ Tabla&nbsp;2: Número de personas vulnerables en múltiples dimensiones, por dom
   border-bottom-width: 0;
 }
 
+<<<<<<< HEAD
 #yjpsgyjsjr .gt_subtitle {
+=======
+#mhraxqwelb .gt_subtitle {
+>>>>>>> 55301ab (remove large file)
   color: #333333;
   font-size: 85%;
   font-weight: initial;
@@ -1415,7 +1677,11 @@ Tabla&nbsp;2: Número de personas vulnerables en múltiples dimensiones, por dom
   border-top-width: 0;
 }
 
+<<<<<<< HEAD
 #yjpsgyjsjr .gt_heading {
+=======
+#mhraxqwelb .gt_heading {
+>>>>>>> 55301ab (remove large file)
   background-color: #FFFFFF;
   text-align: center;
   border-bottom-color: #FFFFFF;
@@ -1427,13 +1693,21 @@ Tabla&nbsp;2: Número de personas vulnerables en múltiples dimensiones, por dom
   border-right-color: #D3D3D3;
 }
 
+<<<<<<< HEAD
 #yjpsgyjsjr .gt_bottom_border {
+=======
+#mhraxqwelb .gt_bottom_border {
+>>>>>>> 55301ab (remove large file)
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
 }
 
+<<<<<<< HEAD
 #yjpsgyjsjr .gt_col_headings {
+=======
+#mhraxqwelb .gt_col_headings {
+>>>>>>> 55301ab (remove large file)
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -1448,7 +1722,11 @@ Tabla&nbsp;2: Número de personas vulnerables en múltiples dimensiones, por dom
   border-right-color: #D3D3D3;
 }
 
+<<<<<<< HEAD
 #yjpsgyjsjr .gt_col_heading {
+=======
+#mhraxqwelb .gt_col_heading {
+>>>>>>> 55301ab (remove large file)
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -1468,7 +1746,11 @@ Tabla&nbsp;2: Número de personas vulnerables en múltiples dimensiones, por dom
   overflow-x: hidden;
 }
 
+<<<<<<< HEAD
 #yjpsgyjsjr .gt_column_spanner_outer {
+=======
+#mhraxqwelb .gt_column_spanner_outer {
+>>>>>>> 55301ab (remove large file)
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -1480,6 +1762,7 @@ Tabla&nbsp;2: Número de personas vulnerables en múltiples dimensiones, por dom
   padding-right: 4px;
 }
 
+<<<<<<< HEAD
 #yjpsgyjsjr .gt_column_spanner_outer:first-child {
   padding-left: 0;
 }
@@ -1489,6 +1772,17 @@ Tabla&nbsp;2: Número de personas vulnerables en múltiples dimensiones, por dom
 }
 
 #yjpsgyjsjr .gt_column_spanner {
+=======
+#mhraxqwelb .gt_column_spanner_outer:first-child {
+  padding-left: 0;
+}
+
+#mhraxqwelb .gt_column_spanner_outer:last-child {
+  padding-right: 0;
+}
+
+#mhraxqwelb .gt_column_spanner {
+>>>>>>> 55301ab (remove large file)
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
@@ -1500,11 +1794,19 @@ Tabla&nbsp;2: Número de personas vulnerables en múltiples dimensiones, por dom
   width: 100%;
 }
 
+<<<<<<< HEAD
 #yjpsgyjsjr .gt_spanner_row {
   border-bottom-style: hidden;
 }
 
 #yjpsgyjsjr .gt_group_heading {
+=======
+#mhraxqwelb .gt_spanner_row {
+  border-bottom-style: hidden;
+}
+
+#mhraxqwelb .gt_group_heading {
+>>>>>>> 55301ab (remove large file)
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1530,7 +1832,11 @@ Tabla&nbsp;2: Número de personas vulnerables en múltiples dimensiones, por dom
   text-align: left;
 }
 
+<<<<<<< HEAD
 #yjpsgyjsjr .gt_empty_group_heading {
+=======
+#mhraxqwelb .gt_empty_group_heading {
+>>>>>>> 55301ab (remove large file)
   padding: 0.5px;
   color: #333333;
   background-color: #FFFFFF;
@@ -1545,6 +1851,7 @@ Tabla&nbsp;2: Número de personas vulnerables en múltiples dimensiones, por dom
   vertical-align: middle;
 }
 
+<<<<<<< HEAD
 #yjpsgyjsjr .gt_from_md > :first-child {
   margin-top: 0;
 }
@@ -1554,6 +1861,17 @@ Tabla&nbsp;2: Número de personas vulnerables en múltiples dimensiones, por dom
 }
 
 #yjpsgyjsjr .gt_row {
+=======
+#mhraxqwelb .gt_from_md > :first-child {
+  margin-top: 0;
+}
+
+#mhraxqwelb .gt_from_md > :last-child {
+  margin-bottom: 0;
+}
+
+#mhraxqwelb .gt_row {
+>>>>>>> 55301ab (remove large file)
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1572,7 +1890,11 @@ Tabla&nbsp;2: Número de personas vulnerables en múltiples dimensiones, por dom
   overflow-x: hidden;
 }
 
+<<<<<<< HEAD
 #yjpsgyjsjr .gt_stub {
+=======
+#mhraxqwelb .gt_stub {
+>>>>>>> 55301ab (remove large file)
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -1585,7 +1907,11 @@ Tabla&nbsp;2: Número de personas vulnerables en múltiples dimensiones, por dom
   padding-right: 5px;
 }
 
+<<<<<<< HEAD
 #yjpsgyjsjr .gt_stub_row_group {
+=======
+#mhraxqwelb .gt_stub_row_group {
+>>>>>>> 55301ab (remove large file)
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -1599,6 +1925,7 @@ Tabla&nbsp;2: Número de personas vulnerables en múltiples dimensiones, por dom
   vertical-align: top;
 }
 
+<<<<<<< HEAD
 #yjpsgyjsjr .gt_row_group_first td {
   border-top-width: 2px;
 }
@@ -1608,6 +1935,17 @@ Tabla&nbsp;2: Número de personas vulnerables en múltiples dimensiones, por dom
 }
 
 #yjpsgyjsjr .gt_summary_row {
+=======
+#mhraxqwelb .gt_row_group_first td {
+  border-top-width: 2px;
+}
+
+#mhraxqwelb .gt_row_group_first th {
+  border-top-width: 2px;
+}
+
+#mhraxqwelb .gt_summary_row {
+>>>>>>> 55301ab (remove large file)
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -1617,16 +1955,28 @@ Tabla&nbsp;2: Número de personas vulnerables en múltiples dimensiones, por dom
   padding-right: 5px;
 }
 
+<<<<<<< HEAD
 #yjpsgyjsjr .gt_first_summary_row {
+=======
+#mhraxqwelb .gt_first_summary_row {
+>>>>>>> 55301ab (remove large file)
   border-top-style: solid;
   border-top-color: #D3D3D3;
 }
 
+<<<<<<< HEAD
 #yjpsgyjsjr .gt_first_summary_row.thick {
   border-top-width: 2px;
 }
 
 #yjpsgyjsjr .gt_last_summary_row {
+=======
+#mhraxqwelb .gt_first_summary_row.thick {
+  border-top-width: 2px;
+}
+
+#mhraxqwelb .gt_last_summary_row {
+>>>>>>> 55301ab (remove large file)
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1636,7 +1986,11 @@ Tabla&nbsp;2: Número de personas vulnerables en múltiples dimensiones, por dom
   border-bottom-color: #D3D3D3;
 }
 
+<<<<<<< HEAD
 #yjpsgyjsjr .gt_grand_summary_row {
+=======
+#mhraxqwelb .gt_grand_summary_row {
+>>>>>>> 55301ab (remove large file)
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -1646,7 +2000,11 @@ Tabla&nbsp;2: Número de personas vulnerables en múltiples dimensiones, por dom
   padding-right: 5px;
 }
 
+<<<<<<< HEAD
 #yjpsgyjsjr .gt_first_grand_summary_row {
+=======
+#mhraxqwelb .gt_first_grand_summary_row {
+>>>>>>> 55301ab (remove large file)
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1656,7 +2014,11 @@ Tabla&nbsp;2: Número de personas vulnerables en múltiples dimensiones, por dom
   border-top-color: #D3D3D3;
 }
 
+<<<<<<< HEAD
 #yjpsgyjsjr .gt_last_grand_summary_row_top {
+=======
+#mhraxqwelb .gt_last_grand_summary_row_top {
+>>>>>>> 55301ab (remove large file)
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1666,11 +2028,19 @@ Tabla&nbsp;2: Número de personas vulnerables en múltiples dimensiones, por dom
   border-bottom-color: #D3D3D3;
 }
 
+<<<<<<< HEAD
 #yjpsgyjsjr .gt_striped {
   background-color: rgba(128, 128, 128, 0.05);
 }
 
 #yjpsgyjsjr .gt_table_body {
+=======
+#mhraxqwelb .gt_striped {
+  background-color: rgba(128, 128, 128, 0.05);
+}
+
+#mhraxqwelb .gt_table_body {
+>>>>>>> 55301ab (remove large file)
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -1679,7 +2049,11 @@ Tabla&nbsp;2: Número de personas vulnerables en múltiples dimensiones, por dom
   border-bottom-color: #D3D3D3;
 }
 
+<<<<<<< HEAD
 #yjpsgyjsjr .gt_footnotes {
+=======
+#mhraxqwelb .gt_footnotes {
+>>>>>>> 55301ab (remove large file)
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -1693,7 +2067,11 @@ Tabla&nbsp;2: Número de personas vulnerables en múltiples dimensiones, por dom
   border-right-color: #D3D3D3;
 }
 
+<<<<<<< HEAD
 #yjpsgyjsjr .gt_footnote {
+=======
+#mhraxqwelb .gt_footnote {
+>>>>>>> 55301ab (remove large file)
   margin: 0px;
   font-size: 90%;
   padding-top: 4px;
@@ -1702,7 +2080,11 @@ Tabla&nbsp;2: Número de personas vulnerables en múltiples dimensiones, por dom
   padding-right: 5px;
 }
 
+<<<<<<< HEAD
 #yjpsgyjsjr .gt_sourcenotes {
+=======
+#mhraxqwelb .gt_sourcenotes {
+>>>>>>> 55301ab (remove large file)
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -1716,7 +2098,11 @@ Tabla&nbsp;2: Número de personas vulnerables en múltiples dimensiones, por dom
   border-right-color: #D3D3D3;
 }
 
+<<<<<<< HEAD
 #yjpsgyjsjr .gt_sourcenote {
+=======
+#mhraxqwelb .gt_sourcenote {
+>>>>>>> 55301ab (remove large file)
   font-size: 90%;
   padding-top: 4px;
   padding-bottom: 4px;
@@ -1724,6 +2110,7 @@ Tabla&nbsp;2: Número de personas vulnerables en múltiples dimensiones, por dom
   padding-right: 5px;
 }
 
+<<<<<<< HEAD
 #yjpsgyjsjr .gt_left {
   text-align: left;
 }
@@ -1733,10 +2120,22 @@ Tabla&nbsp;2: Número de personas vulnerables en múltiples dimensiones, por dom
 }
 
 #yjpsgyjsjr .gt_right {
+=======
+#mhraxqwelb .gt_left {
+  text-align: left;
+}
+
+#mhraxqwelb .gt_center {
+  text-align: center;
+}
+
+#mhraxqwelb .gt_right {
+>>>>>>> 55301ab (remove large file)
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
 
+<<<<<<< HEAD
 #yjpsgyjsjr .gt_font_normal {
   font-weight: normal;
 }
@@ -1754,16 +2153,40 @@ Tabla&nbsp;2: Número de personas vulnerables en múltiples dimensiones, por dom
 }
 
 #yjpsgyjsjr .gt_footnote_marks {
+=======
+#mhraxqwelb .gt_font_normal {
+  font-weight: normal;
+}
+
+#mhraxqwelb .gt_font_bold {
+  font-weight: bold;
+}
+
+#mhraxqwelb .gt_font_italic {
+  font-style: italic;
+}
+
+#mhraxqwelb .gt_super {
+  font-size: 65%;
+}
+
+#mhraxqwelb .gt_footnote_marks {
+>>>>>>> 55301ab (remove large file)
   font-size: 75%;
   vertical-align: 0.4em;
   position: initial;
 }
 
+<<<<<<< HEAD
 #yjpsgyjsjr .gt_asterisk {
+=======
+#mhraxqwelb .gt_asterisk {
+>>>>>>> 55301ab (remove large file)
   font-size: 100%;
   vertical-align: 0;
 }
 
+<<<<<<< HEAD
 #yjpsgyjsjr .gt_indent_1 {
   text-indent: 5px;
 }
@@ -1785,11 +2208,38 @@ Tabla&nbsp;2: Número de personas vulnerables en múltiples dimensiones, por dom
 }
 
 #yjpsgyjsjr .katex-display {
+=======
+#mhraxqwelb .gt_indent_1 {
+  text-indent: 5px;
+}
+
+#mhraxqwelb .gt_indent_2 {
+  text-indent: 10px;
+}
+
+#mhraxqwelb .gt_indent_3 {
+  text-indent: 15px;
+}
+
+#mhraxqwelb .gt_indent_4 {
+  text-indent: 20px;
+}
+
+#mhraxqwelb .gt_indent_5 {
+  text-indent: 25px;
+}
+
+#mhraxqwelb .katex-display {
+>>>>>>> 55301ab (remove large file)
   display: inline-flex !important;
   margin-bottom: 0.75em !important;
 }
 
+<<<<<<< HEAD
 #yjpsgyjsjr div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
+=======
+#mhraxqwelb div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
+>>>>>>> 55301ab (remove large file)
   height: 0px !important;
 }
 </style>
@@ -1942,53 +2392,53 @@ Tabla&nbsp;2: Número de personas vulnerables en múltiples dimensiones, por dom
 <h1>Exportando resultados a Excel</h1>
 <p>Para compartir estos resultados con colegas que no trabajan en R, exportamos las dos tablas finales a un mismo archivo de Excel, cada una en su propia pestaña, utilizando el paquete <code>openxlsx</code>.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>libro <span class="ot">&lt;-</span> <span class="fu">createWorkbook</span>()</span>
-<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a><span class="fu">addWorksheet</span>(libro, <span class="st">"Por dominio"</span>)</span>
-<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a><span class="fu">addWorksheet</span>(libro, <span class="st">"Multidimensional"</span>)</span>
-<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a><span class="fu">writeData</span>(libro, <span class="st">"Por dominio"</span>, tabla_dominio)</span>
-<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a><span class="fu">writeData</span>(libro, <span class="st">"Multidimensional"</span>, tabla_multidimensional)</span>
-<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb22-8"><a href="#cb22-8" aria-hidden="true" tabindex="-1"></a><span class="fu">saveWorkbook</span>(</span>
-<span id="cb22-9"><a href="#cb22-9" aria-hidden="true" tabindex="-1"></a>  libro,</span>
-<span id="cb22-10"><a href="#cb22-10" aria-hidden="true" tabindex="-1"></a>  <span class="st">"salidas/sesiones/0001-encuestas/vulnerabilidad_enaho.xlsx"</span>,</span>
-<span id="cb22-11"><a href="#cb22-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">overwrite =</span> <span class="cn">TRUE</span></span>
-<span id="cb22-12"><a href="#cb22-12" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>libro <span class="ot">&lt;-</span> <span class="fu">createWorkbook</span>()</span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a><span class="fu">addWorksheet</span>(libro, <span class="st">"Por dominio"</span>)</span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a><span class="fu">addWorksheet</span>(libro, <span class="st">"Multidimensional"</span>)</span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a><span class="fu">writeData</span>(libro, <span class="st">"Por dominio"</span>, tabla_dominio)</span>
+<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a><span class="fu">writeData</span>(libro, <span class="st">"Multidimensional"</span>, tabla_multidimensional)</span>
+<span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-8"><a href="#cb23-8" aria-hidden="true" tabindex="-1"></a><span class="fu">saveWorkbook</span>(</span>
+<span id="cb23-9"><a href="#cb23-9" aria-hidden="true" tabindex="-1"></a>  libro,</span>
+<span id="cb23-10"><a href="#cb23-10" aria-hidden="true" tabindex="-1"></a>  <span class="st">"salidas/sesiones/0001-encuestas/vulnerabilidad_enaho.xlsx"</span>,</span>
+<span id="cb23-11"><a href="#cb23-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">overwrite =</span> <span class="cn">TRUE</span></span>
+<span id="cb23-12"><a href="#cb23-12" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <section id="incluyendo-la-fila-de-totales-en-la-exportación" class="level2">
 <h2 class="anchored" data-anchor-id="incluyendo-la-fila-de-totales-en-la-exportación">Incluyendo la fila de totales en la exportación</h2>
 <p>La fila de totales que <code>grand_summary_rows()</code> agrega en pantalla vive únicamente en el objeto de <code>gt</code>, no en los data frames <code>tabla_dominio</code> y <code>tabla_multidimensional</code>, así que no aparece al exportar con <code>writeData()</code>. Para que el Excel también la tenga, calculamos esa fila directamente con <code>summarise()</code> y la agregamos a cada tabla con <code>bind_rows()</code>, antes de exportar a un nuevo archivo.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>tabla_dominio_totales <span class="ot">&lt;-</span> tabla_dominio <span class="sc">|&gt;</span> </span>
-<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">bind_rows</span>(</span>
-<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>    tabla_dominio <span class="sc">|&gt;</span> </span>
-<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>      <span class="fu">summarise</span>(</span>
-<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a>        <span class="fu">across</span>(<span class="fu">where</span>(is.numeric), sum),</span>
-<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a>        <span class="at">Dominio =</span> <span class="st">"Total"</span></span>
-<span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a>      )</span>
-<span id="cb23-8"><a href="#cb23-8" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb23-9"><a href="#cb23-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb23-10"><a href="#cb23-10" aria-hidden="true" tabindex="-1"></a>tabla_multidimensional_totales <span class="ot">&lt;-</span> tabla_multidimensional <span class="sc">|&gt;</span> </span>
-<span id="cb23-11"><a href="#cb23-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">bind_rows</span>(</span>
-<span id="cb23-12"><a href="#cb23-12" aria-hidden="true" tabindex="-1"></a>    tabla_multidimensional <span class="sc">|&gt;</span> </span>
-<span id="cb23-13"><a href="#cb23-13" aria-hidden="true" tabindex="-1"></a>      <span class="fu">summarise</span>(</span>
-<span id="cb23-14"><a href="#cb23-14" aria-hidden="true" tabindex="-1"></a>        <span class="fu">across</span>(<span class="fu">where</span>(is.numeric), sum),</span>
-<span id="cb23-15"><a href="#cb23-15" aria-hidden="true" tabindex="-1"></a>        <span class="at">Dominio =</span> <span class="st">"Total"</span></span>
-<span id="cb23-16"><a href="#cb23-16" aria-hidden="true" tabindex="-1"></a>      )</span>
-<span id="cb23-17"><a href="#cb23-17" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb23-18"><a href="#cb23-18" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb23-19"><a href="#cb23-19" aria-hidden="true" tabindex="-1"></a>libro_totales <span class="ot">&lt;-</span> <span class="fu">createWorkbook</span>()</span>
-<span id="cb23-20"><a href="#cb23-20" aria-hidden="true" tabindex="-1"></a><span class="fu">addWorksheet</span>(libro_totales, <span class="st">"Por dominio"</span>)</span>
-<span id="cb23-21"><a href="#cb23-21" aria-hidden="true" tabindex="-1"></a><span class="fu">addWorksheet</span>(libro_totales, <span class="st">"Multidimensional"</span>)</span>
-<span id="cb23-22"><a href="#cb23-22" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb23-23"><a href="#cb23-23" aria-hidden="true" tabindex="-1"></a><span class="fu">writeData</span>(libro_totales, <span class="st">"Por dominio"</span>, tabla_dominio_totales)</span>
-<span id="cb23-24"><a href="#cb23-24" aria-hidden="true" tabindex="-1"></a><span class="fu">writeData</span>(libro_totales, <span class="st">"Multidimensional"</span>, tabla_multidimensional_totales)</span>
-<span id="cb23-25"><a href="#cb23-25" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb23-26"><a href="#cb23-26" aria-hidden="true" tabindex="-1"></a><span class="fu">saveWorkbook</span>(</span>
-<span id="cb23-27"><a href="#cb23-27" aria-hidden="true" tabindex="-1"></a>  libro_totales,</span>
-<span id="cb23-28"><a href="#cb23-28" aria-hidden="true" tabindex="-1"></a>  <span class="st">"salidas/sesiones/0001-encuestas/vulnerabilidad_enaho_totales.xlsx"</span>,</span>
-<span id="cb23-29"><a href="#cb23-29" aria-hidden="true" tabindex="-1"></a>  <span class="at">overwrite =</span> <span class="cn">TRUE</span></span>
-<span id="cb23-30"><a href="#cb23-30" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>tabla_dominio_totales <span class="ot">&lt;-</span> tabla_dominio <span class="sc">|&gt;</span> </span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">bind_rows</span>(</span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>    tabla_dominio <span class="sc">|&gt;</span> </span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a>      <span class="fu">summarise</span>(</span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a>        <span class="fu">across</span>(<span class="fu">where</span>(is.numeric), sum),</span>
+<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a>        <span class="at">Dominio =</span> <span class="st">"Total"</span></span>
+<span id="cb24-7"><a href="#cb24-7" aria-hidden="true" tabindex="-1"></a>      )</span>
+<span id="cb24-8"><a href="#cb24-8" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb24-9"><a href="#cb24-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-10"><a href="#cb24-10" aria-hidden="true" tabindex="-1"></a>tabla_multidimensional_totales <span class="ot">&lt;-</span> tabla_multidimensional <span class="sc">|&gt;</span> </span>
+<span id="cb24-11"><a href="#cb24-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">bind_rows</span>(</span>
+<span id="cb24-12"><a href="#cb24-12" aria-hidden="true" tabindex="-1"></a>    tabla_multidimensional <span class="sc">|&gt;</span> </span>
+<span id="cb24-13"><a href="#cb24-13" aria-hidden="true" tabindex="-1"></a>      <span class="fu">summarise</span>(</span>
+<span id="cb24-14"><a href="#cb24-14" aria-hidden="true" tabindex="-1"></a>        <span class="fu">across</span>(<span class="fu">where</span>(is.numeric), sum),</span>
+<span id="cb24-15"><a href="#cb24-15" aria-hidden="true" tabindex="-1"></a>        <span class="at">Dominio =</span> <span class="st">"Total"</span></span>
+<span id="cb24-16"><a href="#cb24-16" aria-hidden="true" tabindex="-1"></a>      )</span>
+<span id="cb24-17"><a href="#cb24-17" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb24-18"><a href="#cb24-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-19"><a href="#cb24-19" aria-hidden="true" tabindex="-1"></a>libro_totales <span class="ot">&lt;-</span> <span class="fu">createWorkbook</span>()</span>
+<span id="cb24-20"><a href="#cb24-20" aria-hidden="true" tabindex="-1"></a><span class="fu">addWorksheet</span>(libro_totales, <span class="st">"Por dominio"</span>)</span>
+<span id="cb24-21"><a href="#cb24-21" aria-hidden="true" tabindex="-1"></a><span class="fu">addWorksheet</span>(libro_totales, <span class="st">"Multidimensional"</span>)</span>
+<span id="cb24-22"><a href="#cb24-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-23"><a href="#cb24-23" aria-hidden="true" tabindex="-1"></a><span class="fu">writeData</span>(libro_totales, <span class="st">"Por dominio"</span>, tabla_dominio_totales)</span>
+<span id="cb24-24"><a href="#cb24-24" aria-hidden="true" tabindex="-1"></a><span class="fu">writeData</span>(libro_totales, <span class="st">"Multidimensional"</span>, tabla_multidimensional_totales)</span>
+<span id="cb24-25"><a href="#cb24-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-26"><a href="#cb24-26" aria-hidden="true" tabindex="-1"></a><span class="fu">saveWorkbook</span>(</span>
+<span id="cb24-27"><a href="#cb24-27" aria-hidden="true" tabindex="-1"></a>  libro_totales,</span>
+<span id="cb24-28"><a href="#cb24-28" aria-hidden="true" tabindex="-1"></a>  <span class="st">"salidas/sesiones/0001-encuestas/vulnerabilidad_enaho_totales.xlsx"</span>,</span>
+<span id="cb24-29"><a href="#cb24-29" aria-hidden="true" tabindex="-1"></a>  <span class="at">overwrite =</span> <span class="cn">TRUE</span></span>
+<span id="cb24-30"><a href="#cb24-30" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 </section>
 </section>

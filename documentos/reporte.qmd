@@ -105,7 +105,7 @@ Por último, la @fig-mapa presenta la división administrativa de primer nivel d
 #| echo: false
 
 # Leer el dato geográfico
-adm1 <- sf::read_sf("datos/gis/gadm41_PAN_1.shp")
+adm1 <- sf::read_sf("datos/gis/pan/gadm41_PAN_1.shp")
 
 # Visualizarlo
 ggplot2::ggplot(adm1) +

@@ -9,7 +9,7 @@ categories:
   - análisis reproducible
   - encuestas
   - dplyr
-bibliography: referencias.bib
+bibliography: referencias-0001.bib
 csl: ../../../documentos/apa-es.csl
 ---
 # Video
@@ -49,16 +49,15 @@ En esta sesión, sin embargo, no profundizaremos en los métodos econométricos,
 
 ## Los Datos
 
-En esta sesión utilizaremos los datos reales de la Encuesta Nacional de Hogares (ENAHO) de Perú, que se encuentran disponibles en el [repositorio de datos Instituto Nacional de Estadística e Informática (INEI)](https://proyectos.inei.gob.pe/microdatos/). Los datos de la ENAHO son una fuente valiosa para analizar las condiciones de vida de los hogares peruanos. Utilizaremos los datos más recientes disponibles, que corresponden al primer trimestre de 2026. Entre los datos disponibles, hay muchos módulos y nosotros nos concentraremos solo en algunos:
+En esta sesión utilizaremos los datos reales de la Encuesta Nacional de Hogares (ENAHO) de Perú, que se encuentran disponibles en el [repositorio de datos Instituto Nacional de Estadística e Informática (INEI)](https://proyectos.inei.gob.pe/microdatos/). Los datos de la ENAHO son una fuente valiosa para analizar las condiciones de vida de los hogares peruanos. Utilizaremos los datos más recientes disponibles con cálculos de pobreza y agregado de consumo, que corresponden al año 2025. Entre los datos disponibles, hay muchos módulos y nosotros nos concentraremos solo en algunos. Además es muy importante tener acceso al diccionario que explica las variables, el cual el INEI incluye con las descargas.
 
+::: {.callout-tip appearance="default"}
 - Características de la Vivienda y del Hogar: [datos SPSS](https://github.com/R-en-Vivo/r-envivo/raw/refs/heads/main/datos/per_enaho/Enaho01-2025-100-viviendas.sav) | [preguntas módulo vivienda](https://github.com/R-en-Vivo/r-envivo/raw/refs/heads/main/datos/per_enaho/CED-01-100-2025-vivienda.pdf).
 - Características de los Miembros del Hogar: [datos SPSS](https://github.com/R-en-Vivo/r-envivo/raw/refs/heads/main/datos/per_enaho/Enaho01-2025-200-personas.sav) | [preguntas módulo personas](https://github.com/R-en-Vivo/r-envivo/raw/refs/heads/main/datos/per_enaho/CED-01-100-2025-vivienda.pdf).
 - Educación: [datos SPSS](https://github.com/R-en-Vivo/r-envivo/raw/refs/heads/main/datos/per_enaho/Enaho01-2025-100-educacion.sav) | [preguntas módulo educación](https://github.com/R-en-Vivo/r-envivo/raw/refs/heads/main/datos/per_enaho/CED-01A-300-2025-educacion.pdf).
 - Sumarias (variables calculadas): [datos SPSS](https://github.com/R-en-Vivo/r-envivo/raw/refs/heads/main/datos/per_enaho/Sumaria-2025.sav) | [metodología de cálculo](https://github.com/R-en-Vivo/r-envivo/raw/refs/heads/main/datos/per_enaho/Sumaria_2025.pdf).
-
-Además es muy importante tener acceso al diccionario que explica las variables, el cual el INEI incluye con las descargas. 
-
 - Diccionario de todas las bases  de datos: [descargar](https://github.com/R-en-Vivo/r-envivo/raw/refs/heads/main/datos/per_enaho/Diccionario_2025.pdf).
+:::
 
 Continuaremos con la carga de los datos de la ENAHO y la exploración inicial de los mismos. Asegúrate de tener los archivos descargados y ubicados en el directorio correcto para poder acceder a ellos sin problemas.
 
@@ -426,8 +425,13 @@ hogares_vulnerables <- dim_calculadas |>
   )
 ```
 
+Para poder usar nuestra base de datos en un futuro, la guardamos como objeto RDS, que es un formato eficientemente comprimido para representar datos de R.
 
-# Resultados por área geográfica (`viviendas$DOMINIO`)
+```{r}
+saveRDS(hogares_vulnerables, file = "salidas/sesiones/0001-encuestas/hogares_vulnerables.RDS")
+```
+
+# Resultados por área geográfica
 
 Para expresar la vulnerabilidad en número de personas (y no de hogares), multiplicamos el factor de expansión (`FACTOR07`) por el tamaño del hogar (`MIEPERHO`) y por cada variable de vulnerabilidad. Con esto, la siguiente tabla muestra la población total de cada dominio como referencia, junto con el número de personas vulnerables en cada dimensión, y una fila con los totales nacionales.
 

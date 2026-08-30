@@ -1,0 +1,17 @@
+{
+  "hash": "1e59d6c1bd8eb4f957658f215fb11e4b",
+  "result": {
+    "engine": "knitr",
+    "markdown": "---\ntitle: \"Dashboard\"\nformat:\n  dashboard:\n    orientation: rows\n---\n\n\n\n## Row {height=\"20%\"}\n\n\n::: {.cell content='valuebox' title='PIB de Panamá (2025)' color='#0d6efd'}\n::: {.cell-output .cell-output-stdout}\n\n```\n$icon\n[1] \"cash-coin\"\n\n$value\n[1] \"US$ 90,463 M\"\n```\n\n\n:::\n:::\n\n\n\n::: {.cell content='valuebox' title='Pingüinos estudiados' color='#dc3545'}\n::: {.cell-output .cell-output-stdout}\n\n```\n$icon\n[1] \"binoculars\"\n\n$value\n[1] \"342\"\n```\n\n\n:::\n:::\n\n\n\n::: {.cell content='valuebox' title='Provincias de Panamá' color='#ffc107'}\n::: {.cell-output .cell-output-stdout}\n\n```\n$icon\n[1] \"map\"\n\n$value\n[1] \"13\"\n```\n\n\n:::\n:::\n\n\n## Row {.tabset height=\"80%\"}\n\n### PIB de Panamá\n\n:::: {.columns}\n\n::: {.column width=\"30%\"}\nEl primer resultado corresponde a la evolución reciente del Producto Interno Bruto de Panamá. El PIB muestra la caída abrupta característica del año 2020 asociada a la pandemia, seguida de una recuperación sostenida en los años posteriores.\n:::\n\n::: {.column width=\"70%\"}\n\n::: {.cell}\n::: {.cell-output-display}\n![](dashboard_files/figure-html/unnamed-chunk-4-1.png){width=768}\n:::\n:::\n\n:::\n\n::::\n\n### Pingüinos de Palmer\n\n:::: {.columns}\n\n::: {.column width=\"30%\"}\nComo segundo ejercicio ilustrativo, se exploró la relación entre el largo y el grosor del pico en la base de datos de pingüinos, diferenciando por especie. Se observa una agrupación relativamente clara de las tres especies en este espacio bivariado.\n:::\n\n::: {.column width=\"70%\"}\n\n::: {.cell}\n::: {.cell-output-display}\n![](dashboard_files/figure-html/unnamed-chunk-5-1.png){width=768}\n:::\n:::\n\n:::\n\n::::\n\n### Mapa de Panamá\n\n:::: {.columns}\n\n::: {.column width=\"30%\"}\nPor último, se presenta la división administrativa de primer nivel de Panamá, generada a partir de datos geoespaciales, la cual serviría como base cartográfica para futuros análisis territoriales.\n:::\n\n::: {.column width=\"70%\"}\n\n::: {.cell}\n::: {.cell-output-display}\n![](dashboard_files/figure-html/unnamed-chunk-6-1.png){width=768}\n:::\n:::\n\n:::\n\n::::\n",
+    "supporting": [
+      "dashboard_files"
+    ],
+    "filters": [
+      "rmarkdown/pagebreak.lua"
+    ],
+    "includes": {},
+    "engineDependencies": {},
+    "preserve": {},
+    "postProcess": true
+  }
+}

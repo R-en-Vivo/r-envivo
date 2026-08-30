@@ -9,8 +9,2478 @@
 <link>https://r-en-vivo.github.io/r-envivo/sesiones/</link>
 <atom:link href="https://r-en-vivo.github.io/r-envivo/sesiones/index.xml" rel="self" type="application/rss+xml"/>
 <description></description>
-<generator>quarto-1.9.38</generator>
-<lastBuildDate>Thu, 06 Aug 2026 06:00:00 GMT</lastBuildDate>
+<generator>quarto-1.10.18</generator>
+<lastBuildDate>Wed, 26 Aug 2026 06:00:00 GMT</lastBuildDate>
+<item>
+  <title>La perspectiva geográfica de las encuestas</title>
+  <dc:creator>Renato Vargas</dc:creator>
+  <link>https://r-en-vivo.github.io/r-envivo/sesiones/posts/0002-gis/</link>
+  <description><![CDATA[ 
+
+
+
+
+<section id="video" class="level1">
+<h1>Video</h1>
+<p>Puedes encontrar el vídeo de implementación de esta sesión <a href="https://youtu.be/wZ-Tu-6sqXE">en YouTube</a>:</p>
+<div class="quarto-video ratio ratio-16x9"><iframe data-external="1" src="https://www.youtube.com/embed/wZ-Tu-6sqXE" title="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen=""></iframe></div>
+</section>
+<section id="introducción" class="level1">
+<h1>Introducción</h1>
+<p>En esta sesión, exploraremos cómo agregar la perspectiva geográfica a nuestro análisis con los paquetes <code>sf</code> y <code>terra</code>. En la sesión previa de <a href="../../../sesiones/posts/0001-encuestas/index.html"><em>Encuestas de Hogares</em></a> identificamos a las personas que son vulnerables según una serie de dimensiones por características personales y aquellas de su hogar. Esto hace que esas personas tengan una mayor dificultad para enfrentar y recuperarse de un evento natual extremo. Sin embargo, como vimos, en un país como Perú, puede ser alta la proporción de personas que cumplen con con características como esas. Si el país quiere contar con uno o varios programas de preparación ante enventos extremos, deberá asignar sus recursos limitados a la fracción de individuos que tenga mayores probabilidades de ser afectado por un evento de esa naturaleza. Ahí es donde entra la dimensión geográfica que exploraremos hoy.</p>
+<p>Asegúrate de tener instalado R y Positron para seguir este ejemplo. Estos los debes instalar en el siguiente orden y puedes encontrarlos en:</p>
+<ul>
+<li><a href="https://cran.r-project.org/">Entorno estadístico R</a>.</li>
+<li><a href="https://positron.posit.co/download.html">Positron</a>.</li>
+</ul>
+<p>Si no tienes instalados los paquetes que usaremos, puedes utilizar la funcionalidad de Positron para instalar paquetes, es decir el ícono de una caja de cartón en tu barra de la izquierda. Alternativamente, puedes correr lo siguiente en la consola de R:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">install.packages</span>(</span>
+<span id="cb1-2">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>(</span>
+<span id="cb1-3">    <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"tidyverse"</span>,</span>
+<span id="cb1-4">    <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"haven"</span>,</span>
+<span id="cb1-5">    <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"gt"</span>,</span>
+<span id="cb1-6">    <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"openxlsx"</span>,</span>
+<span id="cb1-7">    <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"terra"</span>,</span>
+<span id="cb1-8">    <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"sf"</span></span>
+<span id="cb1-9">  )</span>
+<span id="cb1-10">)</span></code></pre></div></div>
+</div>
+<section id="los-datos" class="level2">
+<h2 class="anchored" data-anchor-id="los-datos">Los Datos</h2>
+<p>En esta sesión utilizaremos los datos reales de la Encuesta Nacional de Hogares (ENAHO) de Perú, que se encuentran disponibles en el <a href="https://proyectos.inei.gob.pe/microdatos/">repositorio de datos Instituto Nacional de Estadística e Informática (INEI)</a> <span class="citation" data-cites="inei2026microdatos">(INEI, 2026)</span>. Los datos de la ENAHO son una fuente valiosa para analizar las condiciones de vida de los hogares peruanos. Utilizaremos los datos más recientes disponibles con cálculos de pobreza y agregado de consumo, que corresponden al año 2025. Entre los datos disponibles, hay muchos módulos y en esta ocasión, utilizaremos solamente los datos de la vivienda, los cuales combinaremos con datos de nuestro análisis previo en la sesión de <a href="../../../sesiones/posts/0001-encuestas/index.html">encuestas de hogares</a>.</p>
+<p>Adicionalmente utilizaremos datos del mapa global de <a href="https://datacatalog.worldbank.org/search/dataset/0037584/global-landslide-hazard-map">amenaza de deslizamiento del Banco Mundial</a> <span class="citation" data-cites="worldbank2021landslide">(World Bank, 2021)</span>, del cual hemos extraido el área correspondiente a Perú, que puede ser descargada líneas abajo. Específicamente nos centramos en el mapa de amenaza de deslizamiento provocado por lluvia, con base en la mediana entre 1980 y 2018<sup>1</sup>.</p>
+<p>El mapa representa la frecuencia anual estimada de ocurrencia de deslizamientos significativos provocados por lluvia, calculada para el período 1980–2018. Cada celda del ráster corresponde aproximadamente a 1 km² y su valor indica el número esperado de deslizamientos significativos por año en esa superficie. Por ejemplo, un valor de 0.01 equivale aproximadamente a una frecuencia de un deslizamiento cada 100 años por km², mientras que un valor de 0.001 corresponde aproximadamente a uno cada 1,000 años. Es decir, el número indica a grandes rasgos una fracción en el que el inverso es el lapso que transcurrirá en años entre dos eventos en esa ubicación geográfica.</p>
+<p>El mapa combina información sobre la susceptibilidad del terreno, derivada del <a href="https://gpm.nasa.gov/applications/landslides">mapa global de susceptibilidad de NASA</a> <span class="citation" data-cites="nasa2020landslides">(NASA Global Precipitation Measurement Mission, 2020)</span>, con información histórica sobre las precipitaciones. A diferencia de un mapa de susceptibilidad, que indica qué tan propenso es el terreno a deslizarse dadas sus características físicas, este mapa intenta estimar con qué frecuencia puede ocurrir efectivamente un deslizamiento cuando se considera también el mecanismo que lo desencadena, en este caso la lluvia. El modelo estima inicialmente probabilidades de ocurrencia bajo distintas condiciones de precipitación y luego las anualiza para obtener frecuencias de deslizamiento.</p>
+<p>Para facilitar su interpretación, el estudio del Banco Mundial <span class="citation" data-cites="arup2020">(Redshaw et&nbsp;al., 2020)</span> propone los siguientes umbrales de peligro:</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 38%">
+<col style="width: 23%">
+<col style="width: 38%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Frecuencia anual estimada por km²</th>
+<th>Nivel de peligro</th>
+<th>Interpretación aproximada</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>- <strong>&lt; 0.0001</strong></td>
+<td>Muy bajo</td>
+<td>Menos de 1 evento cada 10,000 años</td>
+</tr>
+<tr class="even">
+<td>- <strong>0.0001 – 0.001</strong></td>
+<td>Bajo</td>
+<td>Entre 1 cada 10,000 y 1 cada 1,000 años</td>
+</tr>
+<tr class="odd">
+<td>- <strong>0.001 – 0.01</strong></td>
+<td>Medio</td>
+<td>Entre 1 cada 1,000 y 1 cada 100 años</td>
+</tr>
+<tr class="even">
+<td>- <strong>&gt; 0.01</strong></td>
+<td>Alto</td>
+<td>Más de 1 cada 100 años</td>
+</tr>
+</tbody>
+</table>
+<p>Dado que el mapa de amenazas es de carácter global, el tamaño de archivo es muy grande para incluirlo en este repositorio. Como referencia, muestro aquí una rutina utilizada para extraer solamente lo correspondiente a Perú que utilicé para crear el archivo que te puedes descargar abajo. Esto lo hacemos para mantener el tamaño de este repositorio entre los límites de GitHub. Las funciones usadas aquí corresponden al paquete <code>terra</code>.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Mapa global de deslizamientos</span></span>
+<span id="cb2-2">deslizamientos <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> terra<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">rast</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"datos/gis/per/LS_RF_Median_1980-2018_COG.tif"</span>)</span>
+<span id="cb2-3"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Capa vectorial de límites administrativos de Perú</span></span>
+<span id="cb2-4">peru       <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> terra<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">vect</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"datos/gis/per/PER-adm0.gpkg"</span>)</span>
+<span id="cb2-5"></span>
+<span id="cb2-6"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Primero recortamos un rectángulo del tamaño de Perú del mapa global</span></span>
+<span id="cb2-7">deslizamientos_peru <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> terra<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">crop</span>(deslizamientos, peru)</span>
+<span id="cb2-8"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Segundo cortamos las áreas del rectángulo fuera de los límites</span></span>
+<span id="cb2-9"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># a la medida de la forma del país</span></span>
+<span id="cb2-10">deslizamientos_peru <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> terra<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">mask</span>(deslizamientos_peru, peru)</span>
+<span id="cb2-11"></span>
+<span id="cb2-12"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Finalmente lo exportamos en formato raster para usarlo en</span></span>
+<span id="cb2-13"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># nuestro análisis</span></span>
+<span id="cb2-14"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">writeRaster</span>(</span>
+<span id="cb2-15">  deslizamientos_peru,</span>
+<span id="cb2-16">  <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"datos/gis/per/PER_LS_RF_Median_1980-2018.tif"</span>,</span>
+<span id="cb2-17">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">overwrite =</span> <span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">TRUE</span>,</span>
+<span id="cb2-18">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">NAflag =</span> <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">9999</span>,</span>
+<span id="cb2-19">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">gdal =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"COMPRESS=DEFLATE"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"TILED=YES"</span>)</span>
+<span id="cb2-20">)</span></code></pre></div></div>
+</div>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>Descargas
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<ul>
+<li><strong>Características de la Vivienda y del Hogar</strong>: <a href="../../../datos/per_enaho/Enaho01-2025-100-viviendas.sav">datos SPSS</a> | <a href="../../../datos/per_enaho/CED-01-100-2025-vivienda.pdf" download="CED-01-100-2025-vivienda.pdf">preguntas módulo vivienda</a>.</li>
+<li><strong>Mapa de amenaza de deslizamiento provocado por lluvia (mediana 1980-2018)</strong>: <a href="../../../datos/gis/per/PER_LS_RF_Median_1980-2018.tif">raster</a> | <a href="../../../datos/gis/per/global-landslide-hazard-map-report.pdf" download="global-landslide-hazard-map-report.pdf">reporte</a>.</li>
+<li><strong>Vector de límites de Perú de SIGRID</strong>: <a href="../../../datos/gis/per/PER-adm0.gpkg">vector</a>.</li>
+</ul>
+</div>
+</div>
+</section>
+</section>
+<section id="metodología" class="level1">
+<h1>Metodología</h1>
+<p>En nuestra <a href="../../../sesiones/posts/0001-encuestas/index.html">sesión anterior</a> estimamos el número de peruanos que experimentarían vulnerabilidad ante eventos climáticos extremos. Para esto, utilizamos ideas de <span class="citation" data-cites="doan2023">Doan et&nbsp;al. (2023)</span> en las que entendemos que la <em><strong>“vulnerabilidad de un hogar ante un evento climático extremo dependerá de las características del hogar que determinan el impacto inicial del evento y la capacidad del hogar para afrontarlo (…). Esto se refleja en la definición del IPCC: la vulnerabilidad incluye tanto ‘la sensibilidad o susceptibilidad al daño’ como ‘la falta de capacidad para afrontar y adaptarse’”</strong></em>.</p>
+<p>Siguiendo las ideas de <span class="citation" data-cites="doan2023">Doan et&nbsp;al. (2023)</span> identificamos una serie de dimensiones de la vulnerabilidad<sup>2</sup>, entre las cuales vimos diferentes criterios para catalogar a los miembros de los hogares como vulnerables según:</p>
+<ul>
+<li>Ingreso/gasto.</li>
+<li>Educación.</li>
+<li>Acceso a agua.</li>
+<li>Acceso a saneamiento.</li>
+<li>Materiales de construcción.</li>
+<li>Protección social.</li>
+</ul>
+<p>Pero según la metodología, eso es solo un lado de la moneda. Estas personas son vulnerables, pero eso será un problema solo si están ubicados en un lugar en donde un desastre puede alcanzarlos. Para eso, contrastamos su condición de vulnerablidad contra la distribución geográfica de los lugares en donde es más probable que encuentren ese tipo de riesgo.</p>
+<p>Tenemos la suerte que nuestros amigos del INEI de Perú incluyeron datos acerca de la ubicación geográfica del conglomerado estadístico en el que se encuentran las viviendas en la ENAHO a través de las variables <code>LATITUD</code> y <code>LONGITUD</code> de nuestro marco de datos <code>viviendas</code>. Aquí cabe explicar que no están dándonos la ubicación de cada vivienda, lo cual iría contra los principios de confidencialidad. Eso quiere decir que todas las viviendas de un conglomerado comparten la misma ubicación geográfica, pero esto nos da ya un aproximado de contra qué el valor de posible frecuencia en años de ocurrencia de deslizamiento ocasionado por lluvias del mapa se pueden asociar esas viviendas.</p>
+<p>Vimos arriba que los mismos autores del mapa otorgan una calificación de peligro “alta” a aquellas viviendas que se encuentren en una ubicación con un valor de frecuencia anual estimada por km² mayor a 0.01 equivalente a más de 1 cada 100 años.</p>
+</section>
+<section id="preámbulo" class="level1">
+<h1>Preámbulo</h1>
+<p>Primeramente limpiamos el área de trabajo y cargamos las librerías correspondientes para el análisis.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Limpiar el área de trabajo</span></span>
+<span id="cb3-2"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">rm</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">list =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">ls</span>()) </span>
+<span id="cb3-3"></span>
+<span id="cb3-4"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Cargar librerías</span></span>
+<span id="cb3-5"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">library</span>(tidyverse) <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Cargar dplyr y sus amigos</span></span>
+<span id="cb3-6"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">library</span>(gt) <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># tablas en html</span></span>
+<span id="cb3-7"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">library</span>(haven) <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># importar datos de SPSS y Stata</span></span>
+<span id="cb3-8"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">library</span>(openxlsx) <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># exportar resultados a Excel</span></span>
+<span id="cb3-9"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">library</span>(terra) <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Manipular datos geográficos</span></span>
+<span id="cb3-10"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">library</span>(sf) <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Manipular datos geográficos vectoriales</span></span></code></pre></div></div>
+</div>
+</section>
+<section id="análisis" class="level1">
+<h1>Análisis</h1>
+<section id="carga-de-datos" class="level2">
+<h2 class="anchored" data-anchor-id="carga-de-datos">Carga de datos</h2>
+<p>Utilizamos la función <code>read_spss()</code> del paquete <code>haven</code> para cargar datos de vivienda de la encuesta que se encuentran en SPSS y la función <code>rast()</code> del paquete <code>terra</code> para cargar el objeto geográfico ráster del mapa de amenaza de deslizamiento por lluvia. En nuestra sesión de Encuestas de Hogares creamos una base de datos de hogares vulnerables en formato RDS, la cual cargamos acá con la función <code>readRDS()</code> de R base.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Módulo de viviendas de la ENAHO</span></span>
+<span id="cb4-2">viviendas <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">read_spss</span>(</span>
+<span id="cb4-3">  <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"datos/per_enaho/Enaho01-2025-100-viviendas.sav"</span></span>
+<span id="cb4-4">  )</span>
+<span id="cb4-5"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Base de datos de vulnerabilidad</span></span>
+<span id="cb4-6">hogares_vulnerables <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">readRDS</span>(</span>
+<span id="cb4-7">  <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"salidas/sesiones/0001-encuestas/hogares_vulnerables.RDS"</span></span>
+<span id="cb4-8">  )</span>
+<span id="cb4-9"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># El mapa de amenaza de deslizamiento por lluvia para Perú</span></span>
+<span id="cb4-10">deslizamientos_peru <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">rast</span>(</span>
+<span id="cb4-11">  <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"datos/gis/per/PER_LS_RF_Median_1980-2018.tif"</span></span>
+<span id="cb4-12">  )</span>
+<span id="cb4-13"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Límites administrativos de Perú</span></span>
+<span id="cb4-14">peru <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">vect</span>(</span>
+<span id="cb4-15">  <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"datos/gis/per/PER-adm0.gpkg"</span></span>
+<span id="cb4-16">  )</span></code></pre></div></div>
+</div>
+<p>Los marcos de datos <code>viviendas</code> y <code>hogares_vulnerables</code> cargan como otros marcos de datos o <code>data.frame</code> que hemos usado anteriormente. Sin embargo, el archivo raster del mapa carga como objeto <code>SpatRaster</code>. Un <code>SpatRaster</code> es el objeto y la clase de datos central del paquete terra en R, diseñado para representar y procesar datos geográficos de tipo ráster. Es decir, cuadrículas de celdas. Esto lo podemos verificar con la función <code>class()</code>.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">class</span>(viviendas)</span></code></pre></div></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "tbl_df"     "tbl"        "data.frame"</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">class</span>(hogares_vulnerables)</span></code></pre></div></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "tbl_df"     "tbl"        "data.frame"</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">class</span>(deslizamientos_peru)</span></code></pre></div></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "SpatRaster"
+attr(,"package")
+[1] "terra"</code></pre>
+</div>
+</div>
+<p>Para darnos una idea del contenido del raster de amenazas de deslizamiento provocado por lluvia, hacemos una visualización rápida con las opciones por defecto:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">plot</span>(deslizamientos_peru)</span></code></pre></div></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="https://r-en-vivo.github.io/r-envivo/sesiones/posts/0002-gis/index_files/figure-html/unnamed-chunk-3-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Es claro que la amenaza de deslizamiento provocado por lluvia se incrementa con la pendiente y se puede ver el impacto que tiene la cordillera de los Andes sobre esta variable.</p>
+</section>
+<section id="convertir-los-datos-de-latitud-y-longitud-a-una-capa-geográfica" class="level2">
+<h2 class="anchored" data-anchor-id="convertir-los-datos-de-latitud-y-longitud-a-una-capa-geográfica">Convertir los datos de LATITUD y LONGITUD a una capa geográfica</h2>
+<p>A pesar que <code>viviendas</code> tiene las variables geográficas <code>LATITUD</code> y <code>LONGITUD</code>, el objeto en sí no es entendido como geográfico por R, así que debemos convertirlo a una versión espacialmente definida con el paquete <code>sf</code> (simple features). En la jerga geoespacial, “features” generalmente se refiere a características o figuras vectoriales como lo son los límites administrativos de Perú que vimos recién. En este caso no serán características en forma de figuras, sino una nube de puntos en donde se encuentran los centros de los conglomerados en donde se ubican nuestras viviendas.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1">viviendas_sf <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> viviendas <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">|&gt;</span></span>
+<span id="cb12-2">  <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Seleccionamos solo las variables</span></span>
+<span id="cb12-3">  <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># de identificación única del hogar</span></span>
+<span id="cb12-4">  <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># y las variables geográficas </span></span>
+<span id="cb12-5">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">select</span>(</span>
+<span id="cb12-6">    CONGLOME,</span>
+<span id="cb12-7">    VIVIENDA,</span>
+<span id="cb12-8">    HOGAR,</span>
+<span id="cb12-9">    LATITUD,</span>
+<span id="cb12-10">    LONGITUD</span>
+<span id="cb12-11">  ) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">|&gt;</span> </span>
+<span id="cb12-12">  <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Nos aseguramos que solo utilizamos </span></span>
+<span id="cb12-13">  <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># viviendas con info geográfica no faltante</span></span>
+<span id="cb12-14">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">filter</span>(</span>
+<span id="cb12-15">    <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">!</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">is.na</span>(LATITUD),</span>
+<span id="cb12-16">    <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">!</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">is.na</span>(LONGITUD)</span>
+<span id="cb12-17">  ) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">|&gt;</span> </span>
+<span id="cb12-18">  <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Convertimos las coordenadas a una nube de </span></span>
+<span id="cb12-19">  <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># puntos utilizando el mismo sistema de coordenadas</span></span>
+<span id="cb12-20">  <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># de nuestras capas importadas EPSG: 4326</span></span>
+<span id="cb12-21">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">st_as_sf</span>(</span>
+<span id="cb12-22">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">coords =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"LONGITUD"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"LATITUD"</span>),</span>
+<span id="cb12-23">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">crs =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">4326</span>,</span>
+<span id="cb12-24">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">remove =</span> <span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">FALSE</span></span>
+<span id="cb12-25">  ) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">|&gt;</span> </span>
+<span id="cb12-26">  <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Una vez convertidas en el paso anterior</span></span>
+<span id="cb12-27">  <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># no necesitamos más LATITUD y LONGITUD</span></span>
+<span id="cb12-28">  <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># así que las seleccionamos negativamente con !</span></span>
+<span id="cb12-29">  <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># para deshacernos de ellas y mantener las demás</span></span>
+<span id="cb12-30">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">select</span>(</span>
+<span id="cb12-31">    <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">!</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>(LATITUD, LONGITUD)</span>
+<span id="cb12-32">  )</span></code></pre></div></div>
+</div>
+<p>Ahora <code>viviendas_sf</code> (nombrada por simple features) es un objeto de puntos geográficos que retiene la información de identificación única del hogar <code>CONGLOME</code>, <code>VIVIENDA</code> Y <code>HOGAR</code>. Si usamos la función <code>glimpse()</code> de <code>dplyr</code>, podremos ver que hay una nueva columna llamada <code>geometry</code> que tiene las instrucciones para dibujar a los hogares como una nube de puntos.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">glimpse</span>(viviendas_sf)</span></code></pre></div></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Rows: 44,599
+Columns: 4
+$ CONGLOME &lt;chr&gt; "015009", "015009", "015009", "015009", "015009", "015009", "…
+$ VIVIENDA &lt;chr&gt; "012", "025", "036", "049", "061", "074", "086", "097", "108"…
+$ HOGAR    &lt;chr&gt; "11", "11", "11", "11", "11", "11", "11", "11", "11", "11", "…
+$ geometry &lt;POINT [°]&gt; POINT (-77.86923 -6.234387), POINT (-77.86923 -6.234387…</code></pre>
+</div>
+</div>
+</section>
+<section id="unir-los-datos-geográficos-de-las-viviendas-con-datos-de-amenaza-de-deslizamiento" class="level2">
+<h2 class="anchored" data-anchor-id="unir-los-datos-geográficos-de-las-viviendas-con-datos-de-amenaza-de-deslizamiento">Unir los datos geográficos de las viviendas con datos de amenaza de deslizamiento</h2>
+<p>Hemos creado la columna geográfica, pero el marco de datos <code>vivendas_sf</code> todavía no es un objeto que <code>terra</code> entiende como geográfico, para lo cual debemos usar la función<code>terra::vect()</code> para importarlo como tal, justo como hicimos con los límites administrativos de Perú arriba. Después “extraeremos” la información del mapa ráster de amenaza, utilizando la ubicación del mapa vectorial de puntos que acabamos de hacer. Pero antes le ponemos un nombre de columna a nuestro objeto SpatRaster <code>deslizamientos_peru</code> usando la función <code>names()</code> para que nuestra base de datos combinada tenga sus columnas apropiadamente nombradas.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Nombramos la única columna del ráster de deslizamientos</span></span>
+<span id="cb15-2"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">names</span>(deslizamientos_peru) <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"frecuencia_deslizamiento"</span></span>
+<span id="cb15-3"></span>
+<span id="cb15-4"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Cargamos viviendas_sf como objeto geográfico vectorial</span></span>
+<span id="cb15-5">viviendas_vector <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">vect</span>(viviendas_sf)</span>
+<span id="cb15-6"></span>
+<span id="cb15-7"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Y los combinamos para extraer el valor del ráster en</span></span>
+<span id="cb15-8"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># cada punto vectorial</span></span>
+<span id="cb15-9">amenaza_deslizamiento <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> terra<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">extract</span>(</span>
+<span id="cb15-10">  deslizamientos_peru,</span>
+<span id="cb15-11">  viviendas_vector,</span>
+<span id="cb15-12">  <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Paso importante para conservar los identificadores únicos</span></span>
+<span id="cb15-13">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">bind =</span> <span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">TRUE</span></span>
+<span id="cb15-14">  ) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">|&gt;</span></span>
+<span id="cb15-15">  <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Como no necesitamos que sea objeto geográfico</span></span>
+<span id="cb15-16">  <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># una vez que hicimos la extracción del dato de amenaza</span></span>
+<span id="cb15-17">  <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># en la ubicación, lo convertimos de nuevo a un marco</span></span>
+<span id="cb15-18">  <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># de datos.</span></span>
+<span id="cb15-19">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">as.data.frame</span>()</span></code></pre></div></div>
+</div>
+<p>Nótese que utilizamos la versión a la que los programadores de R denominan “name space” para llamar la función <code>terra::extract()</code> en la que la precedemos con el nombre del paquete seguido de doble dos puntos. Esto lo hacemos porque el paquete <code>tidyr</code> que cargamos con <code>tidyverse</code> en nuestro preámbulo también tiene una función <code>extract()</code> que toma precedencia ante <code>terra</code>. Entonces usamos la versión “name space” para eliminar la ambigüedad. Esto lo aprendemos cuando nos genera un error y buscamos la razón. Ahora sí, si exploramos algunas observaciones de nuestra nueva base <code>amenaza_deslizamiento</code> con la función <code>head()</code> combinada con una selección de aquellas que tienen valor mayor que cero y veremos que cuenta con nuestros identificadores únicos de hogar y con la información de amenaza de deslizamiento por lluvia.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1">amenaza_deslizamiento <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">|&gt;</span> </span>
+<span id="cb16-2">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">filter</span>(frecuencia_deslizamiento <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&gt;</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">|&gt;</span> </span>
+<span id="cb16-3">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">head</span>()</span></code></pre></div></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  CONGLOME VIVIENDA HOGAR frecuencia_deslizamiento
+1   015024      026    11               0.00385021
+2   015024      039    11               0.00385021
+3   015024      069    11               0.00385021
+4   015024      083    11               0.00385021
+5   015024      098    11               0.00385021
+6   015024      123    11               0.00385021</code></pre>
+</div>
+</div>
+<p>También podemos hacer una visualización rápida de los puntos (en rojo) sobre nuestro mapa de exposición para darnos una idea de nuestros hogares expuestos utilizando el objeto de <code>terra</code> que es geográfico: <code>viviendas_vector</code>. Esta visualización simple es cortesía de nuestro paquete <code>terra</code> el cual viene con esta funcionalidad para nuestros <code>SpatRaster</code>. En nuestra siguiente sesión haremos mapas más complejos con <code>ggplot2</code> y con <code>sf</code>.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">plot</span>(deslizamientos_peru)</span>
+<span id="cb18-2"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">plot</span>(</span>
+<span id="cb18-3">  viviendas_vector,</span>
+<span id="cb18-4">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">add =</span> <span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">TRUE</span>,</span>
+<span id="cb18-5">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">col =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"red"</span>,</span>
+<span id="cb18-6">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">pch =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">20</span>,</span>
+<span id="cb18-7">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">cex =</span> <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.05</span></span>
+<span id="cb18-8">)</span></code></pre></div></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="https://r-en-vivo.github.io/r-envivo/sesiones/posts/0002-gis/index_files/figure-html/unnamed-chunk-8-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="identificar-los-hogares-expuestos-a-una-frecuencia-alta" class="level2">
+<h2 class="anchored" data-anchor-id="identificar-los-hogares-expuestos-a-una-frecuencia-alta">Identificar los hogares expuestos a una frecuencia alta</h2>
+<p>Una vez que tenemos la frecuencia de deslizamiento para cada vivienda, tenemos que identificar aquellas viviendas que tienen una probabilidad de una frecuencia de deslizamientos de 1 en 100 años o mayor o “alta” según la clasificación recomendada en el reporte del mapa. Para eso usamos nuestra familiar función <code>mutate()</code>.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1">amenaza_deslizamiento <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> amenaza_deslizamiento <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">|&gt;</span> </span>
+<span id="cb19-2">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">mutate</span>(</span>
+<span id="cb19-3">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">exposicion_deslizamiento =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">if_else</span>(</span>
+<span id="cb19-4">      <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># si frecuencia_deslizamiento mayor o igual que</span></span>
+<span id="cb19-5">      <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># 0.01, entonces coloque 1, de lo contrario</span></span>
+<span id="cb19-6">      <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># coloque 0 en la nueva variable exposicion_deslizamiento</span></span>
+<span id="cb19-7">      frecuencia_deslizamiento <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&gt;=</span> <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.01</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span></span>
+<span id="cb19-8">    )</span>
+<span id="cb19-9">  )</span></code></pre></div></div>
+</div>
+<p>Verificamos las primeras observaciones que cumplen con la condición.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb20" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1">amenaza_deslizamiento <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">|&gt;</span> </span>
+<span id="cb20-2">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">filter</span>(exposicion_deslizamiento <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">|&gt;</span> </span>
+<span id="cb20-3">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">head</span>()</span></code></pre></div></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  CONGLOME VIVIENDA HOGAR frecuencia_deslizamiento exposicion_deslizamiento
+1   015029      003    11               0.01938608                        1
+2   015029      017    11               0.01938608                        1
+3   015029      036    11               0.01938608                        1
+4   015029      047    11               0.01938608                        1
+5   015029      057    11               0.01938608                        1
+6   015029      068    11               0.01938608                        1</code></pre>
+</div>
+</div>
+</section>
+<section id="unión-con-la-base-de-datos-de-vulnerabilidad" class="level2">
+<h2 class="anchored" data-anchor-id="unión-con-la-base-de-datos-de-vulnerabilidad">Unión con la base de datos de vulnerabilidad</h2>
+<p>Ahora sí con nuestra información de exposición a deslizamiento “alta” unimos nuestra base de datos de hogares vulnerables con nuestra información de viviendas expuestas. Aquí vale la pena recordar que en la <strong>ENAHO</strong> hay más viviendas que hogares. Esto lo atribuimos (especulando) a que las personas dieron información sobre sus hogares secundarios porque hay quiénes son dueños de más de una vivienda. Esto es evidente al ver el número de observaciones de <code>hogares_vulnerables</code> (33702) versus el número de observaciones de <code>amenaza_deslizamiento</code> (44599) en nuestro panel de “DATA” de Positron. Esta discrepancia desaparecerá cuando hagamos una unión a la izquierda con las dos bases de datos <code>left_join()</code> que conserva solo aquellas coincidencias con las observaciones del primer marco de datos, que será el de <code>hogares_vulnerables</code>.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb22" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1">vulnerables_y_expuestos <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> hogares_vulnerables <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">|&gt;</span> </span>
+<span id="cb22-2">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">left_join</span>(</span>
+<span id="cb22-3">    amenaza_deslizamiento, </span>
+<span id="cb22-4">    <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">join_by</span>(CONGLOME, VIVIENDA, HOGAR)</span>
+<span id="cb22-5">    )</span></code></pre></div></div>
+</div>
+<p>Y guardamos nuestra nueva base de datos para futuras sesiones.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">saveRDS</span>(</span>
+<span id="cb23-2">  vulnerables_y_expuestos, </span>
+<span id="cb23-3">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">file =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"salidas/sesiones/0002-gis/vulnerables_y_expuestos.RDS"</span> </span>
+<span id="cb23-4">)</span></code></pre></div></div>
+</div>
+</section>
+</section>
+<section id="resultados" class="level1">
+<h1>Resultados</h1>
+<p>Con nuestra nueva variable que nos permite ver quiénes tienen una mayor probabilidad de estar expuestos a un evento natural catastrófico, como lo es un deslizamiento provocado por lluvias, podemos repetir las tablas que hicimos en <a href="../../../sesiones/posts/0001-encuestas/index.html">nuestro ejercicio previo</a>, ahora con el número de personas por dimensión de vulnerabilidad aunado a exposición al evento. Esto asumimos que nos dará números menores de personas, con los cuales el diseño de política pública será más factible.</p>
+<section id="resultados-por-área-geográfica" class="level2">
+<h2 class="anchored" data-anchor-id="resultados-por-área-geográfica">Resultados por área geográfica</h2>
+<p>Para expresar la vulnerabilidad en número de personas (y no de hogares), multiplicamos el factor de expansión (<code>FACTOR07</code>) por el tamaño del hogar (<code>MIEPERHO</code>) y por la dummy de <code>exposicion_deslizamiento</code>, por cada variable de vulnerabilidad. Con esto, la siguiente tabla muestra la población total de cada dominio como referencia, junto con el número de personas vulnerables en cada dimensión, y una fila con los totales nacionales.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb24" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1">tabla_dominio_deslizamiento <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> vulnerables_y_expuestos <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">|&gt;</span> </span>
+<span id="cb24-2">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">mutate</span>(</span>
+<span id="cb24-3">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">Dominio =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">as_factor</span>(DOMINIO),</span>
+<span id="cb24-4">    <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Aquí aprovechamos para multiplicar por exposicion_deslizamiento</span></span>
+<span id="cb24-5">    <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># que puede tomar 1 o 0 para eliminar a los no expuestos para</span></span>
+<span id="cb24-6">    <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># nuestro conteo en summarise() debajo</span></span>
+<span id="cb24-7">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">personas =</span> FACTOR07 <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span> MIEPERHO <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span> exposicion_deslizamiento,</span>
+<span id="cb24-8">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">Ingreso =</span> personas <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span> vulnerabilidad_ingreso,</span>
+<span id="cb24-9">    Educación <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">=</span> personas <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span> vulnerabilidad_educacion,</span>
+<span id="cb24-10">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">Agua =</span> personas <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span> vulnerabilidad_agua,</span>
+<span id="cb24-11">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">Electricidad =</span> personas <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span> vulnerabilidad_electricidad,</span>
+<span id="cb24-12">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">Saneamiento =</span> personas <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span> vulnerabilidad_saneamiento,</span>
+<span id="cb24-13">    Construcción <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">=</span> personas <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span> vulnerabilidad_construccion,</span>
+<span id="cb24-14">    <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">`</span><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">Protección social</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">`</span> <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">=</span> personas <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span> vulnerabilidad_proteccion</span>
+<span id="cb24-15">  ) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">|&gt;</span> </span>
+<span id="cb24-16">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">group_by</span>(Dominio) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">|&gt;</span> </span>
+<span id="cb24-17">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">summarise</span>(</span>
+<span id="cb24-18">    <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Nótese que aquí no sumamos a las personas expuestas</span></span>
+<span id="cb24-19">    <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># sino a las personas totales para tener el total del país</span></span>
+<span id="cb24-20">    <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">`</span><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">Población total</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">`</span> <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">=</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">sum</span>(FACTOR07 <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span> MIEPERHO, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">na.rm =</span> <span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">TRUE</span>),</span>
+<span id="cb24-21">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">Ingreso =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">sum</span>(Ingreso, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">na.rm =</span> <span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">TRUE</span>),</span>
+<span id="cb24-22">    Educación <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">=</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">sum</span>(Educación, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">na.rm =</span> <span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">TRUE</span>),</span>
+<span id="cb24-23">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">Agua =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">sum</span>(Agua, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">na.rm =</span> <span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">TRUE</span>),</span>
+<span id="cb24-24">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">Electricidad =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">sum</span>(Electricidad, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">na.rm =</span> <span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">TRUE</span>),</span>
+<span id="cb24-25">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">Saneamiento =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">sum</span>(Saneamiento, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">na.rm =</span> <span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">TRUE</span>),</span>
+<span id="cb24-26">    Construcción <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">=</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">sum</span>(Construcción, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">na.rm =</span> <span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">TRUE</span>),</span>
+<span id="cb24-27">    <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">`</span><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">Protección social</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">`</span> <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">=</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">sum</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">`</span><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">Protección social</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">`</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">na.rm =</span> <span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">TRUE</span>)</span>
+<span id="cb24-28">  )</span></code></pre></div></div>
+</div>
+<p>Ahora podemos hacer nuestra Tabla&nbsp;1 de frecuencias de personas <strong>vulnerables <em>y</em> expuestas</strong> a deslizamientos. En nuestro <a href="../../../sesiones/posts/0001-encuestas/index.html#resultados-por-área-geográfica">ejercicio de vulnerabilidad</a> vimos que de una población total de <strong>34.9 millones</strong> de personas, <strong>20.4 millones</strong> se encontraban vulnerables ante la variable ingreso o un <strong>58%</strong> de la población, por ejemplo, lo cual es prohibitivamente caro para diseñar un programa de respuesta por riesgo. Sin embargo, al contrastarlo con nuestra variable geográfica como podemos ver debajo, podemos identificar que <strong>2.7 millones</strong> de personas (o un <strong>0.08%</strong> de la población) tendrían una mayor probabilidad de ser afectados por este tipo de desastre natural bajo la dimensión de vulnerabilidad de ingreso, lo cual presenta un panorama más manejable para el diseño de política pública y para el presupuesto público.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb25" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1">tabla_dominio_deslizamiento <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">|&gt;</span> </span>
+<span id="cb25-2">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">gt</span>() <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">|&gt;</span> </span>
+<span id="cb25-3">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">fmt_number</span>(</span>
+<span id="cb25-4">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">columns =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">where</span>(is.numeric),</span>
+<span id="cb25-5">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">decimals =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>,</span>
+<span id="cb25-6">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">use_seps =</span> <span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">TRUE</span></span>
+<span id="cb25-7">  ) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">|&gt;</span> </span>
+<span id="cb25-8">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">grand_summary_rows</span>(</span>
+<span id="cb25-9">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">columns =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">where</span>(is.numeric),</span>
+<span id="cb25-10">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">fns =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">list</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">label =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Total"</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">id =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"totales"</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">fn =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"sum"</span>),</span>
+<span id="cb25-11">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">fmt =</span> <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">~</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">fmt_number</span>(., <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">decimals =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">use_seps =</span> <span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">TRUE</span>)</span>
+<span id="cb25-12">  ) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">|&gt;</span> </span>
+<span id="cb25-13">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">tab_options</span>(</span>
+<span id="cb25-14">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">table.font.size =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">px</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">10</span>),</span>
+<span id="cb25-15">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">table.width =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">pct</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">100</span>)</span>
+<span id="cb25-16">  )</span></code></pre></div></div>
+<div id="tbl-vulnerabilidad-dominio" class="cell quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-vulnerabilidad-dominio-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Tabla&nbsp;1: Número de personas vulnerables y expuestas por dominio y dimensión
+</figcaption>
+<div aria-describedby="tbl-vulnerabilidad-dominio-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="cell-output-display">
+<div id="psritygstt" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#psritygstt table {
+  font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#psritygstt thead, #psritygstt tbody, #psritygstt tfoot, #psritygstt tr, #psritygstt td, #psritygstt th {
+  border-style: none;
+}
+
+#psritygstt p {
+  margin: 0;
+  padding: 0;
+}
+
+#psritygstt .gt_table {
+  display: table;
+  border-collapse: collapse;
+  line-height: normal;
+  margin-left: auto;
+  margin-right: auto;
+  color: #333333;
+  font-size: 10px;
+  font-weight: normal;
+  font-style: normal;
+  background-color: #FFFFFF;
+  width: 100%;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #A8A8A8;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #A8A8A8;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+}
+
+#psritygstt .gt_caption {
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+
+#psritygstt .gt_title {
+  color: #333333;
+  font-size: 125%;
+  font-weight: initial;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-color: #FFFFFF;
+  border-bottom-width: 0;
+}
+
+#psritygstt .gt_subtitle {
+  color: #333333;
+  font-size: 85%;
+  font-weight: initial;
+  padding-top: 3px;
+  padding-bottom: 5px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-color: #FFFFFF;
+  border-top-width: 0;
+}
+
+#psritygstt .gt_heading {
+  background-color: #FFFFFF;
+  text-align: center;
+  border-bottom-color: #FFFFFF;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#psritygstt .gt_bottom_border {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#psritygstt .gt_col_headings {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#psritygstt .gt_col_heading {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 6px;
+  padding-left: 5px;
+  padding-right: 5px;
+  overflow-x: hidden;
+}
+
+#psritygstt .gt_column_spanner_outer {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  padding-top: 0;
+  padding-bottom: 0;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+#psritygstt .gt_column_spanner_outer:first-child {
+  padding-left: 0;
+}
+
+#psritygstt .gt_column_spanner_outer:last-child {
+  padding-right: 0;
+}
+
+#psritygstt .gt_column_spanner {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  overflow-x: hidden;
+  display: inline-block;
+  width: 100%;
+}
+
+#psritygstt .gt_spanner_row {
+  border-bottom-style: hidden;
+}
+
+#psritygstt .gt_group_heading {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  text-align: left;
+}
+
+#psritygstt .gt_empty_group_heading {
+  padding: 0.5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: middle;
+}
+
+#psritygstt .gt_from_md > :first-child {
+  margin-top: 0;
+}
+
+#psritygstt .gt_from_md > :last-child {
+  margin-bottom: 0;
+}
+
+#psritygstt .gt_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  margin: 10px;
+  border-top-style: solid;
+  border-top-width: 1px;
+  border-top-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  overflow-x: hidden;
+}
+
+#psritygstt .gt_stub {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#psritygstt .gt_stub_row_group {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+  vertical-align: top;
+}
+
+#psritygstt .gt_row_group_first td {
+  border-top-width: 2px;
+}
+
+#psritygstt .gt_row_group_first th {
+  border-top-width: 2px;
+}
+
+#psritygstt .gt_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#psritygstt .gt_first_summary_row {
+  border-top-style: solid;
+  border-top-color: #D3D3D3;
+}
+
+#psritygstt .gt_first_summary_row.thick {
+  border-top-width: 2px;
+}
+
+#psritygstt .gt_last_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#psritygstt .gt_grand_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#psritygstt .gt_first_grand_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-style: double;
+  border-top-width: 6px;
+  border-top-color: #D3D3D3;
+}
+
+#psritygstt .gt_last_grand_summary_row_top {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: double;
+  border-bottom-width: 6px;
+  border-bottom-color: #D3D3D3;
+}
+
+#psritygstt .gt_striped {
+  background-color: rgba(128, 128, 128, 0.05);
+}
+
+#psritygstt .gt_table_body {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#psritygstt .gt_footnotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#psritygstt .gt_footnote {
+  margin: 0px;
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#psritygstt .gt_sourcenotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#psritygstt .gt_sourcenote {
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#psritygstt .gt_left {
+  text-align: left;
+}
+
+#psritygstt .gt_center {
+  text-align: center;
+}
+
+#psritygstt .gt_right {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+#psritygstt .gt_font_normal {
+  font-weight: normal;
+}
+
+#psritygstt .gt_font_bold {
+  font-weight: bold;
+}
+
+#psritygstt .gt_font_italic {
+  font-style: italic;
+}
+
+#psritygstt .gt_super {
+  font-size: 65%;
+}
+
+#psritygstt .gt_footnote_marks {
+  font-size: 75%;
+  vertical-align: 0.4em;
+  position: initial;
+}
+
+#psritygstt .gt_asterisk {
+  font-size: 100%;
+  vertical-align: 0;
+}
+
+#psritygstt .gt_indent_1 {
+  text-indent: 5px;
+}
+
+#psritygstt .gt_indent_2 {
+  text-indent: 10px;
+}
+
+#psritygstt .gt_indent_3 {
+  text-indent: 15px;
+}
+
+#psritygstt .gt_indent_4 {
+  text-indent: 20px;
+}
+
+#psritygstt .gt_indent_5 {
+  text-indent: 25px;
+}
+
+#psritygstt .katex-display {
+  display: inline-flex !important;
+  margin-bottom: 0.75em !important;
+}
+
+#psritygstt div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
+  height: 0px !important;
+}
+</style>
+
+<table class="gt_table cell caption-top table table-sm table-striped small" data-quarto-bootstrap="false">
+<thead>
+<tr class="gt_col_headings header">
+<th id="a::stub" class="gt_col_heading gt_columns_bottom_border gt_left" data-quarto-table-cell-role="th" scope="col"></th>
+<th id="Dominio" class="gt_col_heading gt_columns_bottom_border gt_center" data-quarto-table-cell-role="th" scope="col">dominio</th>
+<th id="Población-total" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">Población total</th>
+<th id="Ingreso" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">Ingreso</th>
+<th id="Educación" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">Educación</th>
+<th id="Agua" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">Agua</th>
+<th id="Electricidad" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">Electricidad</th>
+<th id="Saneamiento" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">Saneamiento</th>
+<th id="Construcción" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">Construcción</th>
+<th id="Protección-social" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">Protección social</th>
+</tr>
+</thead>
+<tbody class="gt_table_body">
+<tr class="odd">
+<th id="stub_1_1" class="gt_row gt_left gt_stub" data-quarto-table-cell-role="th" scope="row"></th>
+<td class="gt_row gt_center" headers="stub_1_1 Dominio">Costa Norte</td>
+<td class="gt_row gt_right" headers="stub_1_1 Población total">5,182,069</td>
+<td class="gt_row gt_right" headers="stub_1_1 Ingreso">36,124</td>
+<td class="gt_row gt_right" headers="stub_1_1 Educación">5,993</td>
+<td class="gt_row gt_right" headers="stub_1_1 Agua">39,545</td>
+<td class="gt_row gt_right" headers="stub_1_1 Electricidad">3,360</td>
+<td class="gt_row gt_right" headers="stub_1_1 Saneamiento">21,574</td>
+<td class="gt_row gt_right" headers="stub_1_1 Construcción">36,829</td>
+<td class="gt_row gt_right" headers="stub_1_1 Protección social">13,336</td>
+</tr>
+<tr class="even">
+<th id="stub_1_2" class="gt_row gt_left gt_stub" data-quarto-table-cell-role="th" scope="row"></th>
+<td class="gt_row gt_center" headers="stub_1_2 Dominio">Costa Centro</td>
+<td class="gt_row gt_right" headers="stub_1_2 Población total">2,333,748</td>
+<td class="gt_row gt_right" headers="stub_1_2 Ingreso">40,734</td>
+<td class="gt_row gt_right" headers="stub_1_2 Educación">4,623</td>
+<td class="gt_row gt_right" headers="stub_1_2 Agua">20,233</td>
+<td class="gt_row gt_right" headers="stub_1_2 Electricidad">3,749</td>
+<td class="gt_row gt_right" headers="stub_1_2 Saneamiento">34,550</td>
+<td class="gt_row gt_right" headers="stub_1_2 Construcción">35,587</td>
+<td class="gt_row gt_right" headers="stub_1_2 Protección social">33,250</td>
+</tr>
+<tr class="odd">
+<th id="stub_1_3" class="gt_row gt_left gt_stub" data-quarto-table-cell-role="th" scope="row"></th>
+<td class="gt_row gt_center" headers="stub_1_3 Dominio">Costa Sur</td>
+<td class="gt_row gt_right" headers="stub_1_3 Población total">708,243</td>
+<td class="gt_row gt_right" headers="stub_1_3 Ingreso">0</td>
+<td class="gt_row gt_right" headers="stub_1_3 Educación">0</td>
+<td class="gt_row gt_right" headers="stub_1_3 Agua">0</td>
+<td class="gt_row gt_right" headers="stub_1_3 Electricidad">0</td>
+<td class="gt_row gt_right" headers="stub_1_3 Saneamiento">0</td>
+<td class="gt_row gt_right" headers="stub_1_3 Construcción">0</td>
+<td class="gt_row gt_right" headers="stub_1_3 Protección social">0</td>
+</tr>
+<tr class="even">
+<th id="stub_1_4" class="gt_row gt_left gt_stub" data-quarto-table-cell-role="th" scope="row"></th>
+<td class="gt_row gt_center" headers="stub_1_4 Dominio">Sierra Norte</td>
+<td class="gt_row gt_right" headers="stub_1_4 Población total">1,912,495</td>
+<td class="gt_row gt_right" headers="stub_1_4 Ingreso">555,184</td>
+<td class="gt_row gt_right" headers="stub_1_4 Educación">78,691</td>
+<td class="gt_row gt_right" headers="stub_1_4 Agua">475,837</td>
+<td class="gt_row gt_right" headers="stub_1_4 Electricidad">39,609</td>
+<td class="gt_row gt_right" headers="stub_1_4 Saneamiento">436,277</td>
+<td class="gt_row gt_right" headers="stub_1_4 Construcción">557,763</td>
+<td class="gt_row gt_right" headers="stub_1_4 Protección social">207,115</td>
+</tr>
+<tr class="odd">
+<th id="stub_1_5" class="gt_row gt_left gt_stub" data-quarto-table-cell-role="th" scope="row"></th>
+<td class="gt_row gt_center" headers="stub_1_5 Dominio">Sierra Centro</td>
+<td class="gt_row gt_right" headers="stub_1_5 Población total">4,069,607</td>
+<td class="gt_row gt_right" headers="stub_1_5 Ingreso">1,063,228</td>
+<td class="gt_row gt_right" headers="stub_1_5 Educación">149,810</td>
+<td class="gt_row gt_right" headers="stub_1_5 Agua">909,207</td>
+<td class="gt_row gt_right" headers="stub_1_5 Electricidad">62,247</td>
+<td class="gt_row gt_right" headers="stub_1_5 Saneamiento">556,328</td>
+<td class="gt_row gt_right" headers="stub_1_5 Construcción">1,061,283</td>
+<td class="gt_row gt_right" headers="stub_1_5 Protección social">713,736</td>
+</tr>
+<tr class="even">
+<th id="stub_1_6" class="gt_row gt_left gt_stub" data-quarto-table-cell-role="th" scope="row"></th>
+<td class="gt_row gt_center" headers="stub_1_6 Dominio">Sierra Sur</td>
+<td class="gt_row gt_right" headers="stub_1_6 Población total">4,649,401</td>
+<td class="gt_row gt_right" headers="stub_1_6 Ingreso">612,766</td>
+<td class="gt_row gt_right" headers="stub_1_6 Educación">96,819</td>
+<td class="gt_row gt_right" headers="stub_1_6 Agua">378,603</td>
+<td class="gt_row gt_right" headers="stub_1_6 Electricidad">38,180</td>
+<td class="gt_row gt_right" headers="stub_1_6 Saneamiento">293,562</td>
+<td class="gt_row gt_right" headers="stub_1_6 Construcción">685,209</td>
+<td class="gt_row gt_right" headers="stub_1_6 Protección social">423,667</td>
+</tr>
+<tr class="odd">
+<th id="stub_1_7" class="gt_row gt_left gt_stub" data-quarto-table-cell-role="th" scope="row"></th>
+<td class="gt_row gt_center" headers="stub_1_7 Dominio">Selva</td>
+<td class="gt_row gt_right" headers="stub_1_7 Población total">4,367,681</td>
+<td class="gt_row gt_right" headers="stub_1_7 Ingreso">375,830</td>
+<td class="gt_row gt_right" headers="stub_1_7 Educación">42,431</td>
+<td class="gt_row gt_right" headers="stub_1_7 Agua">353,423</td>
+<td class="gt_row gt_right" headers="stub_1_7 Electricidad">22,075</td>
+<td class="gt_row gt_right" headers="stub_1_7 Saneamiento">224,972</td>
+<td class="gt_row gt_right" headers="stub_1_7 Construcción">328,727</td>
+<td class="gt_row gt_right" headers="stub_1_7 Protección social">217,232</td>
+</tr>
+<tr class="even">
+<th id="stub_1_8" class="gt_row gt_left gt_stub" data-quarto-table-cell-role="th" scope="row"></th>
+<td class="gt_row gt_center" headers="stub_1_8 Dominio">Lima Metropolitana</td>
+<td class="gt_row gt_right" headers="stub_1_8 Población total">11,633,464</td>
+<td class="gt_row gt_right" headers="stub_1_8 Ingreso">56,102</td>
+<td class="gt_row gt_right" headers="stub_1_8 Educación">3,644</td>
+<td class="gt_row gt_right" headers="stub_1_8 Agua">0</td>
+<td class="gt_row gt_right" headers="stub_1_8 Electricidad">0</td>
+<td class="gt_row gt_right" headers="stub_1_8 Saneamiento">0</td>
+<td class="gt_row gt_right" headers="stub_1_8 Construcción">6,922</td>
+<td class="gt_row gt_right" headers="stub_1_8 Protección social">51,223</td>
+</tr>
+<tr class="odd">
+<th id="grand_summary_stub_1" class="gt_row gt_left gt_stub gt_grand_summary_row gt_first_grand_summary_row gt_last_summary_row" data-quarto-table-cell-role="th" scope="row">Total</th>
+<td class="gt_row gt_center gt_grand_summary_row gt_first_grand_summary_row gt_last_summary_row" headers="grand_summary_stub_1 Dominio">—</td>
+<td class="gt_row gt_right gt_grand_summary_row gt_first_grand_summary_row gt_last_summary_row" headers="grand_summary_stub_1 Población total">34,856,707</td>
+<td class="gt_row gt_right gt_grand_summary_row gt_first_grand_summary_row gt_last_summary_row" headers="grand_summary_stub_1 Ingreso">2,739,968</td>
+<td class="gt_row gt_right gt_grand_summary_row gt_first_grand_summary_row gt_last_summary_row" headers="grand_summary_stub_1 Educación">382,012</td>
+<td class="gt_row gt_right gt_grand_summary_row gt_first_grand_summary_row gt_last_summary_row" headers="grand_summary_stub_1 Agua">2,176,848</td>
+<td class="gt_row gt_right gt_grand_summary_row gt_first_grand_summary_row gt_last_summary_row" headers="grand_summary_stub_1 Electricidad">169,219</td>
+<td class="gt_row gt_right gt_grand_summary_row gt_first_grand_summary_row gt_last_summary_row" headers="grand_summary_stub_1 Saneamiento">1,567,263</td>
+<td class="gt_row gt_right gt_grand_summary_row gt_first_grand_summary_row gt_last_summary_row" headers="grand_summary_stub_1 Construcción">2,712,319</td>
+<td class="gt_row gt_right gt_grand_summary_row gt_first_grand_summary_row gt_last_summary_row" headers="grand_summary_stub_1 Protección social">1,659,560</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+</figure>
+</div>
+</div>
+<p>Del mismo modo podemos replicar nuestra tabla de vulnerabilidad múltiple, ahora solo con los expuestos a una probabilidad alta de ser afectados por deslizamientos.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb26" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1">tabla_multidimensional <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> vulnerables_y_expuestos <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">|&gt;</span> </span>
+<span id="cb26-2">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">mutate</span>(</span>
+<span id="cb26-3">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">Dominio =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">as_factor</span>(DOMINIO),</span>
+<span id="cb26-4">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">personas =</span> FACTOR07 <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span> MIEPERHO <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span> exposicion_deslizamiento,</span>
+<span id="cb26-5">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">num_dimensiones =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">rowSums</span>(</span>
+<span id="cb26-6">      <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">across</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">starts_with</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"vulnerabilidad_"</span>)), <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">na.rm =</span> <span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">TRUE</span></span>
+<span id="cb26-7">    )</span>
+<span id="cb26-8">  ) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">|&gt;</span> </span>
+<span id="cb26-9">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">group_by</span>(Dominio, num_dimensiones) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">|&gt;</span> </span>
+<span id="cb26-10">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">summarise</span>(</span>
+<span id="cb26-11">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">personas =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">sum</span>(personas, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">na.rm =</span> <span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">TRUE</span>),</span>
+<span id="cb26-12">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">.groups =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"drop"</span></span>
+<span id="cb26-13">  ) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">|&gt;</span> </span>
+<span id="cb26-14">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">pivot_wider</span>(</span>
+<span id="cb26-15">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">names_from =</span> num_dimensiones,</span>
+<span id="cb26-16">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">names_prefix =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Dimensiones: "</span>,</span>
+<span id="cb26-17">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">values_from =</span> personas,</span>
+<span id="cb26-18">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">values_fill =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span></span>
+<span id="cb26-19">  ) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">|&gt;</span> </span>
+<span id="cb26-20">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">mutate</span>(</span>
+<span id="cb26-21">    <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">`</span><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">Población total</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">`</span> <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">=</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">rowSums</span>(</span>
+<span id="cb26-22">      <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">across</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">starts_with</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Dimensiones:"</span>)), <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">na.rm =</span> <span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">TRUE</span></span>
+<span id="cb26-23">    )</span>
+<span id="cb26-24">  ) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">|&gt;</span> </span>
+<span id="cb26-25">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">select</span>(Dominio, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">`</span><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">Población total</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">`</span>, <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">everything</span>())</span></code></pre></div></div>
+</div>
+<p>Habiendo preparado los datos, hacemos nuestra Tabla&nbsp;2 multidimensional. Esto nos muestra que <strong>3.8 millones</strong> de personas de los <strong>34.9 millones</strong> con que cuenta el país están expuestos a una probabilidad alta de enfrentarse a un deslizamiento ocasionado por lluvias, o un <strong>10.9%</strong> de la población. De ellas, <strong>75,371</strong> personas no califican como vulnerables en ninguna dimensión, mientras que <strong>976,983</strong> personas cuentan con 3 dimensiones (o un <strong>2.8%</strong> de la población), que es el número de dimensiones con un mayor número de personas.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb27" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1">tabla_multidimensional <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">|&gt;</span> </span>
+<span id="cb27-2">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">gt</span>() <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">|&gt;</span> </span>
+<span id="cb27-3">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">fmt_number</span>(</span>
+<span id="cb27-4">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">columns =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">where</span>(is.numeric),</span>
+<span id="cb27-5">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">decimals =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>,</span>
+<span id="cb27-6">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">use_seps =</span> <span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">TRUE</span></span>
+<span id="cb27-7">  ) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">|&gt;</span> </span>
+<span id="cb27-8">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">grand_summary_rows</span>(</span>
+<span id="cb27-9">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">columns =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">where</span>(is.numeric),</span>
+<span id="cb27-10">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">fns =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">list</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">label =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Total"</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">id =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"totales"</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">fn =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"sum"</span>),</span>
+<span id="cb27-11">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">fmt =</span> <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">~</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">fmt_number</span>(., <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">decimals =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">use_seps =</span> <span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">TRUE</span>)</span>
+<span id="cb27-12">  ) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">|&gt;</span> </span>
+<span id="cb27-13">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">tab_options</span>(</span>
+<span id="cb27-14">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">table.font.size =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">px</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">10</span>),</span>
+<span id="cb27-15">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">table.width =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">pct</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">100</span>)</span>
+<span id="cb27-16">  )</span></code></pre></div></div>
+<div id="tbl-vulnerabilidad-multiple" class="cell quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-vulnerabilidad-multiple-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Tabla&nbsp;2: Número de personas vulnerables y expuestas en múltiples dimensiones, por dominio
+</figcaption>
+<div aria-describedby="tbl-vulnerabilidad-multiple-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="cell-output-display">
+<div id="qkqrbfrvny" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#qkqrbfrvny table {
+  font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#qkqrbfrvny thead, #qkqrbfrvny tbody, #qkqrbfrvny tfoot, #qkqrbfrvny tr, #qkqrbfrvny td, #qkqrbfrvny th {
+  border-style: none;
+}
+
+#qkqrbfrvny p {
+  margin: 0;
+  padding: 0;
+}
+
+#qkqrbfrvny .gt_table {
+  display: table;
+  border-collapse: collapse;
+  line-height: normal;
+  margin-left: auto;
+  margin-right: auto;
+  color: #333333;
+  font-size: 10px;
+  font-weight: normal;
+  font-style: normal;
+  background-color: #FFFFFF;
+  width: 100%;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #A8A8A8;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #A8A8A8;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+}
+
+#qkqrbfrvny .gt_caption {
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+
+#qkqrbfrvny .gt_title {
+  color: #333333;
+  font-size: 125%;
+  font-weight: initial;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-color: #FFFFFF;
+  border-bottom-width: 0;
+}
+
+#qkqrbfrvny .gt_subtitle {
+  color: #333333;
+  font-size: 85%;
+  font-weight: initial;
+  padding-top: 3px;
+  padding-bottom: 5px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-color: #FFFFFF;
+  border-top-width: 0;
+}
+
+#qkqrbfrvny .gt_heading {
+  background-color: #FFFFFF;
+  text-align: center;
+  border-bottom-color: #FFFFFF;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#qkqrbfrvny .gt_bottom_border {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#qkqrbfrvny .gt_col_headings {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#qkqrbfrvny .gt_col_heading {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 6px;
+  padding-left: 5px;
+  padding-right: 5px;
+  overflow-x: hidden;
+}
+
+#qkqrbfrvny .gt_column_spanner_outer {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  padding-top: 0;
+  padding-bottom: 0;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+#qkqrbfrvny .gt_column_spanner_outer:first-child {
+  padding-left: 0;
+}
+
+#qkqrbfrvny .gt_column_spanner_outer:last-child {
+  padding-right: 0;
+}
+
+#qkqrbfrvny .gt_column_spanner {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  overflow-x: hidden;
+  display: inline-block;
+  width: 100%;
+}
+
+#qkqrbfrvny .gt_spanner_row {
+  border-bottom-style: hidden;
+}
+
+#qkqrbfrvny .gt_group_heading {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  text-align: left;
+}
+
+#qkqrbfrvny .gt_empty_group_heading {
+  padding: 0.5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: middle;
+}
+
+#qkqrbfrvny .gt_from_md > :first-child {
+  margin-top: 0;
+}
+
+#qkqrbfrvny .gt_from_md > :last-child {
+  margin-bottom: 0;
+}
+
+#qkqrbfrvny .gt_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  margin: 10px;
+  border-top-style: solid;
+  border-top-width: 1px;
+  border-top-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  overflow-x: hidden;
+}
+
+#qkqrbfrvny .gt_stub {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#qkqrbfrvny .gt_stub_row_group {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+  vertical-align: top;
+}
+
+#qkqrbfrvny .gt_row_group_first td {
+  border-top-width: 2px;
+}
+
+#qkqrbfrvny .gt_row_group_first th {
+  border-top-width: 2px;
+}
+
+#qkqrbfrvny .gt_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#qkqrbfrvny .gt_first_summary_row {
+  border-top-style: solid;
+  border-top-color: #D3D3D3;
+}
+
+#qkqrbfrvny .gt_first_summary_row.thick {
+  border-top-width: 2px;
+}
+
+#qkqrbfrvny .gt_last_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#qkqrbfrvny .gt_grand_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#qkqrbfrvny .gt_first_grand_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-style: double;
+  border-top-width: 6px;
+  border-top-color: #D3D3D3;
+}
+
+#qkqrbfrvny .gt_last_grand_summary_row_top {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: double;
+  border-bottom-width: 6px;
+  border-bottom-color: #D3D3D3;
+}
+
+#qkqrbfrvny .gt_striped {
+  background-color: rgba(128, 128, 128, 0.05);
+}
+
+#qkqrbfrvny .gt_table_body {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#qkqrbfrvny .gt_footnotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#qkqrbfrvny .gt_footnote {
+  margin: 0px;
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#qkqrbfrvny .gt_sourcenotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#qkqrbfrvny .gt_sourcenote {
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#qkqrbfrvny .gt_left {
+  text-align: left;
+}
+
+#qkqrbfrvny .gt_center {
+  text-align: center;
+}
+
+#qkqrbfrvny .gt_right {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+#qkqrbfrvny .gt_font_normal {
+  font-weight: normal;
+}
+
+#qkqrbfrvny .gt_font_bold {
+  font-weight: bold;
+}
+
+#qkqrbfrvny .gt_font_italic {
+  font-style: italic;
+}
+
+#qkqrbfrvny .gt_super {
+  font-size: 65%;
+}
+
+#qkqrbfrvny .gt_footnote_marks {
+  font-size: 75%;
+  vertical-align: 0.4em;
+  position: initial;
+}
+
+#qkqrbfrvny .gt_asterisk {
+  font-size: 100%;
+  vertical-align: 0;
+}
+
+#qkqrbfrvny .gt_indent_1 {
+  text-indent: 5px;
+}
+
+#qkqrbfrvny .gt_indent_2 {
+  text-indent: 10px;
+}
+
+#qkqrbfrvny .gt_indent_3 {
+  text-indent: 15px;
+}
+
+#qkqrbfrvny .gt_indent_4 {
+  text-indent: 20px;
+}
+
+#qkqrbfrvny .gt_indent_5 {
+  text-indent: 25px;
+}
+
+#qkqrbfrvny .katex-display {
+  display: inline-flex !important;
+  margin-bottom: 0.75em !important;
+}
+
+#qkqrbfrvny div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
+  height: 0px !important;
+}
+</style>
+
+<table class="gt_table cell caption-top table table-sm table-striped small" data-quarto-bootstrap="false">
+<thead>
+<tr class="gt_col_headings header">
+<th id="a::stub" class="gt_col_heading gt_columns_bottom_border gt_left" data-quarto-table-cell-role="th" scope="col"></th>
+<th id="Dominio" class="gt_col_heading gt_columns_bottom_border gt_center" data-quarto-table-cell-role="th" scope="col">dominio</th>
+<th id="Población-total" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">Población total</th>
+<th id="Dimensiones:-0" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">Dimensiones: 0</th>
+<th id="Dimensiones:-1" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">Dimensiones: 1</th>
+<th id="Dimensiones:-2" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">Dimensiones: 2</th>
+<th id="Dimensiones:-3" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">Dimensiones: 3</th>
+<th id="Dimensiones:-4" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">Dimensiones: 4</th>
+<th id="Dimensiones:-5" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">Dimensiones: 5</th>
+<th id="Dimensiones:-6" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">Dimensiones: 6</th>
+<th id="Dimensiones:-7" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">Dimensiones: 7</th>
+</tr>
+</thead>
+<tbody class="gt_table_body">
+<tr class="odd">
+<th id="stub_1_1" class="gt_row gt_left gt_stub" data-quarto-table-cell-role="th" scope="row"></th>
+<td class="gt_row gt_center" headers="stub_1_1 Dominio">Costa Norte</td>
+<td class="gt_row gt_right" headers="stub_1_1 Población total">43,149</td>
+<td class="gt_row gt_right" headers="stub_1_1 Dimensiones: 0">0</td>
+<td class="gt_row gt_right" headers="stub_1_1 Dimensiones: 1">2,217</td>
+<td class="gt_row gt_right" headers="stub_1_1 Dimensiones: 2">5,254</td>
+<td class="gt_row gt_right" headers="stub_1_1 Dimensiones: 3">8,481</td>
+<td class="gt_row gt_right" headers="stub_1_1 Dimensiones: 4">19,222</td>
+<td class="gt_row gt_right" headers="stub_1_1 Dimensiones: 5">7,001</td>
+<td class="gt_row gt_right" headers="stub_1_1 Dimensiones: 6">119</td>
+<td class="gt_row gt_right" headers="stub_1_1 Dimensiones: 7">855</td>
+</tr>
+<tr class="even">
+<th id="stub_1_2" class="gt_row gt_left gt_stub" data-quarto-table-cell-role="th" scope="row"></th>
+<td class="gt_row gt_center" headers="stub_1_2 Dominio">Costa Centro</td>
+<td class="gt_row gt_right" headers="stub_1_2 Población total">54,283</td>
+<td class="gt_row gt_right" headers="stub_1_2 Dimensiones: 0">541</td>
+<td class="gt_row gt_right" headers="stub_1_2 Dimensiones: 1">5,530</td>
+<td class="gt_row gt_right" headers="stub_1_2 Dimensiones: 2">13,679</td>
+<td class="gt_row gt_right" headers="stub_1_2 Dimensiones: 3">9,829</td>
+<td class="gt_row gt_right" headers="stub_1_2 Dimensiones: 4">15,376</td>
+<td class="gt_row gt_right" headers="stub_1_2 Dimensiones: 5">7,122</td>
+<td class="gt_row gt_right" headers="stub_1_2 Dimensiones: 6">2,207</td>
+<td class="gt_row gt_right" headers="stub_1_2 Dimensiones: 7">0</td>
+</tr>
+<tr class="odd">
+<th id="stub_1_3" class="gt_row gt_left gt_stub" data-quarto-table-cell-role="th" scope="row"></th>
+<td class="gt_row gt_center" headers="stub_1_3 Dominio">Costa Sur</td>
+<td class="gt_row gt_right" headers="stub_1_3 Población total">0</td>
+<td class="gt_row gt_right" headers="stub_1_3 Dimensiones: 0">0</td>
+<td class="gt_row gt_right" headers="stub_1_3 Dimensiones: 1">0</td>
+<td class="gt_row gt_right" headers="stub_1_3 Dimensiones: 2">0</td>
+<td class="gt_row gt_right" headers="stub_1_3 Dimensiones: 3">0</td>
+<td class="gt_row gt_right" headers="stub_1_3 Dimensiones: 4">0</td>
+<td class="gt_row gt_right" headers="stub_1_3 Dimensiones: 5">0</td>
+<td class="gt_row gt_right" headers="stub_1_3 Dimensiones: 6">0</td>
+<td class="gt_row gt_right" headers="stub_1_3 Dimensiones: 7">0</td>
+</tr>
+<tr class="even">
+<th id="stub_1_4" class="gt_row gt_left gt_stub" data-quarto-table-cell-role="th" scope="row"></th>
+<td class="gt_row gt_center" headers="stub_1_4 Dominio">Sierra Norte</td>
+<td class="gt_row gt_right" headers="stub_1_4 Población total">654,130</td>
+<td class="gt_row gt_right" headers="stub_1_4 Dimensiones: 0">4,532</td>
+<td class="gt_row gt_right" headers="stub_1_4 Dimensiones: 1">24,476</td>
+<td class="gt_row gt_right" headers="stub_1_4 Dimensiones: 2">95,835</td>
+<td class="gt_row gt_right" headers="stub_1_4 Dimensiones: 3">149,459</td>
+<td class="gt_row gt_right" headers="stub_1_4 Dimensiones: 4">241,858</td>
+<td class="gt_row gt_right" headers="stub_1_4 Dimensiones: 5">110,130</td>
+<td class="gt_row gt_right" headers="stub_1_4 Dimensiones: 6">27,011</td>
+<td class="gt_row gt_right" headers="stub_1_4 Dimensiones: 7">830</td>
+</tr>
+<tr class="odd">
+<th id="stub_1_5" class="gt_row gt_left gt_stub" data-quarto-table-cell-role="th" scope="row"></th>
+<td class="gt_row gt_center" headers="stub_1_5 Dominio">Sierra Centro</td>
+<td class="gt_row gt_right" headers="stub_1_5 Población total">1,558,658</td>
+<td class="gt_row gt_right" headers="stub_1_5 Dimensiones: 0">27,503</td>
+<td class="gt_row gt_right" headers="stub_1_5 Dimensiones: 1">209,416</td>
+<td class="gt_row gt_right" headers="stub_1_5 Dimensiones: 2">386,441</td>
+<td class="gt_row gt_right" headers="stub_1_5 Dimensiones: 3">409,802</td>
+<td class="gt_row gt_right" headers="stub_1_5 Dimensiones: 4">351,680</td>
+<td class="gt_row gt_right" headers="stub_1_5 Dimensiones: 5">147,166</td>
+<td class="gt_row gt_right" headers="stub_1_5 Dimensiones: 6">24,968</td>
+<td class="gt_row gt_right" headers="stub_1_5 Dimensiones: 7">1,683</td>
+</tr>
+<tr class="even">
+<th id="stub_1_6" class="gt_row gt_left gt_stub" data-quarto-table-cell-role="th" scope="row"></th>
+<td class="gt_row gt_center" headers="stub_1_6 Dominio">Sierra Sur</td>
+<td class="gt_row gt_right" headers="stub_1_6 Población total">944,598</td>
+<td class="gt_row gt_right" headers="stub_1_6 Dimensiones: 0">18,847</td>
+<td class="gt_row gt_right" headers="stub_1_6 Dimensiones: 1">173,485</td>
+<td class="gt_row gt_right" headers="stub_1_6 Dimensiones: 2">253,080</td>
+<td class="gt_row gt_right" headers="stub_1_6 Dimensiones: 3">250,920</td>
+<td class="gt_row gt_right" headers="stub_1_6 Dimensiones: 4">162,972</td>
+<td class="gt_row gt_right" headers="stub_1_6 Dimensiones: 5">68,760</td>
+<td class="gt_row gt_right" headers="stub_1_6 Dimensiones: 6">15,023</td>
+<td class="gt_row gt_right" headers="stub_1_6 Dimensiones: 7">1,510</td>
+</tr>
+<tr class="odd">
+<th id="stub_1_7" class="gt_row gt_left gt_stub" data-quarto-table-cell-role="th" scope="row"></th>
+<td class="gt_row gt_center" headers="stub_1_7 Dominio">Selva</td>
+<td class="gt_row gt_right" headers="stub_1_7 Población total">511,035</td>
+<td class="gt_row gt_right" headers="stub_1_7 Dimensiones: 0">17,683</td>
+<td class="gt_row gt_right" headers="stub_1_7 Dimensiones: 1">44,660</td>
+<td class="gt_row gt_right" headers="stub_1_7 Dimensiones: 2">100,921</td>
+<td class="gt_row gt_right" headers="stub_1_7 Dimensiones: 3">142,953</td>
+<td class="gt_row gt_right" headers="stub_1_7 Dimensiones: 4">145,357</td>
+<td class="gt_row gt_right" headers="stub_1_7 Dimensiones: 5">49,385</td>
+<td class="gt_row gt_right" headers="stub_1_7 Dimensiones: 6">9,548</td>
+<td class="gt_row gt_right" headers="stub_1_7 Dimensiones: 7">527</td>
+</tr>
+<tr class="even">
+<th id="stub_1_8" class="gt_row gt_left gt_stub" data-quarto-table-cell-role="th" scope="row"></th>
+<td class="gt_row gt_center" headers="stub_1_8 Dominio">Lima Metropolitana</td>
+<td class="gt_row gt_right" headers="stub_1_8 Población total">79,638</td>
+<td class="gt_row gt_right" headers="stub_1_8 Dimensiones: 0">6,266</td>
+<td class="gt_row gt_right" headers="stub_1_8 Dimensiones: 1">34,391</td>
+<td class="gt_row gt_right" headers="stub_1_8 Dimensiones: 2">33,444</td>
+<td class="gt_row gt_right" headers="stub_1_8 Dimensiones: 3">5,537</td>
+<td class="gt_row gt_right" headers="stub_1_8 Dimensiones: 4">0</td>
+<td class="gt_row gt_right" headers="stub_1_8 Dimensiones: 5">0</td>
+<td class="gt_row gt_right" headers="stub_1_8 Dimensiones: 6">0</td>
+<td class="gt_row gt_right" headers="stub_1_8 Dimensiones: 7">0</td>
+</tr>
+<tr class="odd">
+<th id="grand_summary_stub_1" class="gt_row gt_left gt_stub gt_grand_summary_row gt_first_grand_summary_row gt_last_summary_row" data-quarto-table-cell-role="th" scope="row">Total</th>
+<td class="gt_row gt_center gt_grand_summary_row gt_first_grand_summary_row gt_last_summary_row" headers="grand_summary_stub_1 Dominio">—</td>
+<td class="gt_row gt_right gt_grand_summary_row gt_first_grand_summary_row gt_last_summary_row" headers="grand_summary_stub_1 Población total">3,845,491</td>
+<td class="gt_row gt_right gt_grand_summary_row gt_first_grand_summary_row gt_last_summary_row" headers="grand_summary_stub_1 Dimensiones: 0">75,371</td>
+<td class="gt_row gt_right gt_grand_summary_row gt_first_grand_summary_row gt_last_summary_row" headers="grand_summary_stub_1 Dimensiones: 1">494,176</td>
+<td class="gt_row gt_right gt_grand_summary_row gt_first_grand_summary_row gt_last_summary_row" headers="grand_summary_stub_1 Dimensiones: 2">888,655</td>
+<td class="gt_row gt_right gt_grand_summary_row gt_first_grand_summary_row gt_last_summary_row" headers="grand_summary_stub_1 Dimensiones: 3">976,983</td>
+<td class="gt_row gt_right gt_grand_summary_row gt_first_grand_summary_row gt_last_summary_row" headers="grand_summary_stub_1 Dimensiones: 4">936,464</td>
+<td class="gt_row gt_right gt_grand_summary_row gt_first_grand_summary_row gt_last_summary_row" headers="grand_summary_stub_1 Dimensiones: 5">389,562</td>
+<td class="gt_row gt_right gt_grand_summary_row gt_first_grand_summary_row gt_last_summary_row" headers="grand_summary_stub_1 Dimensiones: 6">78,875</td>
+<td class="gt_row gt_right gt_grand_summary_row gt_first_grand_summary_row gt_last_summary_row" headers="grand_summary_stub_1 Dimensiones: 7">5,405</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+</figure>
+</div>
+</div>
+</section>
+</section>
+<section id="conclusión" class="level1">
+<h1>Conclusión</h1>
+<p>En esta sesión combinamos las funciones de <code>dplyr</code> que aprendimos en nuestra sesión de <code>encuestas de hogares</code> con nuevas funciones geográficas de los paquetes <code>terra</code> y <code>sf</code>, aprovechando la información de latitud y longitud que incluyeron nuestros amigos del INEI de Perú para los conglomerados de las viviendas de la Encuesta Nacional de Hogares (ENAHO), 2025.</p>
+<p>Esto nos permitió encontrar el número de personas que no solo son vulnerables en diferentes dimensiones, sino además tienen una probabilidad alta de ser afectados por deslizamientos provocados por lluvias según un mapa de amenaza <strong>(3,770,120 personas excluyendo a los vulnerables en 0 dimensiones de 34,856,707 con los que cuenta Perú, o un 10.8% de la población)</strong>. Combinar estos datos nos permite reducir el número de individuos que serían candidatos para un programa de respuesta temprana ante un desastre de esa naturaleza, reduciendo la carga presupuestaria para el diseño del mismo y focalizando la respuesta en las áreas más susceptibles.</p>
+<p>Nuestra última tabla Tabla&nbsp;2 se presta muy bien para la Figura&nbsp;1 de población vulnerable y expuesta a deslizamientos, según el número de dimensiones de vulnerabilidad, el cual nos abre la puerta para nuestra siguiente sesión en la que explicaremos los diferentes componentes de un gráfico como este, desarrollado con el paquete <code>ggplot2</code> y aprovecharemos para hacer algunos mapas para ver qué dominios administrativos requerirán más atención.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div id="fig-dimensiones" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-dimensiones-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="https://r-en-vivo.github.io/r-envivo/sesiones/posts/0002-gis/index_files/figure-html/fig-dimensiones-1.png" class="img-fluid figure-img" width="672">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-dimensiones-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figura&nbsp;1: Población expuesta a deslizamientos por lluvia, según el número de dimensiones de vulnerabilidad
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="referencias" class="level1 unnumbered">
+<h1 class="unnumbered">Referencias</h1>
+<div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" data-line-spacing="2">
+<div id="ref-cenepred2026sigrid" class="csl-entry">
+CENEPRED. (2026). <em>Sistema de Información para la Gestión del Riesgo de Desastres (SIGRID)</em>. Centro Nacional de Estimación, Prevención y Reducción del Riesgo de Desastres, CENEPRED, Perú. <a href="https://sigrid.cenepred.gob.pe/sigridv3/">https://sigrid.cenepred.gob.pe/sigridv3/</a>
+</div>
+<div id="ref-doan2023" class="csl-entry">
+Doan, M. K., Hill, R., Hallegatte, S., Corral Rodas, P. A., Brunckhorst, B. J., Nguyen, M., Freije-Rodriguez, S. y Naikal, E. (2023). <em>Counting People Exposed to, Vulnerable to, or at High Risk From Climate Shocks: A Methodology</em>. <a href="https://documents.worldbank.org/en/publication/documents-reports/documentdetail/099602511292336760/IDU07639ca570f3cb048db09bf60fc2cc82df22d">https://documents.worldbank.org/en/publication/documents-reports/documentdetail/099602511292336760/IDU07639ca570f3cb048db09bf60fc2cc82df22d</a>
+</div>
+<div id="ref-inei2026microdatos" class="csl-entry">
+INEI. (2026). <em><span>Encuesta Nacional de Hogares</span> <span>(ENAHO, 2025)</span></em>. Instituto Nacional de Estadística e Informática, Perú. <a href="https://proyectos.inei.gob.pe/microdatos/">https://proyectos.inei.gob.pe/microdatos/</a>
+</div>
+<div id="ref-nasa2020landslides" class="csl-entry">
+NASA Global Precipitation Measurement Mission. (2020). <em>Landslides</em>. NASA. <a href="https://gpm.nasa.gov/applications/landslides">https://gpm.nasa.gov/applications/landslides</a>
+</div>
+<div id="ref-arup2020" class="csl-entry">
+Redshaw, P., Bottomley, J. y Free, M. (2020). <em>The Global Landslide Hazard Map: Final Project Report</em>. Ove Arup &amp; Partners International Ltd. <a href="https://datacatalogfiles.worldbank.org/ddh-published/0037584/DR0045411/global-landslide-hazard-map-report.pdf">https://datacatalogfiles.worldbank.org/ddh-published/0037584/DR0045411/global-landslide-hazard-map-report.pdf</a>
+</div>
+<div id="ref-worldbank2021landslide" class="csl-entry">
+World Bank. (2021). <em>Global Landslide Hazard Map</em>. World Bank / Global Facility for Disaster Reduction; Recovery (GFDRR). <a href="https://datacatalog.worldbank.org/search/dataset/0037584/global-landslide-hazard-map">https://datacatalog.worldbank.org/search/dataset/0037584/global-landslide-hazard-map</a>
+</div>
+</div>
+
+
+</section>
+
+
+<div id="quarto-appendix" class="default"><section id="footnotes" class="footnotes footnotes-end-of-document"><h2 class="anchored quarto-appendix-heading">Notas</h2>
+
+<ol>
+<li id="fn1"><p>Siempre que sea posible, yo prefiero utilizar información oficial del país. Perú tiene un <a href="https://sigrid.cenepred.gob.pe/sigridv3/">Sistema de Información para la Gestión del Riesgo de Desastres</a> <span class="citation" data-cites="cenepred2026sigrid">(CENEPRED, 2026)</span> que cuenta con información geográfica muy interesante. No obstante, a pesar que tiene un visor de mapas, no cuenta con la posibilidad de descargar las capas, lo cual imposibilita este análisis. Tiene una funcionalidad de mandar mensajes al equipo por la cual solicité el acceso a las capas, pero nunca recibí una respuesta.↩︎</p></li>
+<li id="fn2"><p>Ellos le llaman “factores”, pero dado que la palabra <em>factores</em> tiene una connotación especial en R, nosotros utilizamos la denominación <em>dimensiones</em>.↩︎</p></li>
+</ol>
+</section></div> ]]></description>
+  <category>ciencia de datos</category>
+  <category>rstats</category>
+  <category>análisis reproducible</category>
+  <category>encuestas</category>
+  <category>gis</category>
+  <category>análisis geográfico</category>
+  <category>tidyverse</category>
+  <guid>https://r-en-vivo.github.io/r-envivo/sesiones/posts/0002-gis/</guid>
+  <pubDate>Wed, 26 Aug 2026 06:00:00 GMT</pubDate>
+</item>
 <item>
   <title>Encuestas de Hogares</title>
   <dc:creator>Renato Vargas</dc:creator>
@@ -75,17 +2545,26 @@ font-style: inherit;"># exportar resultados a Excel</span></span></code></pre></
 <p>En esta sesión, sin embargo, no profundizaremos en los métodos econométricos, sino que nos centraremos en cómo acceder a los datos de encuestas de hogares utilizando R y <code>dplyr</code>, pues el objetivo es aprender a extraer información útil de los datos y cómo presentarla de manera clara y reproducible.</p>
 <section id="los-datos" class="level2">
 <h2 class="anchored" data-anchor-id="los-datos">Los Datos</h2>
-<p>En esta sesión utilizaremos los datos reales de la Encuesta Nacional de Hogares (ENAHO) de Perú, que se encuentran disponibles en el <a href="https://proyectos.inei.gob.pe/microdatos/">repositorio de datos Instituto Nacional de Estadística e Informática (INEI)</a>. Los datos de la ENAHO son una fuente valiosa para analizar las condiciones de vida de los hogares peruanos. Utilizaremos los datos más recientes disponibles, que corresponden al primer trimestre de 2026. Entre los datos disponibles, hay muchos módulos y nosotros nos concentraremos solo en algunos:</p>
+<p>En esta sesión utilizaremos los datos reales de la Encuesta Nacional de Hogares (ENAHO) de Perú, que se encuentran disponibles en el <a href="https://proyectos.inei.gob.pe/microdatos/">repositorio de datos Instituto Nacional de Estadística e Informática (INEI)</a>. Los datos de la ENAHO son una fuente valiosa para analizar las condiciones de vida de los hogares peruanos. Utilizaremos los datos más recientes disponibles con cálculos de pobreza y agregado de consumo, que corresponden al año 2025. Entre los datos disponibles, hay muchos módulos y nosotros nos concentraremos solo en algunos. Además es muy importante tener acceso al diccionario que explica las variables, el cual el INEI incluye con las descargas.</p>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Tip
+</div>
+</div>
+<div class="callout-body-container callout-body">
 <ul>
 <li>Características de la Vivienda y del Hogar: <a href="https://github.com/R-en-Vivo/r-envivo/raw/refs/heads/main/datos/per_enaho/Enaho01-2025-100-viviendas.sav">datos SPSS</a> | <a href="https://github.com/R-en-Vivo/r-envivo/raw/refs/heads/main/datos/per_enaho/CED-01-100-2025-vivienda.pdf">preguntas módulo vivienda</a>.</li>
 <li>Características de los Miembros del Hogar: <a href="https://github.com/R-en-Vivo/r-envivo/raw/refs/heads/main/datos/per_enaho/Enaho01-2025-200-personas.sav">datos SPSS</a> | <a href="https://github.com/R-en-Vivo/r-envivo/raw/refs/heads/main/datos/per_enaho/CED-01-100-2025-vivienda.pdf">preguntas módulo personas</a>.</li>
 <li>Educación: <a href="https://github.com/R-en-Vivo/r-envivo/raw/refs/heads/main/datos/per_enaho/Enaho01-2025-100-educacion.sav">datos SPSS</a> | <a href="https://github.com/R-en-Vivo/r-envivo/raw/refs/heads/main/datos/per_enaho/CED-01A-300-2025-educacion.pdf">preguntas módulo educación</a>.</li>
 <li>Sumarias (variables calculadas): <a href="https://github.com/R-en-Vivo/r-envivo/raw/refs/heads/main/datos/per_enaho/Sumaria-2025.sav">datos SPSS</a> | <a href="https://github.com/R-en-Vivo/r-envivo/raw/refs/heads/main/datos/per_enaho/Sumaria_2025.pdf">metodología de cálculo</a>.</li>
-</ul>
-<p>Además es muy importante tener acceso al diccionario que explica las variables, el cual el INEI incluye con las descargas.</p>
-<ul>
 <li>Diccionario de todas las bases de datos: <a href="https://github.com/R-en-Vivo/r-envivo/raw/refs/heads/main/datos/per_enaho/Diccionario_2025.pdf">descargar</a>.</li>
 </ul>
+</div>
+</div>
 <p>Continuaremos con la carga de los datos de la ENAHO y la exploración inicial de los mismos. Asegúrate de tener los archivos descargados y ubicados en el directorio correcto para poder acceder a ellos sin problemas.</p>
 <p>Para esto utilizamos el paquete <code>haven</code> que permite importar datos de SPSS (y Stata), que son los formatos en los que se encuentran los datos de la ENAHO. A continuación, cargamos las bases de datos de personas y viviendas.</p>
 <div class="cell">
@@ -808,61 +3287,71 @@ background-color: null;
 font-style: inherit;">join_by</span>(CONGLOME, VIVIENDA, HOGAR)</span>
 <span id="cb19-9">  )</span></code></pre></div></div>
 </div>
+<p>Para poder usar nuestra base de datos en un futuro, la guardamos como objeto RDS, que es un formato eficientemente comprimido para representar datos de R.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb20" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">saveRDS</span>(hogares_vulnerables, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">file =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"salidas/sesiones/0001-encuestas/hogares_vulnerables.RDS"</span>)</span></code></pre></div></div>
+</div>
 </section>
 </section>
-<section id="resultados-por-área-geográfica-viviendasdominio" class="level1">
-<h1>Resultados por área geográfica (<code>viviendas$DOMINIO</code>)</h1>
+<section id="resultados-por-área-geográfica" class="level1">
+<h1>Resultados por área geográfica</h1>
 <p>Para expresar la vulnerabilidad en número de personas (y no de hogares), multiplicamos el factor de expansión (<code>FACTOR07</code>) por el tamaño del hogar (<code>MIEPERHO</code>) y por cada variable de vulnerabilidad. Con esto, la siguiente tabla muestra la población total de cada dominio como referencia, junto con el número de personas vulnerables en cada dimensión, y una fila con los totales nacionales.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb20" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1">tabla_dominio <span class="ot" style="color: #003B4F;
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1">tabla_dominio <span class="ot" style="color: #003B4F;
 background-color: null;
 font-style: inherit;">&lt;-</span> hogares_vulnerables <span class="sc" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">|&gt;</span> </span>
-<span id="cb20-2">  <span class="fu" style="color: #4758AB;
+<span id="cb21-2">  <span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">mutate</span>(</span>
-<span id="cb20-3">    <span class="at" style="color: #657422;
+<span id="cb21-3">    <span class="at" style="color: #657422;
 background-color: null;
 font-style: inherit;">Dominio =</span> <span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">as_factor</span>(DOMINIO),</span>
-<span id="cb20-4">    <span class="at" style="color: #657422;
+<span id="cb21-4">    <span class="at" style="color: #657422;
 background-color: null;
 font-style: inherit;">personas =</span> FACTOR07 <span class="sc" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">*</span> MIEPERHO,</span>
-<span id="cb20-5">    <span class="at" style="color: #657422;
+<span id="cb21-5">    <span class="at" style="color: #657422;
 background-color: null;
 font-style: inherit;">Ingreso =</span> personas <span class="sc" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">*</span> vulnerabilidad_ingreso,</span>
-<span id="cb20-6">    Educación <span class="ot" style="color: #003B4F;
+<span id="cb21-6">    Educación <span class="ot" style="color: #003B4F;
 background-color: null;
 font-style: inherit;">=</span> personas <span class="sc" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">*</span> vulnerabilidad_educacion,</span>
-<span id="cb20-7">    <span class="at" style="color: #657422;
+<span id="cb21-7">    <span class="at" style="color: #657422;
 background-color: null;
 font-style: inherit;">Agua =</span> personas <span class="sc" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">*</span> vulnerabilidad_agua,</span>
-<span id="cb20-8">    <span class="at" style="color: #657422;
+<span id="cb21-8">    <span class="at" style="color: #657422;
 background-color: null;
 font-style: inherit;">Electricidad =</span> personas <span class="sc" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">*</span> vulnerabilidad_electricidad,</span>
-<span id="cb20-9">    <span class="at" style="color: #657422;
+<span id="cb21-9">    <span class="at" style="color: #657422;
 background-color: null;
 font-style: inherit;">Saneamiento =</span> personas <span class="sc" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">*</span> vulnerabilidad_saneamiento,</span>
-<span id="cb20-10">    Construcción <span class="ot" style="color: #003B4F;
+<span id="cb21-10">    Construcción <span class="ot" style="color: #003B4F;
 background-color: null;
 font-style: inherit;">=</span> personas <span class="sc" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">*</span> vulnerabilidad_construccion,</span>
-<span id="cb20-11">    <span class="st" style="color: #20794D;
+<span id="cb21-11">    <span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">`</span><span class="at" style="color: #657422;
 background-color: null;
@@ -873,18 +3362,18 @@ background-color: null;
 font-style: inherit;">=</span> personas <span class="sc" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">*</span> vulnerabilidad_proteccion</span>
-<span id="cb20-12">  ) <span class="sc" style="color: #5E5E5E;
+<span id="cb21-12">  ) <span class="sc" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">|&gt;</span> </span>
-<span id="cb20-13">  <span class="fu" style="color: #4758AB;
+<span id="cb21-13">  <span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">group_by</span>(Dominio) <span class="sc" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">|&gt;</span> </span>
-<span id="cb20-14">  <span class="fu" style="color: #4758AB;
+<span id="cb21-14">  <span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">summarise</span>(</span>
-<span id="cb20-15">    <span class="st" style="color: #20794D;
+<span id="cb21-15">    <span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">`</span><span class="at" style="color: #657422;
 background-color: null;
@@ -899,7 +3388,7 @@ background-color: null;
 font-style: inherit;">na.rm =</span> <span class="cn" style="color: #8f5902;
 background-color: null;
 font-style: inherit;">TRUE</span>),</span>
-<span id="cb20-16">    <span class="at" style="color: #657422;
+<span id="cb21-16">    <span class="at" style="color: #657422;
 background-color: null;
 font-style: inherit;">Ingreso =</span> <span class="fu" style="color: #4758AB;
 background-color: null;
@@ -908,7 +3397,7 @@ background-color: null;
 font-style: inherit;">na.rm =</span> <span class="cn" style="color: #8f5902;
 background-color: null;
 font-style: inherit;">TRUE</span>),</span>
-<span id="cb20-17">    Educación <span class="ot" style="color: #003B4F;
+<span id="cb21-17">    Educación <span class="ot" style="color: #003B4F;
 background-color: null;
 font-style: inherit;">=</span> <span class="fu" style="color: #4758AB;
 background-color: null;
@@ -917,7 +3406,7 @@ background-color: null;
 font-style: inherit;">na.rm =</span> <span class="cn" style="color: #8f5902;
 background-color: null;
 font-style: inherit;">TRUE</span>),</span>
-<span id="cb20-18">    <span class="at" style="color: #657422;
+<span id="cb21-18">    <span class="at" style="color: #657422;
 background-color: null;
 font-style: inherit;">Agua =</span> <span class="fu" style="color: #4758AB;
 background-color: null;
@@ -926,7 +3415,7 @@ background-color: null;
 font-style: inherit;">na.rm =</span> <span class="cn" style="color: #8f5902;
 background-color: null;
 font-style: inherit;">TRUE</span>),</span>
-<span id="cb20-19">    <span class="at" style="color: #657422;
+<span id="cb21-19">    <span class="at" style="color: #657422;
 background-color: null;
 font-style: inherit;">Electricidad =</span> <span class="fu" style="color: #4758AB;
 background-color: null;
@@ -935,7 +3424,7 @@ background-color: null;
 font-style: inherit;">na.rm =</span> <span class="cn" style="color: #8f5902;
 background-color: null;
 font-style: inherit;">TRUE</span>),</span>
-<span id="cb20-20">    <span class="at" style="color: #657422;
+<span id="cb21-20">    <span class="at" style="color: #657422;
 background-color: null;
 font-style: inherit;">Saneamiento =</span> <span class="fu" style="color: #4758AB;
 background-color: null;
@@ -944,7 +3433,7 @@ background-color: null;
 font-style: inherit;">na.rm =</span> <span class="cn" style="color: #8f5902;
 background-color: null;
 font-style: inherit;">TRUE</span>),</span>
-<span id="cb20-21">    Construcción <span class="ot" style="color: #003B4F;
+<span id="cb21-21">    Construcción <span class="ot" style="color: #003B4F;
 background-color: null;
 font-style: inherit;">=</span> <span class="fu" style="color: #4758AB;
 background-color: null;
@@ -953,7 +3442,7 @@ background-color: null;
 font-style: inherit;">na.rm =</span> <span class="cn" style="color: #8f5902;
 background-color: null;
 font-style: inherit;">TRUE</span>),</span>
-<span id="cb20-22">    <span class="st" style="color: #20794D;
+<span id="cb21-22">    <span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">`</span><span class="at" style="color: #657422;
 background-color: null;
@@ -974,46 +3463,46 @@ background-color: null;
 font-style: inherit;">na.rm =</span> <span class="cn" style="color: #8f5902;
 background-color: null;
 font-style: inherit;">TRUE</span>)</span>
-<span id="cb20-23">  )</span>
-<span id="cb20-24"></span>
-<span id="cb20-25">tabla_dominio <span class="sc" style="color: #5E5E5E;
+<span id="cb21-23">  )</span>
+<span id="cb21-24"></span>
+<span id="cb21-25">tabla_dominio <span class="sc" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">|&gt;</span> </span>
-<span id="cb20-26">  <span class="fu" style="color: #4758AB;
+<span id="cb21-26">  <span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">gt</span>() <span class="sc" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">|&gt;</span> </span>
-<span id="cb20-27">  <span class="fu" style="color: #4758AB;
+<span id="cb21-27">  <span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">fmt_number</span>(</span>
-<span id="cb20-28">    <span class="at" style="color: #657422;
+<span id="cb21-28">    <span class="at" style="color: #657422;
 background-color: null;
 font-style: inherit;">columns =</span> <span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">where</span>(is.numeric),</span>
-<span id="cb20-29">    <span class="at" style="color: #657422;
+<span id="cb21-29">    <span class="at" style="color: #657422;
 background-color: null;
 font-style: inherit;">decimals =</span> <span class="dv" style="color: #AD0000;
 background-color: null;
 font-style: inherit;">0</span>,</span>
-<span id="cb20-30">    <span class="at" style="color: #657422;
+<span id="cb21-30">    <span class="at" style="color: #657422;
 background-color: null;
 font-style: inherit;">use_seps =</span> <span class="cn" style="color: #8f5902;
 background-color: null;
 font-style: inherit;">TRUE</span></span>
-<span id="cb20-31">  ) <span class="sc" style="color: #5E5E5E;
+<span id="cb21-31">  ) <span class="sc" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">|&gt;</span> </span>
-<span id="cb20-32">  <span class="fu" style="color: #4758AB;
+<span id="cb21-32">  <span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">grand_summary_rows</span>(</span>
-<span id="cb20-33">    <span class="at" style="color: #657422;
+<span id="cb21-33">    <span class="at" style="color: #657422;
 background-color: null;
 font-style: inherit;">columns =</span> <span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">where</span>(is.numeric),</span>
-<span id="cb20-34">    <span class="at" style="color: #657422;
+<span id="cb21-34">    <span class="at" style="color: #657422;
 background-color: null;
 font-style: inherit;">fns =</span> <span class="fu" style="color: #4758AB;
 background-color: null;
@@ -1030,7 +3519,7 @@ background-color: null;
 font-style: inherit;">fn =</span> <span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">"sum"</span>),</span>
-<span id="cb20-35">    <span class="at" style="color: #657422;
+<span id="cb21-35">    <span class="at" style="color: #657422;
 background-color: null;
 font-style: inherit;">fmt =</span> <span class="sc" style="color: #5E5E5E;
 background-color: null;
@@ -1045,7 +3534,7 @@ background-color: null;
 font-style: inherit;">use_seps =</span> <span class="cn" style="color: #8f5902;
 background-color: null;
 font-style: inherit;">TRUE</span>)</span>
-<span id="cb20-36">  )</span></code></pre></div></div>
+<span id="cb21-36">  )</span></code></pre></div></div>
 <div id="tbl-vulnerabilidad-dominio" class="cell quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-tbl figure">
 <figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-vulnerabilidad-dominio-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
@@ -1053,23 +3542,40 @@ Tabla&nbsp;1: Número de personas vulnerables por dominio y dimensión
 </figcaption>
 <div aria-describedby="tbl-vulnerabilidad-dominio-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="cell-output-display">
+<<<<<<< HEAD
 <div id="bkxrcpfauy" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
 <style>#bkxrcpfauy table {
+=======
+<div id="trjkttfumm" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#trjkttfumm table {
+>>>>>>> 55301ab (remove large file)
   font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
+<<<<<<< HEAD
 #bkxrcpfauy thead, #bkxrcpfauy tbody, #bkxrcpfauy tfoot, #bkxrcpfauy tr, #bkxrcpfauy td, #bkxrcpfauy th {
   border-style: none;
 }
 
 #bkxrcpfauy p {
+=======
+#trjkttfumm thead, #trjkttfumm tbody, #trjkttfumm tfoot, #trjkttfumm tr, #trjkttfumm td, #trjkttfumm th {
+  border-style: none;
+}
+
+#trjkttfumm p {
+>>>>>>> 55301ab (remove large file)
   margin: 0;
   padding: 0;
 }
 
+<<<<<<< HEAD
 #bkxrcpfauy .gt_table {
+=======
+#trjkttfumm .gt_table {
+>>>>>>> 55301ab (remove large file)
   display: table;
   border-collapse: collapse;
   line-height: normal;
@@ -1095,12 +3601,20 @@ Tabla&nbsp;1: Número de personas vulnerables por dominio y dimensión
   border-left-color: #D3D3D3;
 }
 
+<<<<<<< HEAD
 #bkxrcpfauy .gt_caption {
+=======
+#trjkttfumm .gt_caption {
+>>>>>>> 55301ab (remove large file)
   padding-top: 4px;
   padding-bottom: 4px;
 }
 
+<<<<<<< HEAD
 #bkxrcpfauy .gt_title {
+=======
+#trjkttfumm .gt_title {
+>>>>>>> 55301ab (remove large file)
   color: #333333;
   font-size: 125%;
   font-weight: initial;
@@ -1112,7 +3626,11 @@ Tabla&nbsp;1: Número de personas vulnerables por dominio y dimensión
   border-bottom-width: 0;
 }
 
+<<<<<<< HEAD
 #bkxrcpfauy .gt_subtitle {
+=======
+#trjkttfumm .gt_subtitle {
+>>>>>>> 55301ab (remove large file)
   color: #333333;
   font-size: 85%;
   font-weight: initial;
@@ -1124,7 +3642,11 @@ Tabla&nbsp;1: Número de personas vulnerables por dominio y dimensión
   border-top-width: 0;
 }
 
+<<<<<<< HEAD
 #bkxrcpfauy .gt_heading {
+=======
+#trjkttfumm .gt_heading {
+>>>>>>> 55301ab (remove large file)
   background-color: #FFFFFF;
   text-align: center;
   border-bottom-color: #FFFFFF;
@@ -1136,13 +3658,21 @@ Tabla&nbsp;1: Número de personas vulnerables por dominio y dimensión
   border-right-color: #D3D3D3;
 }
 
+<<<<<<< HEAD
 #bkxrcpfauy .gt_bottom_border {
+=======
+#trjkttfumm .gt_bottom_border {
+>>>>>>> 55301ab (remove large file)
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
 }
 
+<<<<<<< HEAD
 #bkxrcpfauy .gt_col_headings {
+=======
+#trjkttfumm .gt_col_headings {
+>>>>>>> 55301ab (remove large file)
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -1157,7 +3687,11 @@ Tabla&nbsp;1: Número de personas vulnerables por dominio y dimensión
   border-right-color: #D3D3D3;
 }
 
+<<<<<<< HEAD
 #bkxrcpfauy .gt_col_heading {
+=======
+#trjkttfumm .gt_col_heading {
+>>>>>>> 55301ab (remove large file)
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -1177,7 +3711,11 @@ Tabla&nbsp;1: Número de personas vulnerables por dominio y dimensión
   overflow-x: hidden;
 }
 
+<<<<<<< HEAD
 #bkxrcpfauy .gt_column_spanner_outer {
+=======
+#trjkttfumm .gt_column_spanner_outer {
+>>>>>>> 55301ab (remove large file)
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -1189,6 +3727,7 @@ Tabla&nbsp;1: Número de personas vulnerables por dominio y dimensión
   padding-right: 4px;
 }
 
+<<<<<<< HEAD
 #bkxrcpfauy .gt_column_spanner_outer:first-child {
   padding-left: 0;
 }
@@ -1198,6 +3737,17 @@ Tabla&nbsp;1: Número de personas vulnerables por dominio y dimensión
 }
 
 #bkxrcpfauy .gt_column_spanner {
+=======
+#trjkttfumm .gt_column_spanner_outer:first-child {
+  padding-left: 0;
+}
+
+#trjkttfumm .gt_column_spanner_outer:last-child {
+  padding-right: 0;
+}
+
+#trjkttfumm .gt_column_spanner {
+>>>>>>> 55301ab (remove large file)
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
@@ -1209,11 +3759,19 @@ Tabla&nbsp;1: Número de personas vulnerables por dominio y dimensión
   width: 100%;
 }
 
+<<<<<<< HEAD
 #bkxrcpfauy .gt_spanner_row {
   border-bottom-style: hidden;
 }
 
 #bkxrcpfauy .gt_group_heading {
+=======
+#trjkttfumm .gt_spanner_row {
+  border-bottom-style: hidden;
+}
+
+#trjkttfumm .gt_group_heading {
+>>>>>>> 55301ab (remove large file)
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1239,7 +3797,11 @@ Tabla&nbsp;1: Número de personas vulnerables por dominio y dimensión
   text-align: left;
 }
 
+<<<<<<< HEAD
 #bkxrcpfauy .gt_empty_group_heading {
+=======
+#trjkttfumm .gt_empty_group_heading {
+>>>>>>> 55301ab (remove large file)
   padding: 0.5px;
   color: #333333;
   background-color: #FFFFFF;
@@ -1254,6 +3816,7 @@ Tabla&nbsp;1: Número de personas vulnerables por dominio y dimensión
   vertical-align: middle;
 }
 
+<<<<<<< HEAD
 #bkxrcpfauy .gt_from_md > :first-child {
   margin-top: 0;
 }
@@ -1263,6 +3826,17 @@ Tabla&nbsp;1: Número de personas vulnerables por dominio y dimensión
 }
 
 #bkxrcpfauy .gt_row {
+=======
+#trjkttfumm .gt_from_md > :first-child {
+  margin-top: 0;
+}
+
+#trjkttfumm .gt_from_md > :last-child {
+  margin-bottom: 0;
+}
+
+#trjkttfumm .gt_row {
+>>>>>>> 55301ab (remove large file)
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1281,7 +3855,11 @@ Tabla&nbsp;1: Número de personas vulnerables por dominio y dimensión
   overflow-x: hidden;
 }
 
+<<<<<<< HEAD
 #bkxrcpfauy .gt_stub {
+=======
+#trjkttfumm .gt_stub {
+>>>>>>> 55301ab (remove large file)
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -1294,7 +3872,11 @@ Tabla&nbsp;1: Número de personas vulnerables por dominio y dimensión
   padding-right: 5px;
 }
 
+<<<<<<< HEAD
 #bkxrcpfauy .gt_stub_row_group {
+=======
+#trjkttfumm .gt_stub_row_group {
+>>>>>>> 55301ab (remove large file)
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -1308,6 +3890,7 @@ Tabla&nbsp;1: Número de personas vulnerables por dominio y dimensión
   vertical-align: top;
 }
 
+<<<<<<< HEAD
 #bkxrcpfauy .gt_row_group_first td {
   border-top-width: 2px;
 }
@@ -1317,6 +3900,17 @@ Tabla&nbsp;1: Número de personas vulnerables por dominio y dimensión
 }
 
 #bkxrcpfauy .gt_summary_row {
+=======
+#trjkttfumm .gt_row_group_first td {
+  border-top-width: 2px;
+}
+
+#trjkttfumm .gt_row_group_first th {
+  border-top-width: 2px;
+}
+
+#trjkttfumm .gt_summary_row {
+>>>>>>> 55301ab (remove large file)
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -1326,16 +3920,28 @@ Tabla&nbsp;1: Número de personas vulnerables por dominio y dimensión
   padding-right: 5px;
 }
 
+<<<<<<< HEAD
 #bkxrcpfauy .gt_first_summary_row {
+=======
+#trjkttfumm .gt_first_summary_row {
+>>>>>>> 55301ab (remove large file)
   border-top-style: solid;
   border-top-color: #D3D3D3;
 }
 
+<<<<<<< HEAD
 #bkxrcpfauy .gt_first_summary_row.thick {
   border-top-width: 2px;
 }
 
 #bkxrcpfauy .gt_last_summary_row {
+=======
+#trjkttfumm .gt_first_summary_row.thick {
+  border-top-width: 2px;
+}
+
+#trjkttfumm .gt_last_summary_row {
+>>>>>>> 55301ab (remove large file)
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1345,7 +3951,11 @@ Tabla&nbsp;1: Número de personas vulnerables por dominio y dimensión
   border-bottom-color: #D3D3D3;
 }
 
+<<<<<<< HEAD
 #bkxrcpfauy .gt_grand_summary_row {
+=======
+#trjkttfumm .gt_grand_summary_row {
+>>>>>>> 55301ab (remove large file)
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -1355,7 +3965,11 @@ Tabla&nbsp;1: Número de personas vulnerables por dominio y dimensión
   padding-right: 5px;
 }
 
+<<<<<<< HEAD
 #bkxrcpfauy .gt_first_grand_summary_row {
+=======
+#trjkttfumm .gt_first_grand_summary_row {
+>>>>>>> 55301ab (remove large file)
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1365,7 +3979,11 @@ Tabla&nbsp;1: Número de personas vulnerables por dominio y dimensión
   border-top-color: #D3D3D3;
 }
 
+<<<<<<< HEAD
 #bkxrcpfauy .gt_last_grand_summary_row_top {
+=======
+#trjkttfumm .gt_last_grand_summary_row_top {
+>>>>>>> 55301ab (remove large file)
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1375,11 +3993,19 @@ Tabla&nbsp;1: Número de personas vulnerables por dominio y dimensión
   border-bottom-color: #D3D3D3;
 }
 
+<<<<<<< HEAD
 #bkxrcpfauy .gt_striped {
   background-color: rgba(128, 128, 128, 0.05);
 }
 
 #bkxrcpfauy .gt_table_body {
+=======
+#trjkttfumm .gt_striped {
+  background-color: rgba(128, 128, 128, 0.05);
+}
+
+#trjkttfumm .gt_table_body {
+>>>>>>> 55301ab (remove large file)
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -1388,7 +4014,11 @@ Tabla&nbsp;1: Número de personas vulnerables por dominio y dimensión
   border-bottom-color: #D3D3D3;
 }
 
+<<<<<<< HEAD
 #bkxrcpfauy .gt_footnotes {
+=======
+#trjkttfumm .gt_footnotes {
+>>>>>>> 55301ab (remove large file)
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -1402,7 +4032,11 @@ Tabla&nbsp;1: Número de personas vulnerables por dominio y dimensión
   border-right-color: #D3D3D3;
 }
 
+<<<<<<< HEAD
 #bkxrcpfauy .gt_footnote {
+=======
+#trjkttfumm .gt_footnote {
+>>>>>>> 55301ab (remove large file)
   margin: 0px;
   font-size: 90%;
   padding-top: 4px;
@@ -1411,7 +4045,11 @@ Tabla&nbsp;1: Número de personas vulnerables por dominio y dimensión
   padding-right: 5px;
 }
 
+<<<<<<< HEAD
 #bkxrcpfauy .gt_sourcenotes {
+=======
+#trjkttfumm .gt_sourcenotes {
+>>>>>>> 55301ab (remove large file)
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -1425,7 +4063,11 @@ Tabla&nbsp;1: Número de personas vulnerables por dominio y dimensión
   border-right-color: #D3D3D3;
 }
 
+<<<<<<< HEAD
 #bkxrcpfauy .gt_sourcenote {
+=======
+#trjkttfumm .gt_sourcenote {
+>>>>>>> 55301ab (remove large file)
   font-size: 90%;
   padding-top: 4px;
   padding-bottom: 4px;
@@ -1433,6 +4075,7 @@ Tabla&nbsp;1: Número de personas vulnerables por dominio y dimensión
   padding-right: 5px;
 }
 
+<<<<<<< HEAD
 #bkxrcpfauy .gt_left {
   text-align: left;
 }
@@ -1442,10 +4085,22 @@ Tabla&nbsp;1: Número de personas vulnerables por dominio y dimensión
 }
 
 #bkxrcpfauy .gt_right {
+=======
+#trjkttfumm .gt_left {
+  text-align: left;
+}
+
+#trjkttfumm .gt_center {
+  text-align: center;
+}
+
+#trjkttfumm .gt_right {
+>>>>>>> 55301ab (remove large file)
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
 
+<<<<<<< HEAD
 #bkxrcpfauy .gt_font_normal {
   font-weight: normal;
 }
@@ -1463,16 +4118,40 @@ Tabla&nbsp;1: Número de personas vulnerables por dominio y dimensión
 }
 
 #bkxrcpfauy .gt_footnote_marks {
+=======
+#trjkttfumm .gt_font_normal {
+  font-weight: normal;
+}
+
+#trjkttfumm .gt_font_bold {
+  font-weight: bold;
+}
+
+#trjkttfumm .gt_font_italic {
+  font-style: italic;
+}
+
+#trjkttfumm .gt_super {
+  font-size: 65%;
+}
+
+#trjkttfumm .gt_footnote_marks {
+>>>>>>> 55301ab (remove large file)
   font-size: 75%;
   vertical-align: 0.4em;
   position: initial;
 }
 
+<<<<<<< HEAD
 #bkxrcpfauy .gt_asterisk {
+=======
+#trjkttfumm .gt_asterisk {
+>>>>>>> 55301ab (remove large file)
   font-size: 100%;
   vertical-align: 0;
 }
 
+<<<<<<< HEAD
 #bkxrcpfauy .gt_indent_1 {
   text-indent: 5px;
 }
@@ -1494,11 +4173,38 @@ Tabla&nbsp;1: Número de personas vulnerables por dominio y dimensión
 }
 
 #bkxrcpfauy .katex-display {
+=======
+#trjkttfumm .gt_indent_1 {
+  text-indent: 5px;
+}
+
+#trjkttfumm .gt_indent_2 {
+  text-indent: 10px;
+}
+
+#trjkttfumm .gt_indent_3 {
+  text-indent: 15px;
+}
+
+#trjkttfumm .gt_indent_4 {
+  text-indent: 20px;
+}
+
+#trjkttfumm .gt_indent_5 {
+  text-indent: 25px;
+}
+
+#trjkttfumm .katex-display {
+>>>>>>> 55301ab (remove large file)
   display: inline-flex !important;
   margin-bottom: 0.75em !important;
 }
 
+<<<<<<< HEAD
 #bkxrcpfauy div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
+=======
+#trjkttfumm div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
+>>>>>>> 55301ab (remove large file)
   height: 0px !important;
 }
 </style>
@@ -1638,30 +4344,30 @@ Tabla&nbsp;1: Número de personas vulnerables por dominio y dimensión
 </div>
 <p>Finalmente, contamos a las personas según el número de dimensiones en las que son vulnerables simultáneamente (de 0 a 7), por dominio geográfico, con la población total de cada dominio como referencia y una fila de totales nacionales.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1">tabla_multidimensional <span class="ot" style="color: #003B4F;
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb22" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1">tabla_multidimensional <span class="ot" style="color: #003B4F;
 background-color: null;
 font-style: inherit;">&lt;-</span> hogares_vulnerables <span class="sc" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">|&gt;</span> </span>
-<span id="cb21-2">  <span class="fu" style="color: #4758AB;
+<span id="cb22-2">  <span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">mutate</span>(</span>
-<span id="cb21-3">    <span class="at" style="color: #657422;
+<span id="cb22-3">    <span class="at" style="color: #657422;
 background-color: null;
 font-style: inherit;">Dominio =</span> <span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">as_factor</span>(DOMINIO),</span>
-<span id="cb21-4">    <span class="at" style="color: #657422;
+<span id="cb22-4">    <span class="at" style="color: #657422;
 background-color: null;
 font-style: inherit;">personas =</span> FACTOR07 <span class="sc" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">*</span> MIEPERHO,</span>
-<span id="cb21-5">    <span class="at" style="color: #657422;
+<span id="cb22-5">    <span class="at" style="color: #657422;
 background-color: null;
 font-style: inherit;">num_dimensiones =</span> <span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">rowSums</span>(</span>
-<span id="cb21-6">      <span class="fu" style="color: #4758AB;
+<span id="cb22-6">      <span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">across</span>(<span class="fu" style="color: #4758AB;
 background-color: null;
@@ -1672,19 +4378,19 @@ background-color: null;
 font-style: inherit;">na.rm =</span> <span class="cn" style="color: #8f5902;
 background-color: null;
 font-style: inherit;">TRUE</span></span>
-<span id="cb21-7">    )</span>
-<span id="cb21-8">  ) <span class="sc" style="color: #5E5E5E;
+<span id="cb22-7">    )</span>
+<span id="cb22-8">  ) <span class="sc" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">|&gt;</span> </span>
-<span id="cb21-9">  <span class="fu" style="color: #4758AB;
+<span id="cb22-9">  <span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">group_by</span>(Dominio, num_dimensiones) <span class="sc" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">|&gt;</span> </span>
-<span id="cb21-10">  <span class="fu" style="color: #4758AB;
+<span id="cb22-10">  <span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">summarise</span>(</span>
-<span id="cb21-11">    <span class="at" style="color: #657422;
+<span id="cb22-11">    <span class="at" style="color: #657422;
 background-color: null;
 font-style: inherit;">personas =</span> <span class="fu" style="color: #4758AB;
 background-color: null;
@@ -1693,40 +4399,40 @@ background-color: null;
 font-style: inherit;">na.rm =</span> <span class="cn" style="color: #8f5902;
 background-color: null;
 font-style: inherit;">TRUE</span>),</span>
-<span id="cb21-12">    <span class="at" style="color: #657422;
+<span id="cb22-12">    <span class="at" style="color: #657422;
 background-color: null;
 font-style: inherit;">.groups =</span> <span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">"drop"</span></span>
-<span id="cb21-13">  ) <span class="sc" style="color: #5E5E5E;
+<span id="cb22-13">  ) <span class="sc" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">|&gt;</span> </span>
-<span id="cb21-14">  <span class="fu" style="color: #4758AB;
+<span id="cb22-14">  <span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">pivot_wider</span>(</span>
-<span id="cb21-15">    <span class="at" style="color: #657422;
+<span id="cb22-15">    <span class="at" style="color: #657422;
 background-color: null;
 font-style: inherit;">names_from =</span> num_dimensiones,</span>
-<span id="cb21-16">    <span class="at" style="color: #657422;
+<span id="cb22-16">    <span class="at" style="color: #657422;
 background-color: null;
 font-style: inherit;">names_prefix =</span> <span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">"Dimensiones: "</span>,</span>
-<span id="cb21-17">    <span class="at" style="color: #657422;
+<span id="cb22-17">    <span class="at" style="color: #657422;
 background-color: null;
 font-style: inherit;">values_from =</span> personas,</span>
-<span id="cb21-18">    <span class="at" style="color: #657422;
+<span id="cb22-18">    <span class="at" style="color: #657422;
 background-color: null;
 font-style: inherit;">values_fill =</span> <span class="dv" style="color: #AD0000;
 background-color: null;
 font-style: inherit;">0</span></span>
-<span id="cb21-19">  ) <span class="sc" style="color: #5E5E5E;
+<span id="cb22-19">  ) <span class="sc" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">|&gt;</span> </span>
-<span id="cb21-20">  <span class="fu" style="color: #4758AB;
+<span id="cb22-20">  <span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">mutate</span>(</span>
-<span id="cb21-21">    <span class="st" style="color: #20794D;
+<span id="cb22-21">    <span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">`</span><span class="at" style="color: #657422;
 background-color: null;
@@ -1737,7 +4443,7 @@ background-color: null;
 font-style: inherit;">=</span> <span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">rowSums</span>(</span>
-<span id="cb21-22">      <span class="fu" style="color: #4758AB;
+<span id="cb22-22">      <span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">across</span>(<span class="fu" style="color: #4758AB;
 background-color: null;
@@ -1748,11 +4454,11 @@ background-color: null;
 font-style: inherit;">na.rm =</span> <span class="cn" style="color: #8f5902;
 background-color: null;
 font-style: inherit;">TRUE</span></span>
-<span id="cb21-23">    )</span>
-<span id="cb21-24">  ) <span class="sc" style="color: #5E5E5E;
+<span id="cb22-23">    )</span>
+<span id="cb22-24">  ) <span class="sc" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">|&gt;</span> </span>
-<span id="cb21-25">  <span class="fu" style="color: #4758AB;
+<span id="cb22-25">  <span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">select</span>(Dominio, <span class="st" style="color: #20794D;
 background-color: null;
@@ -1763,45 +4469,45 @@ background-color: null;
 font-style: inherit;">`</span>, <span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">everything</span>())</span>
-<span id="cb21-26"></span>
-<span id="cb21-27">tabla_multidimensional <span class="sc" style="color: #5E5E5E;
+<span id="cb22-26"></span>
+<span id="cb22-27">tabla_multidimensional <span class="sc" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">|&gt;</span> </span>
-<span id="cb21-28">  <span class="fu" style="color: #4758AB;
+<span id="cb22-28">  <span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">gt</span>() <span class="sc" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">|&gt;</span> </span>
-<span id="cb21-29">  <span class="fu" style="color: #4758AB;
+<span id="cb22-29">  <span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">fmt_number</span>(</span>
-<span id="cb21-30">    <span class="at" style="color: #657422;
+<span id="cb22-30">    <span class="at" style="color: #657422;
 background-color: null;
 font-style: inherit;">columns =</span> <span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">where</span>(is.numeric),</span>
-<span id="cb21-31">    <span class="at" style="color: #657422;
+<span id="cb22-31">    <span class="at" style="color: #657422;
 background-color: null;
 font-style: inherit;">decimals =</span> <span class="dv" style="color: #AD0000;
 background-color: null;
 font-style: inherit;">0</span>,</span>
-<span id="cb21-32">    <span class="at" style="color: #657422;
+<span id="cb22-32">    <span class="at" style="color: #657422;
 background-color: null;
 font-style: inherit;">use_seps =</span> <span class="cn" style="color: #8f5902;
 background-color: null;
 font-style: inherit;">TRUE</span></span>
-<span id="cb21-33">  ) <span class="sc" style="color: #5E5E5E;
+<span id="cb22-33">  ) <span class="sc" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">|&gt;</span> </span>
-<span id="cb21-34">  <span class="fu" style="color: #4758AB;
+<span id="cb22-34">  <span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">grand_summary_rows</span>(</span>
-<span id="cb21-35">    <span class="at" style="color: #657422;
+<span id="cb22-35">    <span class="at" style="color: #657422;
 background-color: null;
 font-style: inherit;">columns =</span> <span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">where</span>(is.numeric),</span>
-<span id="cb21-36">    <span class="at" style="color: #657422;
+<span id="cb22-36">    <span class="at" style="color: #657422;
 background-color: null;
 font-style: inherit;">fns =</span> <span class="fu" style="color: #4758AB;
 background-color: null;
@@ -1818,7 +4524,7 @@ background-color: null;
 font-style: inherit;">fn =</span> <span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">"sum"</span>),</span>
-<span id="cb21-37">    <span class="at" style="color: #657422;
+<span id="cb22-37">    <span class="at" style="color: #657422;
 background-color: null;
 font-style: inherit;">fmt =</span> <span class="sc" style="color: #5E5E5E;
 background-color: null;
@@ -1833,7 +4539,7 @@ background-color: null;
 font-style: inherit;">use_seps =</span> <span class="cn" style="color: #8f5902;
 background-color: null;
 font-style: inherit;">TRUE</span>)</span>
-<span id="cb21-38">  )</span></code></pre></div></div>
+<span id="cb22-38">  )</span></code></pre></div></div>
 <div id="tbl-vulnerabilidad-multiple" class="cell quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-tbl figure">
 <figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-vulnerabilidad-multiple-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
@@ -1841,23 +4547,40 @@ Tabla&nbsp;2: Número de personas vulnerables en múltiples dimensiones, por dom
 </figcaption>
 <div aria-describedby="tbl-vulnerabilidad-multiple-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="cell-output-display">
+<<<<<<< HEAD
 <div id="yjpsgyjsjr" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
 <style>#yjpsgyjsjr table {
+=======
+<div id="mhraxqwelb" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#mhraxqwelb table {
+>>>>>>> 55301ab (remove large file)
   font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
+<<<<<<< HEAD
 #yjpsgyjsjr thead, #yjpsgyjsjr tbody, #yjpsgyjsjr tfoot, #yjpsgyjsjr tr, #yjpsgyjsjr td, #yjpsgyjsjr th {
   border-style: none;
 }
 
 #yjpsgyjsjr p {
+=======
+#mhraxqwelb thead, #mhraxqwelb tbody, #mhraxqwelb tfoot, #mhraxqwelb tr, #mhraxqwelb td, #mhraxqwelb th {
+  border-style: none;
+}
+
+#mhraxqwelb p {
+>>>>>>> 55301ab (remove large file)
   margin: 0;
   padding: 0;
 }
 
+<<<<<<< HEAD
 #yjpsgyjsjr .gt_table {
+=======
+#mhraxqwelb .gt_table {
+>>>>>>> 55301ab (remove large file)
   display: table;
   border-collapse: collapse;
   line-height: normal;
@@ -1883,12 +4606,20 @@ Tabla&nbsp;2: Número de personas vulnerables en múltiples dimensiones, por dom
   border-left-color: #D3D3D3;
 }
 
+<<<<<<< HEAD
 #yjpsgyjsjr .gt_caption {
+=======
+#mhraxqwelb .gt_caption {
+>>>>>>> 55301ab (remove large file)
   padding-top: 4px;
   padding-bottom: 4px;
 }
 
+<<<<<<< HEAD
 #yjpsgyjsjr .gt_title {
+=======
+#mhraxqwelb .gt_title {
+>>>>>>> 55301ab (remove large file)
   color: #333333;
   font-size: 125%;
   font-weight: initial;
@@ -1900,7 +4631,11 @@ Tabla&nbsp;2: Número de personas vulnerables en múltiples dimensiones, por dom
   border-bottom-width: 0;
 }
 
+<<<<<<< HEAD
 #yjpsgyjsjr .gt_subtitle {
+=======
+#mhraxqwelb .gt_subtitle {
+>>>>>>> 55301ab (remove large file)
   color: #333333;
   font-size: 85%;
   font-weight: initial;
@@ -1912,7 +4647,11 @@ Tabla&nbsp;2: Número de personas vulnerables en múltiples dimensiones, por dom
   border-top-width: 0;
 }
 
+<<<<<<< HEAD
 #yjpsgyjsjr .gt_heading {
+=======
+#mhraxqwelb .gt_heading {
+>>>>>>> 55301ab (remove large file)
   background-color: #FFFFFF;
   text-align: center;
   border-bottom-color: #FFFFFF;
@@ -1924,13 +4663,21 @@ Tabla&nbsp;2: Número de personas vulnerables en múltiples dimensiones, por dom
   border-right-color: #D3D3D3;
 }
 
+<<<<<<< HEAD
 #yjpsgyjsjr .gt_bottom_border {
+=======
+#mhraxqwelb .gt_bottom_border {
+>>>>>>> 55301ab (remove large file)
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
 }
 
+<<<<<<< HEAD
 #yjpsgyjsjr .gt_col_headings {
+=======
+#mhraxqwelb .gt_col_headings {
+>>>>>>> 55301ab (remove large file)
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -1945,7 +4692,11 @@ Tabla&nbsp;2: Número de personas vulnerables en múltiples dimensiones, por dom
   border-right-color: #D3D3D3;
 }
 
+<<<<<<< HEAD
 #yjpsgyjsjr .gt_col_heading {
+=======
+#mhraxqwelb .gt_col_heading {
+>>>>>>> 55301ab (remove large file)
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -1965,7 +4716,11 @@ Tabla&nbsp;2: Número de personas vulnerables en múltiples dimensiones, por dom
   overflow-x: hidden;
 }
 
+<<<<<<< HEAD
 #yjpsgyjsjr .gt_column_spanner_outer {
+=======
+#mhraxqwelb .gt_column_spanner_outer {
+>>>>>>> 55301ab (remove large file)
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -1977,6 +4732,7 @@ Tabla&nbsp;2: Número de personas vulnerables en múltiples dimensiones, por dom
   padding-right: 4px;
 }
 
+<<<<<<< HEAD
 #yjpsgyjsjr .gt_column_spanner_outer:first-child {
   padding-left: 0;
 }
@@ -1986,6 +4742,17 @@ Tabla&nbsp;2: Número de personas vulnerables en múltiples dimensiones, por dom
 }
 
 #yjpsgyjsjr .gt_column_spanner {
+=======
+#mhraxqwelb .gt_column_spanner_outer:first-child {
+  padding-left: 0;
+}
+
+#mhraxqwelb .gt_column_spanner_outer:last-child {
+  padding-right: 0;
+}
+
+#mhraxqwelb .gt_column_spanner {
+>>>>>>> 55301ab (remove large file)
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
@@ -1997,11 +4764,19 @@ Tabla&nbsp;2: Número de personas vulnerables en múltiples dimensiones, por dom
   width: 100%;
 }
 
+<<<<<<< HEAD
 #yjpsgyjsjr .gt_spanner_row {
   border-bottom-style: hidden;
 }
 
 #yjpsgyjsjr .gt_group_heading {
+=======
+#mhraxqwelb .gt_spanner_row {
+  border-bottom-style: hidden;
+}
+
+#mhraxqwelb .gt_group_heading {
+>>>>>>> 55301ab (remove large file)
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -2027,7 +4802,11 @@ Tabla&nbsp;2: Número de personas vulnerables en múltiples dimensiones, por dom
   text-align: left;
 }
 
+<<<<<<< HEAD
 #yjpsgyjsjr .gt_empty_group_heading {
+=======
+#mhraxqwelb .gt_empty_group_heading {
+>>>>>>> 55301ab (remove large file)
   padding: 0.5px;
   color: #333333;
   background-color: #FFFFFF;
@@ -2042,6 +4821,7 @@ Tabla&nbsp;2: Número de personas vulnerables en múltiples dimensiones, por dom
   vertical-align: middle;
 }
 
+<<<<<<< HEAD
 #yjpsgyjsjr .gt_from_md > :first-child {
   margin-top: 0;
 }
@@ -2051,6 +4831,17 @@ Tabla&nbsp;2: Número de personas vulnerables en múltiples dimensiones, por dom
 }
 
 #yjpsgyjsjr .gt_row {
+=======
+#mhraxqwelb .gt_from_md > :first-child {
+  margin-top: 0;
+}
+
+#mhraxqwelb .gt_from_md > :last-child {
+  margin-bottom: 0;
+}
+
+#mhraxqwelb .gt_row {
+>>>>>>> 55301ab (remove large file)
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -2069,7 +4860,11 @@ Tabla&nbsp;2: Número de personas vulnerables en múltiples dimensiones, por dom
   overflow-x: hidden;
 }
 
+<<<<<<< HEAD
 #yjpsgyjsjr .gt_stub {
+=======
+#mhraxqwelb .gt_stub {
+>>>>>>> 55301ab (remove large file)
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -2082,7 +4877,11 @@ Tabla&nbsp;2: Número de personas vulnerables en múltiples dimensiones, por dom
   padding-right: 5px;
 }
 
+<<<<<<< HEAD
 #yjpsgyjsjr .gt_stub_row_group {
+=======
+#mhraxqwelb .gt_stub_row_group {
+>>>>>>> 55301ab (remove large file)
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -2096,6 +4895,7 @@ Tabla&nbsp;2: Número de personas vulnerables en múltiples dimensiones, por dom
   vertical-align: top;
 }
 
+<<<<<<< HEAD
 #yjpsgyjsjr .gt_row_group_first td {
   border-top-width: 2px;
 }
@@ -2105,6 +4905,17 @@ Tabla&nbsp;2: Número de personas vulnerables en múltiples dimensiones, por dom
 }
 
 #yjpsgyjsjr .gt_summary_row {
+=======
+#mhraxqwelb .gt_row_group_first td {
+  border-top-width: 2px;
+}
+
+#mhraxqwelb .gt_row_group_first th {
+  border-top-width: 2px;
+}
+
+#mhraxqwelb .gt_summary_row {
+>>>>>>> 55301ab (remove large file)
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -2114,16 +4925,28 @@ Tabla&nbsp;2: Número de personas vulnerables en múltiples dimensiones, por dom
   padding-right: 5px;
 }
 
+<<<<<<< HEAD
 #yjpsgyjsjr .gt_first_summary_row {
+=======
+#mhraxqwelb .gt_first_summary_row {
+>>>>>>> 55301ab (remove large file)
   border-top-style: solid;
   border-top-color: #D3D3D3;
 }
 
+<<<<<<< HEAD
 #yjpsgyjsjr .gt_first_summary_row.thick {
   border-top-width: 2px;
 }
 
 #yjpsgyjsjr .gt_last_summary_row {
+=======
+#mhraxqwelb .gt_first_summary_row.thick {
+  border-top-width: 2px;
+}
+
+#mhraxqwelb .gt_last_summary_row {
+>>>>>>> 55301ab (remove large file)
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -2133,7 +4956,11 @@ Tabla&nbsp;2: Número de personas vulnerables en múltiples dimensiones, por dom
   border-bottom-color: #D3D3D3;
 }
 
+<<<<<<< HEAD
 #yjpsgyjsjr .gt_grand_summary_row {
+=======
+#mhraxqwelb .gt_grand_summary_row {
+>>>>>>> 55301ab (remove large file)
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -2143,7 +4970,11 @@ Tabla&nbsp;2: Número de personas vulnerables en múltiples dimensiones, por dom
   padding-right: 5px;
 }
 
+<<<<<<< HEAD
 #yjpsgyjsjr .gt_first_grand_summary_row {
+=======
+#mhraxqwelb .gt_first_grand_summary_row {
+>>>>>>> 55301ab (remove large file)
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -2153,7 +4984,11 @@ Tabla&nbsp;2: Número de personas vulnerables en múltiples dimensiones, por dom
   border-top-color: #D3D3D3;
 }
 
+<<<<<<< HEAD
 #yjpsgyjsjr .gt_last_grand_summary_row_top {
+=======
+#mhraxqwelb .gt_last_grand_summary_row_top {
+>>>>>>> 55301ab (remove large file)
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -2163,11 +4998,19 @@ Tabla&nbsp;2: Número de personas vulnerables en múltiples dimensiones, por dom
   border-bottom-color: #D3D3D3;
 }
 
+<<<<<<< HEAD
 #yjpsgyjsjr .gt_striped {
   background-color: rgba(128, 128, 128, 0.05);
 }
 
 #yjpsgyjsjr .gt_table_body {
+=======
+#mhraxqwelb .gt_striped {
+  background-color: rgba(128, 128, 128, 0.05);
+}
+
+#mhraxqwelb .gt_table_body {
+>>>>>>> 55301ab (remove large file)
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -2176,7 +5019,11 @@ Tabla&nbsp;2: Número de personas vulnerables en múltiples dimensiones, por dom
   border-bottom-color: #D3D3D3;
 }
 
+<<<<<<< HEAD
 #yjpsgyjsjr .gt_footnotes {
+=======
+#mhraxqwelb .gt_footnotes {
+>>>>>>> 55301ab (remove large file)
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -2190,7 +5037,11 @@ Tabla&nbsp;2: Número de personas vulnerables en múltiples dimensiones, por dom
   border-right-color: #D3D3D3;
 }
 
+<<<<<<< HEAD
 #yjpsgyjsjr .gt_footnote {
+=======
+#mhraxqwelb .gt_footnote {
+>>>>>>> 55301ab (remove large file)
   margin: 0px;
   font-size: 90%;
   padding-top: 4px;
@@ -2199,7 +5050,11 @@ Tabla&nbsp;2: Número de personas vulnerables en múltiples dimensiones, por dom
   padding-right: 5px;
 }
 
+<<<<<<< HEAD
 #yjpsgyjsjr .gt_sourcenotes {
+=======
+#mhraxqwelb .gt_sourcenotes {
+>>>>>>> 55301ab (remove large file)
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -2213,7 +5068,11 @@ Tabla&nbsp;2: Número de personas vulnerables en múltiples dimensiones, por dom
   border-right-color: #D3D3D3;
 }
 
+<<<<<<< HEAD
 #yjpsgyjsjr .gt_sourcenote {
+=======
+#mhraxqwelb .gt_sourcenote {
+>>>>>>> 55301ab (remove large file)
   font-size: 90%;
   padding-top: 4px;
   padding-bottom: 4px;
@@ -2221,6 +5080,7 @@ Tabla&nbsp;2: Número de personas vulnerables en múltiples dimensiones, por dom
   padding-right: 5px;
 }
 
+<<<<<<< HEAD
 #yjpsgyjsjr .gt_left {
   text-align: left;
 }
@@ -2230,10 +5090,22 @@ Tabla&nbsp;2: Número de personas vulnerables en múltiples dimensiones, por dom
 }
 
 #yjpsgyjsjr .gt_right {
+=======
+#mhraxqwelb .gt_left {
+  text-align: left;
+}
+
+#mhraxqwelb .gt_center {
+  text-align: center;
+}
+
+#mhraxqwelb .gt_right {
+>>>>>>> 55301ab (remove large file)
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
 
+<<<<<<< HEAD
 #yjpsgyjsjr .gt_font_normal {
   font-weight: normal;
 }
@@ -2251,16 +5123,40 @@ Tabla&nbsp;2: Número de personas vulnerables en múltiples dimensiones, por dom
 }
 
 #yjpsgyjsjr .gt_footnote_marks {
+=======
+#mhraxqwelb .gt_font_normal {
+  font-weight: normal;
+}
+
+#mhraxqwelb .gt_font_bold {
+  font-weight: bold;
+}
+
+#mhraxqwelb .gt_font_italic {
+  font-style: italic;
+}
+
+#mhraxqwelb .gt_super {
+  font-size: 65%;
+}
+
+#mhraxqwelb .gt_footnote_marks {
+>>>>>>> 55301ab (remove large file)
   font-size: 75%;
   vertical-align: 0.4em;
   position: initial;
 }
 
+<<<<<<< HEAD
 #yjpsgyjsjr .gt_asterisk {
+=======
+#mhraxqwelb .gt_asterisk {
+>>>>>>> 55301ab (remove large file)
   font-size: 100%;
   vertical-align: 0;
 }
 
+<<<<<<< HEAD
 #yjpsgyjsjr .gt_indent_1 {
   text-indent: 5px;
 }
@@ -2282,11 +5178,38 @@ Tabla&nbsp;2: Número de personas vulnerables en múltiples dimensiones, por dom
 }
 
 #yjpsgyjsjr .katex-display {
+=======
+#mhraxqwelb .gt_indent_1 {
+  text-indent: 5px;
+}
+
+#mhraxqwelb .gt_indent_2 {
+  text-indent: 10px;
+}
+
+#mhraxqwelb .gt_indent_3 {
+  text-indent: 15px;
+}
+
+#mhraxqwelb .gt_indent_4 {
+  text-indent: 20px;
+}
+
+#mhraxqwelb .gt_indent_5 {
+  text-indent: 25px;
+}
+
+#mhraxqwelb .katex-display {
+>>>>>>> 55301ab (remove large file)
   display: inline-flex !important;
   margin-bottom: 0.75em !important;
 }
 
+<<<<<<< HEAD
 #yjpsgyjsjr div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
+=======
+#mhraxqwelb div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
+>>>>>>> 55301ab (remove large file)
   height: 0px !important;
 }
 </style>
@@ -2439,145 +5362,145 @@ Tabla&nbsp;2: Número de personas vulnerables en múltiples dimensiones, por dom
 <h1>Exportando resultados a Excel</h1>
 <p>Para compartir estos resultados con colegas que no trabajan en R, exportamos las dos tablas finales a un mismo archivo de Excel, cada una en su propia pestaña, utilizando el paquete <code>openxlsx</code>.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb22" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1">libro <span class="ot" style="color: #003B4F;
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1">libro <span class="ot" style="color: #003B4F;
 background-color: null;
 font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">createWorkbook</span>()</span>
-<span id="cb22-2"><span class="fu" style="color: #4758AB;
+<span id="cb23-2"><span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">addWorksheet</span>(libro, <span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">"Por dominio"</span>)</span>
-<span id="cb22-3"><span class="fu" style="color: #4758AB;
+<span id="cb23-3"><span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">addWorksheet</span>(libro, <span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">"Multidimensional"</span>)</span>
-<span id="cb22-4"></span>
-<span id="cb22-5"><span class="fu" style="color: #4758AB;
+<span id="cb23-4"></span>
+<span id="cb23-5"><span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">writeData</span>(libro, <span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">"Por dominio"</span>, tabla_dominio)</span>
-<span id="cb22-6"><span class="fu" style="color: #4758AB;
+<span id="cb23-6"><span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">writeData</span>(libro, <span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">"Multidimensional"</span>, tabla_multidimensional)</span>
-<span id="cb22-7"></span>
-<span id="cb22-8"><span class="fu" style="color: #4758AB;
+<span id="cb23-7"></span>
+<span id="cb23-8"><span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">saveWorkbook</span>(</span>
-<span id="cb22-9">  libro,</span>
-<span id="cb22-10">  <span class="st" style="color: #20794D;
+<span id="cb23-9">  libro,</span>
+<span id="cb23-10">  <span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">"salidas/sesiones/0001-encuestas/vulnerabilidad_enaho.xlsx"</span>,</span>
-<span id="cb22-11">  <span class="at" style="color: #657422;
+<span id="cb23-11">  <span class="at" style="color: #657422;
 background-color: null;
 font-style: inherit;">overwrite =</span> <span class="cn" style="color: #8f5902;
 background-color: null;
 font-style: inherit;">TRUE</span></span>
-<span id="cb22-12">)</span></code></pre></div></div>
+<span id="cb23-12">)</span></code></pre></div></div>
 </div>
 <section id="incluyendo-la-fila-de-totales-en-la-exportación" class="level2">
 <h2 class="anchored" data-anchor-id="incluyendo-la-fila-de-totales-en-la-exportación">Incluyendo la fila de totales en la exportación</h2>
 <p>La fila de totales que <code>grand_summary_rows()</code> agrega en pantalla vive únicamente en el objeto de <code>gt</code>, no en los data frames <code>tabla_dominio</code> y <code>tabla_multidimensional</code>, así que no aparece al exportar con <code>writeData()</code>. Para que el Excel también la tenga, calculamos esa fila directamente con <code>summarise()</code> y la agregamos a cada tabla con <code>bind_rows()</code>, antes de exportar a un nuevo archivo.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1">tabla_dominio_totales <span class="ot" style="color: #003B4F;
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb24" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1">tabla_dominio_totales <span class="ot" style="color: #003B4F;
 background-color: null;
 font-style: inherit;">&lt;-</span> tabla_dominio <span class="sc" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">|&gt;</span> </span>
-<span id="cb23-2">  <span class="fu" style="color: #4758AB;
+<span id="cb24-2">  <span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">bind_rows</span>(</span>
-<span id="cb23-3">    tabla_dominio <span class="sc" style="color: #5E5E5E;
+<span id="cb24-3">    tabla_dominio <span class="sc" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">|&gt;</span> </span>
-<span id="cb23-4">      <span class="fu" style="color: #4758AB;
+<span id="cb24-4">      <span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">summarise</span>(</span>
-<span id="cb23-5">        <span class="fu" style="color: #4758AB;
+<span id="cb24-5">        <span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">across</span>(<span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">where</span>(is.numeric), sum),</span>
-<span id="cb23-6">        <span class="at" style="color: #657422;
+<span id="cb24-6">        <span class="at" style="color: #657422;
 background-color: null;
 font-style: inherit;">Dominio =</span> <span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">"Total"</span></span>
-<span id="cb23-7">      )</span>
-<span id="cb23-8">  )</span>
-<span id="cb23-9"></span>
-<span id="cb23-10">tabla_multidimensional_totales <span class="ot" style="color: #003B4F;
+<span id="cb24-7">      )</span>
+<span id="cb24-8">  )</span>
+<span id="cb24-9"></span>
+<span id="cb24-10">tabla_multidimensional_totales <span class="ot" style="color: #003B4F;
 background-color: null;
 font-style: inherit;">&lt;-</span> tabla_multidimensional <span class="sc" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">|&gt;</span> </span>
-<span id="cb23-11">  <span class="fu" style="color: #4758AB;
+<span id="cb24-11">  <span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">bind_rows</span>(</span>
-<span id="cb23-12">    tabla_multidimensional <span class="sc" style="color: #5E5E5E;
+<span id="cb24-12">    tabla_multidimensional <span class="sc" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">|&gt;</span> </span>
-<span id="cb23-13">      <span class="fu" style="color: #4758AB;
+<span id="cb24-13">      <span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">summarise</span>(</span>
-<span id="cb23-14">        <span class="fu" style="color: #4758AB;
+<span id="cb24-14">        <span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">across</span>(<span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">where</span>(is.numeric), sum),</span>
-<span id="cb23-15">        <span class="at" style="color: #657422;
+<span id="cb24-15">        <span class="at" style="color: #657422;
 background-color: null;
 font-style: inherit;">Dominio =</span> <span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">"Total"</span></span>
-<span id="cb23-16">      )</span>
-<span id="cb23-17">  )</span>
-<span id="cb23-18"></span>
-<span id="cb23-19">libro_totales <span class="ot" style="color: #003B4F;
+<span id="cb24-16">      )</span>
+<span id="cb24-17">  )</span>
+<span id="cb24-18"></span>
+<span id="cb24-19">libro_totales <span class="ot" style="color: #003B4F;
 background-color: null;
 font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">createWorkbook</span>()</span>
-<span id="cb23-20"><span class="fu" style="color: #4758AB;
+<span id="cb24-20"><span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">addWorksheet</span>(libro_totales, <span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">"Por dominio"</span>)</span>
-<span id="cb23-21"><span class="fu" style="color: #4758AB;
+<span id="cb24-21"><span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">addWorksheet</span>(libro_totales, <span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">"Multidimensional"</span>)</span>
-<span id="cb23-22"></span>
-<span id="cb23-23"><span class="fu" style="color: #4758AB;
+<span id="cb24-22"></span>
+<span id="cb24-23"><span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">writeData</span>(libro_totales, <span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">"Por dominio"</span>, tabla_dominio_totales)</span>
-<span id="cb23-24"><span class="fu" style="color: #4758AB;
+<span id="cb24-24"><span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">writeData</span>(libro_totales, <span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">"Multidimensional"</span>, tabla_multidimensional_totales)</span>
-<span id="cb23-25"></span>
-<span id="cb23-26"><span class="fu" style="color: #4758AB;
+<span id="cb24-25"></span>
+<span id="cb24-26"><span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">saveWorkbook</span>(</span>
-<span id="cb23-27">  libro_totales,</span>
-<span id="cb23-28">  <span class="st" style="color: #20794D;
+<span id="cb24-27">  libro_totales,</span>
+<span id="cb24-28">  <span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">"salidas/sesiones/0001-encuestas/vulnerabilidad_enaho_totales.xlsx"</span>,</span>
-<span id="cb23-29">  <span class="at" style="color: #657422;
+<span id="cb24-29">  <span class="at" style="color: #657422;
 background-color: null;
 font-style: inherit;">overwrite =</span> <span class="cn" style="color: #8f5902;
 background-color: null;
 font-style: inherit;">TRUE</span></span>
-<span id="cb23-30">)</span></code></pre></div></div>
+<span id="cb24-30">)</span></code></pre></div></div>
 </div>
 </section>
 </section>

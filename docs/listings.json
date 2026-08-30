@@ -1,13 +1,15 @@
 [
   {
-    "listing": "/index.html",
+    "listing": "/sesiones/index.html",
     "items": [
+      "/sesiones/posts/0002-gis/index.html",
       "/sesiones/posts/0001-encuestas/index.html"
     ]
   },
   {
-    "listing": "/sesiones/index.html",
+    "listing": "/index.html",
     "items": [
+      "/sesiones/posts/0002-gis/index.html",
       "/sesiones/posts/0001-encuestas/index.html"
     ]
   }

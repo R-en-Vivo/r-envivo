@@ -1,0 +1,2382 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="es" xml:lang="es"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.10.18">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Renato Vargas">
+<meta name="description" content="Explorando el riesgo parte 2: los paquetes sf y terra">
+
+<title>La perspectiva geográfica de las encuestas – R en Vivo</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+  margin-bottom: 0em;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
+
+
+<script src="../../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../../">
+<script src="../../../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../../../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../../site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../../site_libs/bootstrap/bootstrap-629c56ba100745318e9dcb35146191d0.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No se han encontrado resultados",
+    "search-matching-documents-text": "documentos encontrados",
+    "search-copy-link-title": "Copiar el enlace en la búsqueda",
+    "search-hide-matches-text": "Ocultar resultados adicionales",
+    "search-more-match-text": "resultado adicional en este documento",
+    "search-more-matches-text": "resultados adicionales en este documento",
+    "search-clear-button-title": "Borrar",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancelar",
+    "search-submit-button-title": "Enviar",
+    "search-label": "Buscar"
+  }
+}</script>
+
+
+<link rel="stylesheet" href="../../../styles.css">
+</head>
+
+<body class="nav-fixed quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="../../../index.html">
+    <span class="navbar-title">R en Vivo</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Buscar"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Navegación de palanca" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../../../index.html"> 
+<span class="menu-text">Inicio</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../../sesiones/index.html"> 
+<span class="menu-text">Sesiones</span></a>
+  </li>  
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-documentos" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">Documentos</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-documentos">    
+        <li>
+    <a class="dropdown-item" href="../../../documentos/memoria-de-calculo.html">
+ <span class="dropdown-text">Memoria de Cálculo</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../../documentos/reporte.html">
+ <span class="dropdown-text">Un Lindo Reporte Ficticio</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" href="../../../dashboard.html"> 
+<span class="menu-text">Dashboard</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../../presentaciones.html"> 
+<span class="menu-text">Presentaciones</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../../about.html"> 
+<span class="menu-text">Acerca de</span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">En esta página</h2>
+   
+  <ul>
+  <li><a href="#video" id="toc-video" class="nav-link active" data-scroll-target="#video">Video</a></li>
+  <li><a href="#introducción" id="toc-introducción" class="nav-link" data-scroll-target="#introducción">Introducción</a>
+  <ul class="collapse">
+  <li><a href="#los-datos" id="toc-los-datos" class="nav-link" data-scroll-target="#los-datos">Los Datos</a></li>
+  </ul></li>
+  <li><a href="#metodología" id="toc-metodología" class="nav-link" data-scroll-target="#metodología">Metodología</a></li>
+  <li><a href="#preámbulo" id="toc-preámbulo" class="nav-link" data-scroll-target="#preámbulo">Preámbulo</a></li>
+  <li><a href="#análisis" id="toc-análisis" class="nav-link" data-scroll-target="#análisis">Análisis</a>
+  <ul class="collapse">
+  <li><a href="#carga-de-datos" id="toc-carga-de-datos" class="nav-link" data-scroll-target="#carga-de-datos">Carga de datos</a></li>
+  <li><a href="#convertir-los-datos-de-latitud-y-longitud-a-una-capa-geográfica" id="toc-convertir-los-datos-de-latitud-y-longitud-a-una-capa-geográfica" class="nav-link" data-scroll-target="#convertir-los-datos-de-latitud-y-longitud-a-una-capa-geográfica">Convertir los datos de LATITUD y LONGITUD a una capa geográfica</a></li>
+  <li><a href="#unir-los-datos-geográficos-de-las-viviendas-con-datos-de-amenaza-de-deslizamiento" id="toc-unir-los-datos-geográficos-de-las-viviendas-con-datos-de-amenaza-de-deslizamiento" class="nav-link" data-scroll-target="#unir-los-datos-geográficos-de-las-viviendas-con-datos-de-amenaza-de-deslizamiento">Unir los datos geográficos de las viviendas con datos de amenaza de deslizamiento</a></li>
+  <li><a href="#identificar-los-hogares-expuestos-a-una-frecuencia-alta" id="toc-identificar-los-hogares-expuestos-a-una-frecuencia-alta" class="nav-link" data-scroll-target="#identificar-los-hogares-expuestos-a-una-frecuencia-alta">Identificar los hogares expuestos a una frecuencia alta</a></li>
+  <li><a href="#unión-con-la-base-de-datos-de-vulnerabilidad" id="toc-unión-con-la-base-de-datos-de-vulnerabilidad" class="nav-link" data-scroll-target="#unión-con-la-base-de-datos-de-vulnerabilidad">Unión con la base de datos de vulnerabilidad</a></li>
+  </ul></li>
+  <li><a href="#resultados" id="toc-resultados" class="nav-link" data-scroll-target="#resultados">Resultados</a>
+  <ul class="collapse">
+  <li><a href="#resultados-por-área-geográfica" id="toc-resultados-por-área-geográfica" class="nav-link" data-scroll-target="#resultados-por-área-geográfica">Resultados por área geográfica</a></li>
+  </ul></li>
+  <li><a href="#conclusión" id="toc-conclusión" class="nav-link" data-scroll-target="#conclusión">Conclusión</a></li>
+  <li><a href="#referencias" id="toc-referencias" class="nav-link" data-scroll-target="#referencias">Referencias</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">La perspectiva geográfica de las encuestas</h1>
+  <div class="quarto-categories">
+    <div class="quarto-category">ciencia de datos</div>
+    <div class="quarto-category">rstats</div>
+    <div class="quarto-category">análisis reproducible</div>
+    <div class="quarto-category">encuestas</div>
+    <div class="quarto-category">gis</div>
+    <div class="quarto-category">análisis geográfico</div>
+    <div class="quarto-category">tidyverse</div>
+  </div>
+  </div>
+
+<div>
+  <div class="description">
+    Explorando el riesgo parte 2: los paquetes sf y terra
+  </div>
+</div>
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Autor/a</div>
+    <div class="quarto-title-meta-contents">
+             <p>Renato Vargas </p>
+          </div>
+  </div>
+    
+    <div>
+    <div class="quarto-title-meta-heading">Fecha de publicación</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">26 de agosto de 2026</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="video" class="level1">
+<h1>Video</h1>
+<p>Puedes encontrar el vídeo de implementación de esta sesión <a href="https://youtu.be/wZ-Tu-6sqXE">en YouTube</a>:</p>
+<div class="quarto-video ratio ratio-16x9"><iframe data-external="1" src="https://www.youtube.com/embed/wZ-Tu-6sqXE" title="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen=""></iframe></div>
+</section>
+<section id="introducción" class="level1">
+<h1>Introducción</h1>
+<p>En esta sesión, exploraremos cómo agregar la perspectiva geográfica a nuestro análisis con los paquetes <code>sf</code> y <code>terra</code>. En la sesión previa de <a href="../../../sesiones/posts/0001-encuestas/index.html"><em>Encuestas de Hogares</em></a> identificamos a las personas que son vulnerables según una serie de dimensiones por características personales y aquellas de su hogar. Esto hace que esas personas tengan una mayor dificultad para enfrentar y recuperarse de un evento natual extremo. Sin embargo, como vimos, en un país como Perú, puede ser alta la proporción de personas que cumplen con con características como esas. Si el país quiere contar con uno o varios programas de preparación ante enventos extremos, deberá asignar sus recursos limitados a la fracción de individuos que tenga mayores probabilidades de ser afectado por un evento de esa naturaleza. Ahí es donde entra la dimensión geográfica que exploraremos hoy.</p>
+<p>Asegúrate de tener instalado R y Positron para seguir este ejemplo. Estos los debes instalar en el siguiente orden y puedes encontrarlos en:</p>
+<ul>
+<li><a href="https://cran.r-project.org/">Entorno estadístico R</a>.</li>
+<li><a href="https://positron.posit.co/download.html">Positron</a>.</li>
+</ul>
+<p>Si no tienes instalados los paquetes que usaremos, puedes utilizar la funcionalidad de Positron para instalar paquetes, es decir el ícono de una caja de cartón en tu barra de la izquierda. Alternativamente, puedes correr lo siguiente en la consola de R:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">install.packages</span>(</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">c</span>(</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">"tidyverse"</span>,</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>    <span class="st">"haven"</span>,</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">"gt"</span>,</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>    <span class="st">"openxlsx"</span>,</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>    <span class="st">"terra"</span>,</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>    <span class="st">"sf"</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<section id="los-datos" class="level2">
+<h2 class="anchored" data-anchor-id="los-datos">Los Datos</h2>
+<p>En esta sesión utilizaremos los datos reales de la Encuesta Nacional de Hogares (ENAHO) de Perú, que se encuentran disponibles en el <a href="https://proyectos.inei.gob.pe/microdatos/">repositorio de datos Instituto Nacional de Estadística e Informática (INEI)</a> <span class="citation" data-cites="inei2026microdatos">(<a href="#ref-inei2026microdatos" role="doc-biblioref">INEI, 2026</a>)</span>. Los datos de la ENAHO son una fuente valiosa para analizar las condiciones de vida de los hogares peruanos. Utilizaremos los datos más recientes disponibles con cálculos de pobreza y agregado de consumo, que corresponden al año 2025. Entre los datos disponibles, hay muchos módulos y en esta ocasión, utilizaremos solamente los datos de la vivienda, los cuales combinaremos con datos de nuestro análisis previo en la sesión de <a href="../../../sesiones/posts/0001-encuestas/index.html">encuestas de hogares</a>.</p>
+<p>Adicionalmente utilizaremos datos del mapa global de <a href="https://datacatalog.worldbank.org/search/dataset/0037584/global-landslide-hazard-map">amenaza de deslizamiento del Banco Mundial</a> <span class="citation" data-cites="worldbank2021landslide">(<a href="#ref-worldbank2021landslide" role="doc-biblioref">World Bank, 2021</a>)</span>, del cual hemos extraido el área correspondiente a Perú, que puede ser descargada líneas abajo. Específicamente nos centramos en el mapa de amenaza de deslizamiento provocado por lluvia, con base en la mediana entre 1980 y 2018<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a>.</p>
+<p>El mapa representa la frecuencia anual estimada de ocurrencia de deslizamientos significativos provocados por lluvia, calculada para el período 1980–2018. Cada celda del ráster corresponde aproximadamente a 1 km² y su valor indica el número esperado de deslizamientos significativos por año en esa superficie. Por ejemplo, un valor de 0.01 equivale aproximadamente a una frecuencia de un deslizamiento cada 100 años por km², mientras que un valor de 0.001 corresponde aproximadamente a uno cada 1,000 años. Es decir, el número indica a grandes rasgos una fracción en el que el inverso es el lapso que transcurrirá en años entre dos eventos en esa ubicación geográfica.</p>
+<p>El mapa combina información sobre la susceptibilidad del terreno, derivada del <a href="https://gpm.nasa.gov/applications/landslides">mapa global de susceptibilidad de NASA</a> <span class="citation" data-cites="nasa2020landslides">(<a href="#ref-nasa2020landslides" role="doc-biblioref">NASA Global Precipitation Measurement Mission, 2020</a>)</span>, con información histórica sobre las precipitaciones. A diferencia de un mapa de susceptibilidad, que indica qué tan propenso es el terreno a deslizarse dadas sus características físicas, este mapa intenta estimar con qué frecuencia puede ocurrir efectivamente un deslizamiento cuando se considera también el mecanismo que lo desencadena, en este caso la lluvia. El modelo estima inicialmente probabilidades de ocurrencia bajo distintas condiciones de precipitación y luego las anualiza para obtener frecuencias de deslizamiento.</p>
+<p>Para facilitar su interpretación, el estudio del Banco Mundial <span class="citation" data-cites="arup2020">(<a href="#ref-arup2020" role="doc-biblioref">Redshaw et&nbsp;al., 2020</a>)</span> propone los siguientes umbrales de peligro:</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 38%">
+<col style="width: 23%">
+<col style="width: 38%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Frecuencia anual estimada por km²</th>
+<th>Nivel de peligro</th>
+<th>Interpretación aproximada</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>- <strong>&lt; 0.0001</strong></td>
+<td>Muy bajo</td>
+<td>Menos de 1 evento cada 10,000 años</td>
+</tr>
+<tr class="even">
+<td>- <strong>0.0001 – 0.001</strong></td>
+<td>Bajo</td>
+<td>Entre 1 cada 10,000 y 1 cada 1,000 años</td>
+</tr>
+<tr class="odd">
+<td>- <strong>0.001 – 0.01</strong></td>
+<td>Medio</td>
+<td>Entre 1 cada 1,000 y 1 cada 100 años</td>
+</tr>
+<tr class="even">
+<td>- <strong>&gt; 0.01</strong></td>
+<td>Alto</td>
+<td>Más de 1 cada 100 años</td>
+</tr>
+</tbody>
+</table>
+<p>Dado que el mapa de amenazas es de carácter global, el tamaño de archivo es muy grande para incluirlo en este repositorio. Como referencia, muestro aquí una rutina utilizada para extraer solamente lo correspondiente a Perú que utilicé para crear el archivo que te puedes descargar abajo. Esto lo hacemos para mantener el tamaño de este repositorio entre los límites de GitHub. Las funciones usadas aquí corresponden al paquete <code>terra</code>.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Mapa global de deslizamientos</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>deslizamientos <span class="ot">&lt;-</span> terra<span class="sc">::</span><span class="fu">rast</span>(<span class="st">"datos/gis/per/LS_RF_Median_1980-2018_COG.tif"</span>)</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Capa vectorial de límites administrativos de Perú</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>peru       <span class="ot">&lt;-</span> terra<span class="sc">::</span><span class="fu">vect</span>(<span class="st">"datos/gis/per/PER-adm0.gpkg"</span>)</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Primero recortamos un rectángulo del tamaño de Perú del mapa global</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>deslizamientos_peru <span class="ot">&lt;-</span> terra<span class="sc">::</span><span class="fu">crop</span>(deslizamientos, peru)</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Segundo cortamos las áreas del rectángulo fuera de los límites</span></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a><span class="co"># a la medida de la forma del país</span></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>deslizamientos_peru <span class="ot">&lt;-</span> terra<span class="sc">::</span><span class="fu">mask</span>(deslizamientos_peru, peru)</span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a><span class="co"># Finalmente lo exportamos en formato raster para usarlo en</span></span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a><span class="co"># nuestro análisis</span></span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a><span class="fu">writeRaster</span>(</span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>  deslizamientos_peru,</span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>  <span class="st">"datos/gis/per/PER_LS_RF_Median_1980-2018.tif"</span>,</span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>  <span class="at">overwrite =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>  <span class="at">NAflag =</span> <span class="sc">-</span><span class="dv">9999</span>,</span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a>  <span class="at">gdal =</span> <span class="fu">c</span>(<span class="st">"COMPRESS=DEFLATE"</span>, <span class="st">"TILED=YES"</span>)</span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>Descargas
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<ul>
+<li><strong>Características de la Vivienda y del Hogar</strong>: <a href="../../../datos/per_enaho/Enaho01-2025-100-viviendas.sav">datos SPSS</a> | <a href="../../../datos/per_enaho/CED-01-100-2025-vivienda.pdf" download="CED-01-100-2025-vivienda.pdf">preguntas módulo vivienda</a>.</li>
+<li><strong>Mapa de amenaza de deslizamiento provocado por lluvia (mediana 1980-2018)</strong>: <a href="../../../datos/gis/per/PER_LS_RF_Median_1980-2018.tif">raster</a> | <a href="../../../datos/gis/per/global-landslide-hazard-map-report.pdf" download="global-landslide-hazard-map-report.pdf">reporte</a>.</li>
+<li><strong>Vector de límites de Perú de SIGRID</strong>: <a href="../../../datos/gis/per/PER-adm0.gpkg">vector</a>.</li>
+</ul>
+</div>
+</div>
+</section>
+</section>
+<section id="metodología" class="level1">
+<h1>Metodología</h1>
+<p>En nuestra <a href="../../../sesiones/posts/0001-encuestas/index.html">sesión anterior</a> estimamos el número de peruanos que experimentarían vulnerabilidad ante eventos climáticos extremos. Para esto, utilizamos ideas de <span class="citation" data-cites="doan2023">Doan et&nbsp;al. (<a href="#ref-doan2023" role="doc-biblioref">2023</a>)</span> en las que entendemos que la <em><strong>“vulnerabilidad de un hogar ante un evento climático extremo dependerá de las características del hogar que determinan el impacto inicial del evento y la capacidad del hogar para afrontarlo (…). Esto se refleja en la definición del IPCC: la vulnerabilidad incluye tanto ‘la sensibilidad o susceptibilidad al daño’ como ‘la falta de capacidad para afrontar y adaptarse’”</strong></em>.</p>
+<p>Siguiendo las ideas de <span class="citation" data-cites="doan2023">Doan et&nbsp;al. (<a href="#ref-doan2023" role="doc-biblioref">2023</a>)</span> identificamos una serie de dimensiones de la vulnerabilidad<a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a>, entre las cuales vimos diferentes criterios para catalogar a los miembros de los hogares como vulnerables según:</p>
+<ul>
+<li>Ingreso/gasto.</li>
+<li>Educación.</li>
+<li>Acceso a agua.</li>
+<li>Acceso a saneamiento.</li>
+<li>Materiales de construcción.</li>
+<li>Protección social.</li>
+</ul>
+<p>Pero según la metodología, eso es solo un lado de la moneda. Estas personas son vulnerables, pero eso será un problema solo si están ubicados en un lugar en donde un desastre puede alcanzarlos. Para eso, contrastamos su condición de vulnerablidad contra la distribución geográfica de los lugares en donde es más probable que encuentren ese tipo de riesgo.</p>
+<p>Tenemos la suerte que nuestros amigos del INEI de Perú incluyeron datos acerca de la ubicación geográfica del conglomerado estadístico en el que se encuentran las viviendas en la ENAHO a través de las variables <code>LATITUD</code> y <code>LONGITUD</code> de nuestro marco de datos <code>viviendas</code>. Aquí cabe explicar que no están dándonos la ubicación de cada vivienda, lo cual iría contra los principios de confidencialidad. Eso quiere decir que todas las viviendas de un conglomerado comparten la misma ubicación geográfica, pero esto nos da ya un aproximado de contra qué el valor de posible frecuencia en años de ocurrencia de deslizamiento ocasionado por lluvias del mapa se pueden asociar esas viviendas.</p>
+<p>Vimos arriba que los mismos autores del mapa otorgan una calificación de peligro “alta” a aquellas viviendas que se encuentren en una ubicación con un valor de frecuencia anual estimada por km² mayor a 0.01 equivalente a más de 1 cada 100 años.</p>
+</section>
+<section id="preámbulo" class="level1">
+<h1>Preámbulo</h1>
+<p>Primeramente limpiamos el área de trabajo y cargamos las librerías correspondientes para el análisis.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Limpiar el área de trabajo</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">rm</span>(<span class="at">list =</span> <span class="fu">ls</span>()) </span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Cargar librerías</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse) <span class="co"># Cargar dplyr y sus amigos</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(gt) <span class="co"># tablas en html</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(haven) <span class="co"># importar datos de SPSS y Stata</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(openxlsx) <span class="co"># exportar resultados a Excel</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(terra) <span class="co"># Manipular datos geográficos</span></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(sf) <span class="co"># Manipular datos geográficos vectoriales</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</section>
+<section id="análisis" class="level1">
+<h1>Análisis</h1>
+<section id="carga-de-datos" class="level2">
+<h2 class="anchored" data-anchor-id="carga-de-datos">Carga de datos</h2>
+<p>Utilizamos la función <code>read_spss()</code> del paquete <code>haven</code> para cargar datos de vivienda de la encuesta que se encuentran en SPSS y la función <code>rast()</code> del paquete <code>terra</code> para cargar el objeto geográfico ráster del mapa de amenaza de deslizamiento por lluvia. En nuestra sesión de Encuestas de Hogares creamos una base de datos de hogares vulnerables en formato RDS, la cual cargamos acá con la función <code>readRDS()</code> de R base.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Módulo de viviendas de la ENAHO</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>viviendas <span class="ot">&lt;-</span> <span class="fu">read_spss</span>(</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>  <span class="st">"datos/per_enaho/Enaho01-2025-100-viviendas.sav"</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Base de datos de vulnerabilidad</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>hogares_vulnerables <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>  <span class="st">"salidas/sesiones/0001-encuestas/hogares_vulnerables.RDS"</span></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a><span class="co"># El mapa de amenaza de deslizamiento por lluvia para Perú</span></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>deslizamientos_peru <span class="ot">&lt;-</span> <span class="fu">rast</span>(</span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>  <span class="st">"datos/gis/per/PER_LS_RF_Median_1980-2018.tif"</span></span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a><span class="co"># Límites administrativos de Perú</span></span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>peru <span class="ot">&lt;-</span> <span class="fu">vect</span>(</span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>  <span class="st">"datos/gis/per/PER-adm0.gpkg"</span></span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Los marcos de datos <code>viviendas</code> y <code>hogares_vulnerables</code> cargan como otros marcos de datos o <code>data.frame</code> que hemos usado anteriormente. Sin embargo, el archivo raster del mapa carga como objeto <code>SpatRaster</code>. Un <code>SpatRaster</code> es el objeto y la clase de datos central del paquete terra en R, diseñado para representar y procesar datos geográficos de tipo ráster. Es decir, cuadrículas de celdas. Esto lo podemos verificar con la función <code>class()</code>.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">class</span>(viviendas)</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "tbl_df"     "tbl"        "data.frame"</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">class</span>(hogares_vulnerables)</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "tbl_df"     "tbl"        "data.frame"</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">class</span>(deslizamientos_peru)</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "SpatRaster"
+attr(,"package")
+[1] "terra"</code></pre>
+</div>
+</div>
+<p>Para darnos una idea del contenido del raster de amenazas de deslizamiento provocado por lluvia, hacemos una visualización rápida con las opciones por defecto:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(deslizamientos_peru)</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="index_files/figure-html/unnamed-chunk-3-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Es claro que la amenaza de deslizamiento provocado por lluvia se incrementa con la pendiente y se puede ver el impacto que tiene la cordillera de los Andes sobre esta variable.</p>
+</section>
+<section id="convertir-los-datos-de-latitud-y-longitud-a-una-capa-geográfica" class="level2">
+<h2 class="anchored" data-anchor-id="convertir-los-datos-de-latitud-y-longitud-a-una-capa-geográfica">Convertir los datos de LATITUD y LONGITUD a una capa geográfica</h2>
+<p>A pesar que <code>viviendas</code> tiene las variables geográficas <code>LATITUD</code> y <code>LONGITUD</code>, el objeto en sí no es entendido como geográfico por R, así que debemos convertirlo a una versión espacialmente definida con el paquete <code>sf</code> (simple features). En la jerga geoespacial, “features” generalmente se refiere a características o figuras vectoriales como lo son los límites administrativos de Perú que vimos recién. En este caso no serán características en forma de figuras, sino una nube de puntos en donde se encuentran los centros de los conglomerados en donde se ubican nuestras viviendas.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>viviendas_sf <span class="ot">&lt;-</span> viviendas <span class="sc">|&gt;</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Seleccionamos solo las variables</span></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>  <span class="co"># de identificación única del hogar</span></span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>  <span class="co"># y las variables geográficas </span></span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(</span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>    CONGLOME,</span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>    VIVIENDA,</span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>    HOGAR,</span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>    LATITUD,</span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a>    LONGITUD</span>
+<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span> </span>
+<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Nos aseguramos que solo utilizamos </span></span>
+<span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a>  <span class="co"># viviendas con info geográfica no faltante</span></span>
+<span id="cb12-14"><a href="#cb12-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(</span>
+<span id="cb12-15"><a href="#cb12-15" aria-hidden="true" tabindex="-1"></a>    <span class="sc">!</span><span class="fu">is.na</span>(LATITUD),</span>
+<span id="cb12-16"><a href="#cb12-16" aria-hidden="true" tabindex="-1"></a>    <span class="sc">!</span><span class="fu">is.na</span>(LONGITUD)</span>
+<span id="cb12-17"><a href="#cb12-17" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span> </span>
+<span id="cb12-18"><a href="#cb12-18" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Convertimos las coordenadas a una nube de </span></span>
+<span id="cb12-19"><a href="#cb12-19" aria-hidden="true" tabindex="-1"></a>  <span class="co"># puntos utilizando el mismo sistema de coordenadas</span></span>
+<span id="cb12-20"><a href="#cb12-20" aria-hidden="true" tabindex="-1"></a>  <span class="co"># de nuestras capas importadas EPSG: 4326</span></span>
+<span id="cb12-21"><a href="#cb12-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">st_as_sf</span>(</span>
+<span id="cb12-22"><a href="#cb12-22" aria-hidden="true" tabindex="-1"></a>    <span class="at">coords =</span> <span class="fu">c</span>(<span class="st">"LONGITUD"</span>, <span class="st">"LATITUD"</span>),</span>
+<span id="cb12-23"><a href="#cb12-23" aria-hidden="true" tabindex="-1"></a>    <span class="at">crs =</span> <span class="dv">4326</span>,</span>
+<span id="cb12-24"><a href="#cb12-24" aria-hidden="true" tabindex="-1"></a>    <span class="at">remove =</span> <span class="cn">FALSE</span></span>
+<span id="cb12-25"><a href="#cb12-25" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span> </span>
+<span id="cb12-26"><a href="#cb12-26" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Una vez convertidas en el paso anterior</span></span>
+<span id="cb12-27"><a href="#cb12-27" aria-hidden="true" tabindex="-1"></a>  <span class="co"># no necesitamos más LATITUD y LONGITUD</span></span>
+<span id="cb12-28"><a href="#cb12-28" aria-hidden="true" tabindex="-1"></a>  <span class="co"># así que las seleccionamos negativamente con !</span></span>
+<span id="cb12-29"><a href="#cb12-29" aria-hidden="true" tabindex="-1"></a>  <span class="co"># para deshacernos de ellas y mantener las demás</span></span>
+<span id="cb12-30"><a href="#cb12-30" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(</span>
+<span id="cb12-31"><a href="#cb12-31" aria-hidden="true" tabindex="-1"></a>    <span class="sc">!</span><span class="fu">c</span>(LATITUD, LONGITUD)</span>
+<span id="cb12-32"><a href="#cb12-32" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Ahora <code>viviendas_sf</code> (nombrada por simple features) es un objeto de puntos geográficos que retiene la información de identificación única del hogar <code>CONGLOME</code>, <code>VIVIENDA</code> Y <code>HOGAR</code>. Si usamos la función <code>glimpse()</code> de <code>dplyr</code>, podremos ver que hay una nueva columna llamada <code>geometry</code> que tiene las instrucciones para dibujar a los hogares como una nube de puntos.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">glimpse</span>(viviendas_sf)</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Rows: 44,599
+Columns: 4
+$ CONGLOME &lt;chr&gt; "015009", "015009", "015009", "015009", "015009", "015009", "…
+$ VIVIENDA &lt;chr&gt; "012", "025", "036", "049", "061", "074", "086", "097", "108"…
+$ HOGAR    &lt;chr&gt; "11", "11", "11", "11", "11", "11", "11", "11", "11", "11", "…
+$ geometry &lt;POINT [°]&gt; POINT (-77.86923 -6.234387), POINT (-77.86923 -6.234387…</code></pre>
+</div>
+</div>
+</section>
+<section id="unir-los-datos-geográficos-de-las-viviendas-con-datos-de-amenaza-de-deslizamiento" class="level2">
+<h2 class="anchored" data-anchor-id="unir-los-datos-geográficos-de-las-viviendas-con-datos-de-amenaza-de-deslizamiento">Unir los datos geográficos de las viviendas con datos de amenaza de deslizamiento</h2>
+<p>Hemos creado la columna geográfica, pero el marco de datos <code>vivendas_sf</code> todavía no es un objeto que <code>terra</code> entiende como geográfico, para lo cual debemos usar la función<code>terra::vect()</code> para importarlo como tal, justo como hicimos con los límites administrativos de Perú arriba. Después “extraeremos” la información del mapa ráster de amenaza, utilizando la ubicación del mapa vectorial de puntos que acabamos de hacer. Pero antes le ponemos un nombre de columna a nuestro objeto SpatRaster <code>deslizamientos_peru</code> usando la función <code>names()</code> para que nuestra base de datos combinada tenga sus columnas apropiadamente nombradas.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Nombramos la única columna del ráster de deslizamientos</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(deslizamientos_peru) <span class="ot">&lt;-</span> <span class="st">"frecuencia_deslizamiento"</span></span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Cargamos viviendas_sf como objeto geográfico vectorial</span></span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>viviendas_vector <span class="ot">&lt;-</span> <span class="fu">vect</span>(viviendas_sf)</span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Y los combinamos para extraer el valor del ráster en</span></span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a><span class="co"># cada punto vectorial</span></span>
+<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a>amenaza_deslizamiento <span class="ot">&lt;-</span> terra<span class="sc">::</span><span class="fu">extract</span>(</span>
+<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a>  deslizamientos_peru,</span>
+<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a>  viviendas_vector,</span>
+<span id="cb15-12"><a href="#cb15-12" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Paso importante para conservar los identificadores únicos</span></span>
+<span id="cb15-13"><a href="#cb15-13" aria-hidden="true" tabindex="-1"></a>  <span class="at">bind =</span> <span class="cn">TRUE</span></span>
+<span id="cb15-14"><a href="#cb15-14" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb15-15"><a href="#cb15-15" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Como no necesitamos que sea objeto geográfico</span></span>
+<span id="cb15-16"><a href="#cb15-16" aria-hidden="true" tabindex="-1"></a>  <span class="co"># una vez que hicimos la extracción del dato de amenaza</span></span>
+<span id="cb15-17"><a href="#cb15-17" aria-hidden="true" tabindex="-1"></a>  <span class="co"># en la ubicación, lo convertimos de nuevo a un marco</span></span>
+<span id="cb15-18"><a href="#cb15-18" aria-hidden="true" tabindex="-1"></a>  <span class="co"># de datos.</span></span>
+<span id="cb15-19"><a href="#cb15-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">as.data.frame</span>()</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Nótese que utilizamos la versión a la que los programadores de R denominan “name space” para llamar la función <code>terra::extract()</code> en la que la precedemos con el nombre del paquete seguido de doble dos puntos. Esto lo hacemos porque el paquete <code>tidyr</code> que cargamos con <code>tidyverse</code> en nuestro preámbulo también tiene una función <code>extract()</code> que toma precedencia ante <code>terra</code>. Entonces usamos la versión “name space” para eliminar la ambigüedad. Esto lo aprendemos cuando nos genera un error y buscamos la razón. Ahora sí, si exploramos algunas observaciones de nuestra nueva base <code>amenaza_deslizamiento</code> con la función <code>head()</code> combinada con una selección de aquellas que tienen valor mayor que cero y veremos que cuenta con nuestros identificadores únicos de hogar y con la información de amenaza de deslizamiento por lluvia.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>amenaza_deslizamiento <span class="sc">|&gt;</span> </span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(frecuencia_deslizamiento <span class="sc">&gt;</span> <span class="dv">0</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">head</span>()</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  CONGLOME VIVIENDA HOGAR frecuencia_deslizamiento
+1   015024      026    11               0.00385021
+2   015024      039    11               0.00385021
+3   015024      069    11               0.00385021
+4   015024      083    11               0.00385021
+5   015024      098    11               0.00385021
+6   015024      123    11               0.00385021</code></pre>
+</div>
+</div>
+<p>También podemos hacer una visualización rápida de los puntos (en rojo) sobre nuestro mapa de exposición para darnos una idea de nuestros hogares expuestos utilizando el objeto de <code>terra</code> que es geográfico: <code>viviendas_vector</code>. Esta visualización simple es cortesía de nuestro paquete <code>terra</code> el cual viene con esta funcionalidad para nuestros <code>SpatRaster</code>. En nuestra siguiente sesión haremos mapas más complejos con <code>ggplot2</code> y con <code>sf</code>.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(deslizamientos_peru)</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(</span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>  viviendas_vector,</span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">add =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">col =</span> <span class="st">"red"</span>,</span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">pch =</span> <span class="dv">20</span>,</span>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">cex =</span> <span class="fl">0.05</span></span>
+<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="index_files/figure-html/unnamed-chunk-8-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="identificar-los-hogares-expuestos-a-una-frecuencia-alta" class="level2">
+<h2 class="anchored" data-anchor-id="identificar-los-hogares-expuestos-a-una-frecuencia-alta">Identificar los hogares expuestos a una frecuencia alta</h2>
+<p>Una vez que tenemos la frecuencia de deslizamiento para cada vivienda, tenemos que identificar aquellas viviendas que tienen una probabilidad de una frecuencia de deslizamientos de 1 en 100 años o mayor o “alta” según la clasificación recomendada en el reporte del mapa. Para eso usamos nuestra familiar función <code>mutate()</code>.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>amenaza_deslizamiento <span class="ot">&lt;-</span> amenaza_deslizamiento <span class="sc">|&gt;</span> </span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">exposicion_deslizamiento =</span> <span class="fu">if_else</span>(</span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>      <span class="co"># si frecuencia_deslizamiento mayor o igual que</span></span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>      <span class="co"># 0.01, entonces coloque 1, de lo contrario</span></span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>      <span class="co"># coloque 0 en la nueva variable exposicion_deslizamiento</span></span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a>      frecuencia_deslizamiento <span class="sc">&gt;=</span> <span class="fl">0.01</span>, <span class="dv">1</span>, <span class="dv">0</span></span>
+<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Verificamos las primeras observaciones que cumplen con la condición.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>amenaza_deslizamiento <span class="sc">|&gt;</span> </span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(exposicion_deslizamiento <span class="sc">==</span> <span class="dv">1</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">head</span>()</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  CONGLOME VIVIENDA HOGAR frecuencia_deslizamiento exposicion_deslizamiento
+1   015029      003    11               0.01938608                        1
+2   015029      017    11               0.01938608                        1
+3   015029      036    11               0.01938608                        1
+4   015029      047    11               0.01938608                        1
+5   015029      057    11               0.01938608                        1
+6   015029      068    11               0.01938608                        1</code></pre>
+</div>
+</div>
+</section>
+<section id="unión-con-la-base-de-datos-de-vulnerabilidad" class="level2">
+<h2 class="anchored" data-anchor-id="unión-con-la-base-de-datos-de-vulnerabilidad">Unión con la base de datos de vulnerabilidad</h2>
+<p>Ahora sí con nuestra información de exposición a deslizamiento “alta” unimos nuestra base de datos de hogares vulnerables con nuestra información de viviendas expuestas. Aquí vale la pena recordar que en la <strong>ENAHO</strong> hay más viviendas que hogares. Esto lo atribuimos (especulando) a que las personas dieron información sobre sus hogares secundarios porque hay quiénes son dueños de más de una vivienda. Esto es evidente al ver el número de observaciones de <code>hogares_vulnerables</code> (33702) versus el número de observaciones de <code>amenaza_deslizamiento</code> (44599) en nuestro panel de “DATA” de Positron. Esta discrepancia desaparecerá cuando hagamos una unión a la izquierda con las dos bases de datos <code>left_join()</code> que conserva solo aquellas coincidencias con las observaciones del primer marco de datos, que será el de <code>hogares_vulnerables</code>.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>vulnerables_y_expuestos <span class="ot">&lt;-</span> hogares_vulnerables <span class="sc">|&gt;</span> </span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(</span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>    amenaza_deslizamiento, </span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">join_by</span>(CONGLOME, VIVIENDA, HOGAR)</span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a>    )</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Y guardamos nuestra nueva base de datos para futuras sesiones.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="fu">saveRDS</span>(</span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>  vulnerables_y_expuestos, </span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">file =</span> <span class="st">"salidas/sesiones/0002-gis/vulnerables_y_expuestos.RDS"</span> </span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</section>
+</section>
+<section id="resultados" class="level1">
+<h1>Resultados</h1>
+<p>Con nuestra nueva variable que nos permite ver quiénes tienen una mayor probabilidad de estar expuestos a un evento natural catastrófico, como lo es un deslizamiento provocado por lluvias, podemos repetir las tablas que hicimos en <a href="../../../sesiones/posts/0001-encuestas/index.html">nuestro ejercicio previo</a>, ahora con el número de personas por dimensión de vulnerabilidad aunado a exposición al evento. Esto asumimos que nos dará números menores de personas, con los cuales el diseño de política pública será más factible.</p>
+<section id="resultados-por-área-geográfica" class="level2">
+<h2 class="anchored" data-anchor-id="resultados-por-área-geográfica">Resultados por área geográfica</h2>
+<p>Para expresar la vulnerabilidad en número de personas (y no de hogares), multiplicamos el factor de expansión (<code>FACTOR07</code>) por el tamaño del hogar (<code>MIEPERHO</code>) y por la dummy de <code>exposicion_deslizamiento</code>, por cada variable de vulnerabilidad. Con esto, la siguiente tabla muestra la población total de cada dominio como referencia, junto con el número de personas vulnerables en cada dimensión, y una fila con los totales nacionales.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>tabla_dominio_deslizamiento <span class="ot">&lt;-</span> vulnerables_y_expuestos <span class="sc">|&gt;</span> </span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">Dominio =</span> <span class="fu">as_factor</span>(DOMINIO),</span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Aquí aprovechamos para multiplicar por exposicion_deslizamiento</span></span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a>    <span class="co"># que puede tomar 1 o 0 para eliminar a los no expuestos para</span></span>
+<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a>    <span class="co"># nuestro conteo en summarise() debajo</span></span>
+<span id="cb24-7"><a href="#cb24-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">personas =</span> FACTOR07 <span class="sc">*</span> MIEPERHO <span class="sc">*</span> exposicion_deslizamiento,</span>
+<span id="cb24-8"><a href="#cb24-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">Ingreso =</span> personas <span class="sc">*</span> vulnerabilidad_ingreso,</span>
+<span id="cb24-9"><a href="#cb24-9" aria-hidden="true" tabindex="-1"></a>    Educación <span class="ot">=</span> personas <span class="sc">*</span> vulnerabilidad_educacion,</span>
+<span id="cb24-10"><a href="#cb24-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">Agua =</span> personas <span class="sc">*</span> vulnerabilidad_agua,</span>
+<span id="cb24-11"><a href="#cb24-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">Electricidad =</span> personas <span class="sc">*</span> vulnerabilidad_electricidad,</span>
+<span id="cb24-12"><a href="#cb24-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">Saneamiento =</span> personas <span class="sc">*</span> vulnerabilidad_saneamiento,</span>
+<span id="cb24-13"><a href="#cb24-13" aria-hidden="true" tabindex="-1"></a>    Construcción <span class="ot">=</span> personas <span class="sc">*</span> vulnerabilidad_construccion,</span>
+<span id="cb24-14"><a href="#cb24-14" aria-hidden="true" tabindex="-1"></a>    <span class="st">`</span><span class="at">Protección social</span><span class="st">`</span> <span class="ot">=</span> personas <span class="sc">*</span> vulnerabilidad_proteccion</span>
+<span id="cb24-15"><a href="#cb24-15" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span> </span>
+<span id="cb24-16"><a href="#cb24-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(Dominio) <span class="sc">|&gt;</span> </span>
+<span id="cb24-17"><a href="#cb24-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(</span>
+<span id="cb24-18"><a href="#cb24-18" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Nótese que aquí no sumamos a las personas expuestas</span></span>
+<span id="cb24-19"><a href="#cb24-19" aria-hidden="true" tabindex="-1"></a>    <span class="co"># sino a las personas totales para tener el total del país</span></span>
+<span id="cb24-20"><a href="#cb24-20" aria-hidden="true" tabindex="-1"></a>    <span class="st">`</span><span class="at">Población total</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">sum</span>(FACTOR07 <span class="sc">*</span> MIEPERHO, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb24-21"><a href="#cb24-21" aria-hidden="true" tabindex="-1"></a>    <span class="at">Ingreso =</span> <span class="fu">sum</span>(Ingreso, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb24-22"><a href="#cb24-22" aria-hidden="true" tabindex="-1"></a>    Educación <span class="ot">=</span> <span class="fu">sum</span>(Educación, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb24-23"><a href="#cb24-23" aria-hidden="true" tabindex="-1"></a>    <span class="at">Agua =</span> <span class="fu">sum</span>(Agua, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb24-24"><a href="#cb24-24" aria-hidden="true" tabindex="-1"></a>    <span class="at">Electricidad =</span> <span class="fu">sum</span>(Electricidad, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb24-25"><a href="#cb24-25" aria-hidden="true" tabindex="-1"></a>    <span class="at">Saneamiento =</span> <span class="fu">sum</span>(Saneamiento, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb24-26"><a href="#cb24-26" aria-hidden="true" tabindex="-1"></a>    Construcción <span class="ot">=</span> <span class="fu">sum</span>(Construcción, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb24-27"><a href="#cb24-27" aria-hidden="true" tabindex="-1"></a>    <span class="st">`</span><span class="at">Protección social</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">sum</span>(<span class="st">`</span><span class="at">Protección social</span><span class="st">`</span>, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb24-28"><a href="#cb24-28" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Ahora podemos hacer nuestra <a href="#tbl-vulnerabilidad-dominio" class="quarto-xref">Tabla&nbsp;1</a> de frecuencias de personas <strong>vulnerables <em>y</em> expuestas</strong> a deslizamientos. En nuestro <a href="../../../sesiones/posts/0001-encuestas/index.html#resultados-por-área-geográfica">ejercicio de vulnerabilidad</a> vimos que de una población total de <strong>34.9 millones</strong> de personas, <strong>20.4 millones</strong> se encontraban vulnerables ante la variable ingreso o un <strong>58%</strong> de la población, por ejemplo, lo cual es prohibitivamente caro para diseñar un programa de respuesta por riesgo. Sin embargo, al contrastarlo con nuestra variable geográfica como podemos ver debajo, podemos identificar que <strong>2.7 millones</strong> de personas (o un <strong>0.08%</strong> de la población) tendrían una mayor probabilidad de ser afectados por este tipo de desastre natural bajo la dimensión de vulnerabilidad de ingreso, lo cual presenta un panorama más manejable para el diseño de política pública y para el presupuesto público.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>tabla_dominio_deslizamiento <span class="sc">|&gt;</span> </span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">gt</span>() <span class="sc">|&gt;</span> </span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">fmt_number</span>(</span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">columns =</span> <span class="fu">where</span>(is.numeric),</span>
+<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">decimals =</span> <span class="dv">0</span>,</span>
+<span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">use_seps =</span> <span class="cn">TRUE</span></span>
+<span id="cb25-7"><a href="#cb25-7" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span> </span>
+<span id="cb25-8"><a href="#cb25-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">grand_summary_rows</span>(</span>
+<span id="cb25-9"><a href="#cb25-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">columns =</span> <span class="fu">where</span>(is.numeric),</span>
+<span id="cb25-10"><a href="#cb25-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">fns =</span> <span class="fu">list</span>(<span class="at">label =</span> <span class="st">"Total"</span>, <span class="at">id =</span> <span class="st">"totales"</span>, <span class="at">fn =</span> <span class="st">"sum"</span>),</span>
+<span id="cb25-11"><a href="#cb25-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">fmt =</span> <span class="sc">~</span> <span class="fu">fmt_number</span>(., <span class="at">decimals =</span> <span class="dv">0</span>, <span class="at">use_seps =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb25-12"><a href="#cb25-12" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span> </span>
+<span id="cb25-13"><a href="#cb25-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tab_options</span>(</span>
+<span id="cb25-14"><a href="#cb25-14" aria-hidden="true" tabindex="-1"></a>    <span class="at">table.font.size =</span> <span class="fu">px</span>(<span class="dv">10</span>),</span>
+<span id="cb25-15"><a href="#cb25-15" aria-hidden="true" tabindex="-1"></a>    <span class="at">table.width =</span> <span class="fu">pct</span>(<span class="dv">100</span>)</span>
+<span id="cb25-16"><a href="#cb25-16" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div id="tbl-vulnerabilidad-dominio" class="cell quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-vulnerabilidad-dominio-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Tabla&nbsp;1: Número de personas vulnerables y expuestas por dominio y dimensión
+</figcaption>
+<div aria-describedby="tbl-vulnerabilidad-dominio-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="cell-output-display">
+<div id="psritygstt" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#psritygstt table {
+  font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#psritygstt thead, #psritygstt tbody, #psritygstt tfoot, #psritygstt tr, #psritygstt td, #psritygstt th {
+  border-style: none;
+}
+
+#psritygstt p {
+  margin: 0;
+  padding: 0;
+}
+
+#psritygstt .gt_table {
+  display: table;
+  border-collapse: collapse;
+  line-height: normal;
+  margin-left: auto;
+  margin-right: auto;
+  color: #333333;
+  font-size: 10px;
+  font-weight: normal;
+  font-style: normal;
+  background-color: #FFFFFF;
+  width: 100%;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #A8A8A8;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #A8A8A8;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+}
+
+#psritygstt .gt_caption {
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+
+#psritygstt .gt_title {
+  color: #333333;
+  font-size: 125%;
+  font-weight: initial;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-color: #FFFFFF;
+  border-bottom-width: 0;
+}
+
+#psritygstt .gt_subtitle {
+  color: #333333;
+  font-size: 85%;
+  font-weight: initial;
+  padding-top: 3px;
+  padding-bottom: 5px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-color: #FFFFFF;
+  border-top-width: 0;
+}
+
+#psritygstt .gt_heading {
+  background-color: #FFFFFF;
+  text-align: center;
+  border-bottom-color: #FFFFFF;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#psritygstt .gt_bottom_border {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#psritygstt .gt_col_headings {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#psritygstt .gt_col_heading {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 6px;
+  padding-left: 5px;
+  padding-right: 5px;
+  overflow-x: hidden;
+}
+
+#psritygstt .gt_column_spanner_outer {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  padding-top: 0;
+  padding-bottom: 0;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+#psritygstt .gt_column_spanner_outer:first-child {
+  padding-left: 0;
+}
+
+#psritygstt .gt_column_spanner_outer:last-child {
+  padding-right: 0;
+}
+
+#psritygstt .gt_column_spanner {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  overflow-x: hidden;
+  display: inline-block;
+  width: 100%;
+}
+
+#psritygstt .gt_spanner_row {
+  border-bottom-style: hidden;
+}
+
+#psritygstt .gt_group_heading {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  text-align: left;
+}
+
+#psritygstt .gt_empty_group_heading {
+  padding: 0.5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: middle;
+}
+
+#psritygstt .gt_from_md > :first-child {
+  margin-top: 0;
+}
+
+#psritygstt .gt_from_md > :last-child {
+  margin-bottom: 0;
+}
+
+#psritygstt .gt_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  margin: 10px;
+  border-top-style: solid;
+  border-top-width: 1px;
+  border-top-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  overflow-x: hidden;
+}
+
+#psritygstt .gt_stub {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#psritygstt .gt_stub_row_group {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+  vertical-align: top;
+}
+
+#psritygstt .gt_row_group_first td {
+  border-top-width: 2px;
+}
+
+#psritygstt .gt_row_group_first th {
+  border-top-width: 2px;
+}
+
+#psritygstt .gt_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#psritygstt .gt_first_summary_row {
+  border-top-style: solid;
+  border-top-color: #D3D3D3;
+}
+
+#psritygstt .gt_first_summary_row.thick {
+  border-top-width: 2px;
+}
+
+#psritygstt .gt_last_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#psritygstt .gt_grand_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#psritygstt .gt_first_grand_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-style: double;
+  border-top-width: 6px;
+  border-top-color: #D3D3D3;
+}
+
+#psritygstt .gt_last_grand_summary_row_top {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: double;
+  border-bottom-width: 6px;
+  border-bottom-color: #D3D3D3;
+}
+
+#psritygstt .gt_striped {
+  background-color: rgba(128, 128, 128, 0.05);
+}
+
+#psritygstt .gt_table_body {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#psritygstt .gt_footnotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#psritygstt .gt_footnote {
+  margin: 0px;
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#psritygstt .gt_sourcenotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#psritygstt .gt_sourcenote {
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#psritygstt .gt_left {
+  text-align: left;
+}
+
+#psritygstt .gt_center {
+  text-align: center;
+}
+
+#psritygstt .gt_right {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+#psritygstt .gt_font_normal {
+  font-weight: normal;
+}
+
+#psritygstt .gt_font_bold {
+  font-weight: bold;
+}
+
+#psritygstt .gt_font_italic {
+  font-style: italic;
+}
+
+#psritygstt .gt_super {
+  font-size: 65%;
+}
+
+#psritygstt .gt_footnote_marks {
+  font-size: 75%;
+  vertical-align: 0.4em;
+  position: initial;
+}
+
+#psritygstt .gt_asterisk {
+  font-size: 100%;
+  vertical-align: 0;
+}
+
+#psritygstt .gt_indent_1 {
+  text-indent: 5px;
+}
+
+#psritygstt .gt_indent_2 {
+  text-indent: 10px;
+}
+
+#psritygstt .gt_indent_3 {
+  text-indent: 15px;
+}
+
+#psritygstt .gt_indent_4 {
+  text-indent: 20px;
+}
+
+#psritygstt .gt_indent_5 {
+  text-indent: 25px;
+}
+
+#psritygstt .katex-display {
+  display: inline-flex !important;
+  margin-bottom: 0.75em !important;
+}
+
+#psritygstt div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
+  height: 0px !important;
+}
+</style>
+
+<table class="gt_table cell caption-top table table-sm table-striped small" data-quarto-bootstrap="false">
+<thead>
+<tr class="gt_col_headings header">
+<th id="a::stub" class="gt_col_heading gt_columns_bottom_border gt_left" data-quarto-table-cell-role="th" scope="col"></th>
+<th id="Dominio" class="gt_col_heading gt_columns_bottom_border gt_center" data-quarto-table-cell-role="th" scope="col">dominio</th>
+<th id="Población-total" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">Población total</th>
+<th id="Ingreso" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">Ingreso</th>
+<th id="Educación" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">Educación</th>
+<th id="Agua" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">Agua</th>
+<th id="Electricidad" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">Electricidad</th>
+<th id="Saneamiento" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">Saneamiento</th>
+<th id="Construcción" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">Construcción</th>
+<th id="Protección-social" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">Protección social</th>
+</tr>
+</thead>
+<tbody class="gt_table_body">
+<tr class="odd">
+<th id="stub_1_1" class="gt_row gt_left gt_stub" data-quarto-table-cell-role="th" scope="row"></th>
+<td class="gt_row gt_center" headers="stub_1_1 Dominio">Costa Norte</td>
+<td class="gt_row gt_right" headers="stub_1_1 Población total">5,182,069</td>
+<td class="gt_row gt_right" headers="stub_1_1 Ingreso">36,124</td>
+<td class="gt_row gt_right" headers="stub_1_1 Educación">5,993</td>
+<td class="gt_row gt_right" headers="stub_1_1 Agua">39,545</td>
+<td class="gt_row gt_right" headers="stub_1_1 Electricidad">3,360</td>
+<td class="gt_row gt_right" headers="stub_1_1 Saneamiento">21,574</td>
+<td class="gt_row gt_right" headers="stub_1_1 Construcción">36,829</td>
+<td class="gt_row gt_right" headers="stub_1_1 Protección social">13,336</td>
+</tr>
+<tr class="even">
+<th id="stub_1_2" class="gt_row gt_left gt_stub" data-quarto-table-cell-role="th" scope="row"></th>
+<td class="gt_row gt_center" headers="stub_1_2 Dominio">Costa Centro</td>
+<td class="gt_row gt_right" headers="stub_1_2 Población total">2,333,748</td>
+<td class="gt_row gt_right" headers="stub_1_2 Ingreso">40,734</td>
+<td class="gt_row gt_right" headers="stub_1_2 Educación">4,623</td>
+<td class="gt_row gt_right" headers="stub_1_2 Agua">20,233</td>
+<td class="gt_row gt_right" headers="stub_1_2 Electricidad">3,749</td>
+<td class="gt_row gt_right" headers="stub_1_2 Saneamiento">34,550</td>
+<td class="gt_row gt_right" headers="stub_1_2 Construcción">35,587</td>
+<td class="gt_row gt_right" headers="stub_1_2 Protección social">33,250</td>
+</tr>
+<tr class="odd">
+<th id="stub_1_3" class="gt_row gt_left gt_stub" data-quarto-table-cell-role="th" scope="row"></th>
+<td class="gt_row gt_center" headers="stub_1_3 Dominio">Costa Sur</td>
+<td class="gt_row gt_right" headers="stub_1_3 Población total">708,243</td>
+<td class="gt_row gt_right" headers="stub_1_3 Ingreso">0</td>
+<td class="gt_row gt_right" headers="stub_1_3 Educación">0</td>
+<td class="gt_row gt_right" headers="stub_1_3 Agua">0</td>
+<td class="gt_row gt_right" headers="stub_1_3 Electricidad">0</td>
+<td class="gt_row gt_right" headers="stub_1_3 Saneamiento">0</td>
+<td class="gt_row gt_right" headers="stub_1_3 Construcción">0</td>
+<td class="gt_row gt_right" headers="stub_1_3 Protección social">0</td>
+</tr>
+<tr class="even">
+<th id="stub_1_4" class="gt_row gt_left gt_stub" data-quarto-table-cell-role="th" scope="row"></th>
+<td class="gt_row gt_center" headers="stub_1_4 Dominio">Sierra Norte</td>
+<td class="gt_row gt_right" headers="stub_1_4 Población total">1,912,495</td>
+<td class="gt_row gt_right" headers="stub_1_4 Ingreso">555,184</td>
+<td class="gt_row gt_right" headers="stub_1_4 Educación">78,691</td>
+<td class="gt_row gt_right" headers="stub_1_4 Agua">475,837</td>
+<td class="gt_row gt_right" headers="stub_1_4 Electricidad">39,609</td>
+<td class="gt_row gt_right" headers="stub_1_4 Saneamiento">436,277</td>
+<td class="gt_row gt_right" headers="stub_1_4 Construcción">557,763</td>
+<td class="gt_row gt_right" headers="stub_1_4 Protección social">207,115</td>
+</tr>
+<tr class="odd">
+<th id="stub_1_5" class="gt_row gt_left gt_stub" data-quarto-table-cell-role="th" scope="row"></th>
+<td class="gt_row gt_center" headers="stub_1_5 Dominio">Sierra Centro</td>
+<td class="gt_row gt_right" headers="stub_1_5 Población total">4,069,607</td>
+<td class="gt_row gt_right" headers="stub_1_5 Ingreso">1,063,228</td>
+<td class="gt_row gt_right" headers="stub_1_5 Educación">149,810</td>
+<td class="gt_row gt_right" headers="stub_1_5 Agua">909,207</td>
+<td class="gt_row gt_right" headers="stub_1_5 Electricidad">62,247</td>
+<td class="gt_row gt_right" headers="stub_1_5 Saneamiento">556,328</td>
+<td class="gt_row gt_right" headers="stub_1_5 Construcción">1,061,283</td>
+<td class="gt_row gt_right" headers="stub_1_5 Protección social">713,736</td>
+</tr>
+<tr class="even">
+<th id="stub_1_6" class="gt_row gt_left gt_stub" data-quarto-table-cell-role="th" scope="row"></th>
+<td class="gt_row gt_center" headers="stub_1_6 Dominio">Sierra Sur</td>
+<td class="gt_row gt_right" headers="stub_1_6 Población total">4,649,401</td>
+<td class="gt_row gt_right" headers="stub_1_6 Ingreso">612,766</td>
+<td class="gt_row gt_right" headers="stub_1_6 Educación">96,819</td>
+<td class="gt_row gt_right" headers="stub_1_6 Agua">378,603</td>
+<td class="gt_row gt_right" headers="stub_1_6 Electricidad">38,180</td>
+<td class="gt_row gt_right" headers="stub_1_6 Saneamiento">293,562</td>
+<td class="gt_row gt_right" headers="stub_1_6 Construcción">685,209</td>
+<td class="gt_row gt_right" headers="stub_1_6 Protección social">423,667</td>
+</tr>
+<tr class="odd">
+<th id="stub_1_7" class="gt_row gt_left gt_stub" data-quarto-table-cell-role="th" scope="row"></th>
+<td class="gt_row gt_center" headers="stub_1_7 Dominio">Selva</td>
+<td class="gt_row gt_right" headers="stub_1_7 Población total">4,367,681</td>
+<td class="gt_row gt_right" headers="stub_1_7 Ingreso">375,830</td>
+<td class="gt_row gt_right" headers="stub_1_7 Educación">42,431</td>
+<td class="gt_row gt_right" headers="stub_1_7 Agua">353,423</td>
+<td class="gt_row gt_right" headers="stub_1_7 Electricidad">22,075</td>
+<td class="gt_row gt_right" headers="stub_1_7 Saneamiento">224,972</td>
+<td class="gt_row gt_right" headers="stub_1_7 Construcción">328,727</td>
+<td class="gt_row gt_right" headers="stub_1_7 Protección social">217,232</td>
+</tr>
+<tr class="even">
+<th id="stub_1_8" class="gt_row gt_left gt_stub" data-quarto-table-cell-role="th" scope="row"></th>
+<td class="gt_row gt_center" headers="stub_1_8 Dominio">Lima Metropolitana</td>
+<td class="gt_row gt_right" headers="stub_1_8 Población total">11,633,464</td>
+<td class="gt_row gt_right" headers="stub_1_8 Ingreso">56,102</td>
+<td class="gt_row gt_right" headers="stub_1_8 Educación">3,644</td>
+<td class="gt_row gt_right" headers="stub_1_8 Agua">0</td>
+<td class="gt_row gt_right" headers="stub_1_8 Electricidad">0</td>
+<td class="gt_row gt_right" headers="stub_1_8 Saneamiento">0</td>
+<td class="gt_row gt_right" headers="stub_1_8 Construcción">6,922</td>
+<td class="gt_row gt_right" headers="stub_1_8 Protección social">51,223</td>
+</tr>
+<tr class="odd">
+<th id="grand_summary_stub_1" class="gt_row gt_left gt_stub gt_grand_summary_row gt_first_grand_summary_row gt_last_summary_row" data-quarto-table-cell-role="th" scope="row">Total</th>
+<td class="gt_row gt_center gt_grand_summary_row gt_first_grand_summary_row gt_last_summary_row" headers="grand_summary_stub_1 Dominio">—</td>
+<td class="gt_row gt_right gt_grand_summary_row gt_first_grand_summary_row gt_last_summary_row" headers="grand_summary_stub_1 Población total">34,856,707</td>
+<td class="gt_row gt_right gt_grand_summary_row gt_first_grand_summary_row gt_last_summary_row" headers="grand_summary_stub_1 Ingreso">2,739,968</td>
+<td class="gt_row gt_right gt_grand_summary_row gt_first_grand_summary_row gt_last_summary_row" headers="grand_summary_stub_1 Educación">382,012</td>
+<td class="gt_row gt_right gt_grand_summary_row gt_first_grand_summary_row gt_last_summary_row" headers="grand_summary_stub_1 Agua">2,176,848</td>
+<td class="gt_row gt_right gt_grand_summary_row gt_first_grand_summary_row gt_last_summary_row" headers="grand_summary_stub_1 Electricidad">169,219</td>
+<td class="gt_row gt_right gt_grand_summary_row gt_first_grand_summary_row gt_last_summary_row" headers="grand_summary_stub_1 Saneamiento">1,567,263</td>
+<td class="gt_row gt_right gt_grand_summary_row gt_first_grand_summary_row gt_last_summary_row" headers="grand_summary_stub_1 Construcción">2,712,319</td>
+<td class="gt_row gt_right gt_grand_summary_row gt_first_grand_summary_row gt_last_summary_row" headers="grand_summary_stub_1 Protección social">1,659,560</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+</figure>
+</div>
+</div>
+<p>Del mismo modo podemos replicar nuestra tabla de vulnerabilidad múltiple, ahora solo con los expuestos a una probabilidad alta de ser afectados por deslizamientos.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>tabla_multidimensional <span class="ot">&lt;-</span> vulnerables_y_expuestos <span class="sc">|&gt;</span> </span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">Dominio =</span> <span class="fu">as_factor</span>(DOMINIO),</span>
+<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">personas =</span> FACTOR07 <span class="sc">*</span> MIEPERHO <span class="sc">*</span> exposicion_deslizamiento,</span>
+<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">num_dimensiones =</span> <span class="fu">rowSums</span>(</span>
+<span id="cb26-6"><a href="#cb26-6" aria-hidden="true" tabindex="-1"></a>      <span class="fu">across</span>(<span class="fu">starts_with</span>(<span class="st">"vulnerabilidad_"</span>)), <span class="at">na.rm =</span> <span class="cn">TRUE</span></span>
+<span id="cb26-7"><a href="#cb26-7" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb26-8"><a href="#cb26-8" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span> </span>
+<span id="cb26-9"><a href="#cb26-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(Dominio, num_dimensiones) <span class="sc">|&gt;</span> </span>
+<span id="cb26-10"><a href="#cb26-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(</span>
+<span id="cb26-11"><a href="#cb26-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">personas =</span> <span class="fu">sum</span>(personas, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb26-12"><a href="#cb26-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">.groups =</span> <span class="st">"drop"</span></span>
+<span id="cb26-13"><a href="#cb26-13" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span> </span>
+<span id="cb26-14"><a href="#cb26-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_wider</span>(</span>
+<span id="cb26-15"><a href="#cb26-15" aria-hidden="true" tabindex="-1"></a>    <span class="at">names_from =</span> num_dimensiones,</span>
+<span id="cb26-16"><a href="#cb26-16" aria-hidden="true" tabindex="-1"></a>    <span class="at">names_prefix =</span> <span class="st">"Dimensiones: "</span>,</span>
+<span id="cb26-17"><a href="#cb26-17" aria-hidden="true" tabindex="-1"></a>    <span class="at">values_from =</span> personas,</span>
+<span id="cb26-18"><a href="#cb26-18" aria-hidden="true" tabindex="-1"></a>    <span class="at">values_fill =</span> <span class="dv">0</span></span>
+<span id="cb26-19"><a href="#cb26-19" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span> </span>
+<span id="cb26-20"><a href="#cb26-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb26-21"><a href="#cb26-21" aria-hidden="true" tabindex="-1"></a>    <span class="st">`</span><span class="at">Población total</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">rowSums</span>(</span>
+<span id="cb26-22"><a href="#cb26-22" aria-hidden="true" tabindex="-1"></a>      <span class="fu">across</span>(<span class="fu">starts_with</span>(<span class="st">"Dimensiones:"</span>)), <span class="at">na.rm =</span> <span class="cn">TRUE</span></span>
+<span id="cb26-23"><a href="#cb26-23" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb26-24"><a href="#cb26-24" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span> </span>
+<span id="cb26-25"><a href="#cb26-25" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(Dominio, <span class="st">`</span><span class="at">Población total</span><span class="st">`</span>, <span class="fu">everything</span>())</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Habiendo preparado los datos, hacemos nuestra <a href="#tbl-vulnerabilidad-multiple" class="quarto-xref">Tabla&nbsp;2</a> multidimensional. Esto nos muestra que <strong>3.8 millones</strong> de personas de los <strong>34.9 millones</strong> con que cuenta el país están expuestos a una probabilidad alta de enfrentarse a un deslizamiento ocasionado por lluvias, o un <strong>10.9%</strong> de la población. De ellas, <strong>75,371</strong> personas no califican como vulnerables en ninguna dimensión, mientras que <strong>976,983</strong> personas cuentan con 3 dimensiones (o un <strong>2.8%</strong> de la población), que es el número de dimensiones con un mayor número de personas.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>tabla_multidimensional <span class="sc">|&gt;</span> </span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">gt</span>() <span class="sc">|&gt;</span> </span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">fmt_number</span>(</span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">columns =</span> <span class="fu">where</span>(is.numeric),</span>
+<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">decimals =</span> <span class="dv">0</span>,</span>
+<span id="cb27-6"><a href="#cb27-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">use_seps =</span> <span class="cn">TRUE</span></span>
+<span id="cb27-7"><a href="#cb27-7" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span> </span>
+<span id="cb27-8"><a href="#cb27-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">grand_summary_rows</span>(</span>
+<span id="cb27-9"><a href="#cb27-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">columns =</span> <span class="fu">where</span>(is.numeric),</span>
+<span id="cb27-10"><a href="#cb27-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">fns =</span> <span class="fu">list</span>(<span class="at">label =</span> <span class="st">"Total"</span>, <span class="at">id =</span> <span class="st">"totales"</span>, <span class="at">fn =</span> <span class="st">"sum"</span>),</span>
+<span id="cb27-11"><a href="#cb27-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">fmt =</span> <span class="sc">~</span> <span class="fu">fmt_number</span>(., <span class="at">decimals =</span> <span class="dv">0</span>, <span class="at">use_seps =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb27-12"><a href="#cb27-12" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span> </span>
+<span id="cb27-13"><a href="#cb27-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tab_options</span>(</span>
+<span id="cb27-14"><a href="#cb27-14" aria-hidden="true" tabindex="-1"></a>    <span class="at">table.font.size =</span> <span class="fu">px</span>(<span class="dv">10</span>),</span>
+<span id="cb27-15"><a href="#cb27-15" aria-hidden="true" tabindex="-1"></a>    <span class="at">table.width =</span> <span class="fu">pct</span>(<span class="dv">100</span>)</span>
+<span id="cb27-16"><a href="#cb27-16" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div id="tbl-vulnerabilidad-multiple" class="cell quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-vulnerabilidad-multiple-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Tabla&nbsp;2: Número de personas vulnerables y expuestas en múltiples dimensiones, por dominio
+</figcaption>
+<div aria-describedby="tbl-vulnerabilidad-multiple-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="cell-output-display">
+<div id="qkqrbfrvny" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#qkqrbfrvny table {
+  font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#qkqrbfrvny thead, #qkqrbfrvny tbody, #qkqrbfrvny tfoot, #qkqrbfrvny tr, #qkqrbfrvny td, #qkqrbfrvny th {
+  border-style: none;
+}
+
+#qkqrbfrvny p {
+  margin: 0;
+  padding: 0;
+}
+
+#qkqrbfrvny .gt_table {
+  display: table;
+  border-collapse: collapse;
+  line-height: normal;
+  margin-left: auto;
+  margin-right: auto;
+  color: #333333;
+  font-size: 10px;
+  font-weight: normal;
+  font-style: normal;
+  background-color: #FFFFFF;
+  width: 100%;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #A8A8A8;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #A8A8A8;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+}
+
+#qkqrbfrvny .gt_caption {
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+
+#qkqrbfrvny .gt_title {
+  color: #333333;
+  font-size: 125%;
+  font-weight: initial;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-color: #FFFFFF;
+  border-bottom-width: 0;
+}
+
+#qkqrbfrvny .gt_subtitle {
+  color: #333333;
+  font-size: 85%;
+  font-weight: initial;
+  padding-top: 3px;
+  padding-bottom: 5px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-color: #FFFFFF;
+  border-top-width: 0;
+}
+
+#qkqrbfrvny .gt_heading {
+  background-color: #FFFFFF;
+  text-align: center;
+  border-bottom-color: #FFFFFF;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#qkqrbfrvny .gt_bottom_border {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#qkqrbfrvny .gt_col_headings {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#qkqrbfrvny .gt_col_heading {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 6px;
+  padding-left: 5px;
+  padding-right: 5px;
+  overflow-x: hidden;
+}
+
+#qkqrbfrvny .gt_column_spanner_outer {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  padding-top: 0;
+  padding-bottom: 0;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+#qkqrbfrvny .gt_column_spanner_outer:first-child {
+  padding-left: 0;
+}
+
+#qkqrbfrvny .gt_column_spanner_outer:last-child {
+  padding-right: 0;
+}
+
+#qkqrbfrvny .gt_column_spanner {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  overflow-x: hidden;
+  display: inline-block;
+  width: 100%;
+}
+
+#qkqrbfrvny .gt_spanner_row {
+  border-bottom-style: hidden;
+}
+
+#qkqrbfrvny .gt_group_heading {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  text-align: left;
+}
+
+#qkqrbfrvny .gt_empty_group_heading {
+  padding: 0.5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: middle;
+}
+
+#qkqrbfrvny .gt_from_md > :first-child {
+  margin-top: 0;
+}
+
+#qkqrbfrvny .gt_from_md > :last-child {
+  margin-bottom: 0;
+}
+
+#qkqrbfrvny .gt_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  margin: 10px;
+  border-top-style: solid;
+  border-top-width: 1px;
+  border-top-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  overflow-x: hidden;
+}
+
+#qkqrbfrvny .gt_stub {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#qkqrbfrvny .gt_stub_row_group {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+  vertical-align: top;
+}
+
+#qkqrbfrvny .gt_row_group_first td {
+  border-top-width: 2px;
+}
+
+#qkqrbfrvny .gt_row_group_first th {
+  border-top-width: 2px;
+}
+
+#qkqrbfrvny .gt_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#qkqrbfrvny .gt_first_summary_row {
+  border-top-style: solid;
+  border-top-color: #D3D3D3;
+}
+
+#qkqrbfrvny .gt_first_summary_row.thick {
+  border-top-width: 2px;
+}
+
+#qkqrbfrvny .gt_last_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#qkqrbfrvny .gt_grand_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#qkqrbfrvny .gt_first_grand_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-style: double;
+  border-top-width: 6px;
+  border-top-color: #D3D3D3;
+}
+
+#qkqrbfrvny .gt_last_grand_summary_row_top {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: double;
+  border-bottom-width: 6px;
+  border-bottom-color: #D3D3D3;
+}
+
+#qkqrbfrvny .gt_striped {
+  background-color: rgba(128, 128, 128, 0.05);
+}
+
+#qkqrbfrvny .gt_table_body {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#qkqrbfrvny .gt_footnotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#qkqrbfrvny .gt_footnote {
+  margin: 0px;
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#qkqrbfrvny .gt_sourcenotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#qkqrbfrvny .gt_sourcenote {
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#qkqrbfrvny .gt_left {
+  text-align: left;
+}
+
+#qkqrbfrvny .gt_center {
+  text-align: center;
+}
+
+#qkqrbfrvny .gt_right {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+#qkqrbfrvny .gt_font_normal {
+  font-weight: normal;
+}
+
+#qkqrbfrvny .gt_font_bold {
+  font-weight: bold;
+}
+
+#qkqrbfrvny .gt_font_italic {
+  font-style: italic;
+}
+
+#qkqrbfrvny .gt_super {
+  font-size: 65%;
+}
+
+#qkqrbfrvny .gt_footnote_marks {
+  font-size: 75%;
+  vertical-align: 0.4em;
+  position: initial;
+}
+
+#qkqrbfrvny .gt_asterisk {
+  font-size: 100%;
+  vertical-align: 0;
+}
+
+#qkqrbfrvny .gt_indent_1 {
+  text-indent: 5px;
+}
+
+#qkqrbfrvny .gt_indent_2 {
+  text-indent: 10px;
+}
+
+#qkqrbfrvny .gt_indent_3 {
+  text-indent: 15px;
+}
+
+#qkqrbfrvny .gt_indent_4 {
+  text-indent: 20px;
+}
+
+#qkqrbfrvny .gt_indent_5 {
+  text-indent: 25px;
+}
+
+#qkqrbfrvny .katex-display {
+  display: inline-flex !important;
+  margin-bottom: 0.75em !important;
+}
+
+#qkqrbfrvny div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
+  height: 0px !important;
+}
+</style>
+
+<table class="gt_table cell caption-top table table-sm table-striped small" data-quarto-bootstrap="false">
+<thead>
+<tr class="gt_col_headings header">
+<th id="a::stub" class="gt_col_heading gt_columns_bottom_border gt_left" data-quarto-table-cell-role="th" scope="col"></th>
+<th id="Dominio" class="gt_col_heading gt_columns_bottom_border gt_center" data-quarto-table-cell-role="th" scope="col">dominio</th>
+<th id="Población-total" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">Población total</th>
+<th id="Dimensiones:-0" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">Dimensiones: 0</th>
+<th id="Dimensiones:-1" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">Dimensiones: 1</th>
+<th id="Dimensiones:-2" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">Dimensiones: 2</th>
+<th id="Dimensiones:-3" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">Dimensiones: 3</th>
+<th id="Dimensiones:-4" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">Dimensiones: 4</th>
+<th id="Dimensiones:-5" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">Dimensiones: 5</th>
+<th id="Dimensiones:-6" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">Dimensiones: 6</th>
+<th id="Dimensiones:-7" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">Dimensiones: 7</th>
+</tr>
+</thead>
+<tbody class="gt_table_body">
+<tr class="odd">
+<th id="stub_1_1" class="gt_row gt_left gt_stub" data-quarto-table-cell-role="th" scope="row"></th>
+<td class="gt_row gt_center" headers="stub_1_1 Dominio">Costa Norte</td>
+<td class="gt_row gt_right" headers="stub_1_1 Población total">43,149</td>
+<td class="gt_row gt_right" headers="stub_1_1 Dimensiones: 0">0</td>
+<td class="gt_row gt_right" headers="stub_1_1 Dimensiones: 1">2,217</td>
+<td class="gt_row gt_right" headers="stub_1_1 Dimensiones: 2">5,254</td>
+<td class="gt_row gt_right" headers="stub_1_1 Dimensiones: 3">8,481</td>
+<td class="gt_row gt_right" headers="stub_1_1 Dimensiones: 4">19,222</td>
+<td class="gt_row gt_right" headers="stub_1_1 Dimensiones: 5">7,001</td>
+<td class="gt_row gt_right" headers="stub_1_1 Dimensiones: 6">119</td>
+<td class="gt_row gt_right" headers="stub_1_1 Dimensiones: 7">855</td>
+</tr>
+<tr class="even">
+<th id="stub_1_2" class="gt_row gt_left gt_stub" data-quarto-table-cell-role="th" scope="row"></th>
+<td class="gt_row gt_center" headers="stub_1_2 Dominio">Costa Centro</td>
+<td class="gt_row gt_right" headers="stub_1_2 Población total">54,283</td>
+<td class="gt_row gt_right" headers="stub_1_2 Dimensiones: 0">541</td>
+<td class="gt_row gt_right" headers="stub_1_2 Dimensiones: 1">5,530</td>
+<td class="gt_row gt_right" headers="stub_1_2 Dimensiones: 2">13,679</td>
+<td class="gt_row gt_right" headers="stub_1_2 Dimensiones: 3">9,829</td>
+<td class="gt_row gt_right" headers="stub_1_2 Dimensiones: 4">15,376</td>
+<td class="gt_row gt_right" headers="stub_1_2 Dimensiones: 5">7,122</td>
+<td class="gt_row gt_right" headers="stub_1_2 Dimensiones: 6">2,207</td>
+<td class="gt_row gt_right" headers="stub_1_2 Dimensiones: 7">0</td>
+</tr>
+<tr class="odd">
+<th id="stub_1_3" class="gt_row gt_left gt_stub" data-quarto-table-cell-role="th" scope="row"></th>
+<td class="gt_row gt_center" headers="stub_1_3 Dominio">Costa Sur</td>
+<td class="gt_row gt_right" headers="stub_1_3 Población total">0</td>
+<td class="gt_row gt_right" headers="stub_1_3 Dimensiones: 0">0</td>
+<td class="gt_row gt_right" headers="stub_1_3 Dimensiones: 1">0</td>
+<td class="gt_row gt_right" headers="stub_1_3 Dimensiones: 2">0</td>
+<td class="gt_row gt_right" headers="stub_1_3 Dimensiones: 3">0</td>
+<td class="gt_row gt_right" headers="stub_1_3 Dimensiones: 4">0</td>
+<td class="gt_row gt_right" headers="stub_1_3 Dimensiones: 5">0</td>
+<td class="gt_row gt_right" headers="stub_1_3 Dimensiones: 6">0</td>
+<td class="gt_row gt_right" headers="stub_1_3 Dimensiones: 7">0</td>
+</tr>
+<tr class="even">
+<th id="stub_1_4" class="gt_row gt_left gt_stub" data-quarto-table-cell-role="th" scope="row"></th>
+<td class="gt_row gt_center" headers="stub_1_4 Dominio">Sierra Norte</td>
+<td class="gt_row gt_right" headers="stub_1_4 Población total">654,130</td>
+<td class="gt_row gt_right" headers="stub_1_4 Dimensiones: 0">4,532</td>
+<td class="gt_row gt_right" headers="stub_1_4 Dimensiones: 1">24,476</td>
+<td class="gt_row gt_right" headers="stub_1_4 Dimensiones: 2">95,835</td>
+<td class="gt_row gt_right" headers="stub_1_4 Dimensiones: 3">149,459</td>
+<td class="gt_row gt_right" headers="stub_1_4 Dimensiones: 4">241,858</td>
+<td class="gt_row gt_right" headers="stub_1_4 Dimensiones: 5">110,130</td>
+<td class="gt_row gt_right" headers="stub_1_4 Dimensiones: 6">27,011</td>
+<td class="gt_row gt_right" headers="stub_1_4 Dimensiones: 7">830</td>
+</tr>
+<tr class="odd">
+<th id="stub_1_5" class="gt_row gt_left gt_stub" data-quarto-table-cell-role="th" scope="row"></th>
+<td class="gt_row gt_center" headers="stub_1_5 Dominio">Sierra Centro</td>
+<td class="gt_row gt_right" headers="stub_1_5 Población total">1,558,658</td>
+<td class="gt_row gt_right" headers="stub_1_5 Dimensiones: 0">27,503</td>
+<td class="gt_row gt_right" headers="stub_1_5 Dimensiones: 1">209,416</td>
+<td class="gt_row gt_right" headers="stub_1_5 Dimensiones: 2">386,441</td>
+<td class="gt_row gt_right" headers="stub_1_5 Dimensiones: 3">409,802</td>
+<td class="gt_row gt_right" headers="stub_1_5 Dimensiones: 4">351,680</td>
+<td class="gt_row gt_right" headers="stub_1_5 Dimensiones: 5">147,166</td>
+<td class="gt_row gt_right" headers="stub_1_5 Dimensiones: 6">24,968</td>
+<td class="gt_row gt_right" headers="stub_1_5 Dimensiones: 7">1,683</td>
+</tr>
+<tr class="even">
+<th id="stub_1_6" class="gt_row gt_left gt_stub" data-quarto-table-cell-role="th" scope="row"></th>
+<td class="gt_row gt_center" headers="stub_1_6 Dominio">Sierra Sur</td>
+<td class="gt_row gt_right" headers="stub_1_6 Población total">944,598</td>
+<td class="gt_row gt_right" headers="stub_1_6 Dimensiones: 0">18,847</td>
+<td class="gt_row gt_right" headers="stub_1_6 Dimensiones: 1">173,485</td>
+<td class="gt_row gt_right" headers="stub_1_6 Dimensiones: 2">253,080</td>
+<td class="gt_row gt_right" headers="stub_1_6 Dimensiones: 3">250,920</td>
+<td class="gt_row gt_right" headers="stub_1_6 Dimensiones: 4">162,972</td>
+<td class="gt_row gt_right" headers="stub_1_6 Dimensiones: 5">68,760</td>
+<td class="gt_row gt_right" headers="stub_1_6 Dimensiones: 6">15,023</td>
+<td class="gt_row gt_right" headers="stub_1_6 Dimensiones: 7">1,510</td>
+</tr>
+<tr class="odd">
+<th id="stub_1_7" class="gt_row gt_left gt_stub" data-quarto-table-cell-role="th" scope="row"></th>
+<td class="gt_row gt_center" headers="stub_1_7 Dominio">Selva</td>
+<td class="gt_row gt_right" headers="stub_1_7 Población total">511,035</td>
+<td class="gt_row gt_right" headers="stub_1_7 Dimensiones: 0">17,683</td>
+<td class="gt_row gt_right" headers="stub_1_7 Dimensiones: 1">44,660</td>
+<td class="gt_row gt_right" headers="stub_1_7 Dimensiones: 2">100,921</td>
+<td class="gt_row gt_right" headers="stub_1_7 Dimensiones: 3">142,953</td>
+<td class="gt_row gt_right" headers="stub_1_7 Dimensiones: 4">145,357</td>
+<td class="gt_row gt_right" headers="stub_1_7 Dimensiones: 5">49,385</td>
+<td class="gt_row gt_right" headers="stub_1_7 Dimensiones: 6">9,548</td>
+<td class="gt_row gt_right" headers="stub_1_7 Dimensiones: 7">527</td>
+</tr>
+<tr class="even">
+<th id="stub_1_8" class="gt_row gt_left gt_stub" data-quarto-table-cell-role="th" scope="row"></th>
+<td class="gt_row gt_center" headers="stub_1_8 Dominio">Lima Metropolitana</td>
+<td class="gt_row gt_right" headers="stub_1_8 Población total">79,638</td>
+<td class="gt_row gt_right" headers="stub_1_8 Dimensiones: 0">6,266</td>
+<td class="gt_row gt_right" headers="stub_1_8 Dimensiones: 1">34,391</td>
+<td class="gt_row gt_right" headers="stub_1_8 Dimensiones: 2">33,444</td>
+<td class="gt_row gt_right" headers="stub_1_8 Dimensiones: 3">5,537</td>
+<td class="gt_row gt_right" headers="stub_1_8 Dimensiones: 4">0</td>
+<td class="gt_row gt_right" headers="stub_1_8 Dimensiones: 5">0</td>
+<td class="gt_row gt_right" headers="stub_1_8 Dimensiones: 6">0</td>
+<td class="gt_row gt_right" headers="stub_1_8 Dimensiones: 7">0</td>
+</tr>
+<tr class="odd">
+<th id="grand_summary_stub_1" class="gt_row gt_left gt_stub gt_grand_summary_row gt_first_grand_summary_row gt_last_summary_row" data-quarto-table-cell-role="th" scope="row">Total</th>
+<td class="gt_row gt_center gt_grand_summary_row gt_first_grand_summary_row gt_last_summary_row" headers="grand_summary_stub_1 Dominio">—</td>
+<td class="gt_row gt_right gt_grand_summary_row gt_first_grand_summary_row gt_last_summary_row" headers="grand_summary_stub_1 Población total">3,845,491</td>
+<td class="gt_row gt_right gt_grand_summary_row gt_first_grand_summary_row gt_last_summary_row" headers="grand_summary_stub_1 Dimensiones: 0">75,371</td>
+<td class="gt_row gt_right gt_grand_summary_row gt_first_grand_summary_row gt_last_summary_row" headers="grand_summary_stub_1 Dimensiones: 1">494,176</td>
+<td class="gt_row gt_right gt_grand_summary_row gt_first_grand_summary_row gt_last_summary_row" headers="grand_summary_stub_1 Dimensiones: 2">888,655</td>
+<td class="gt_row gt_right gt_grand_summary_row gt_first_grand_summary_row gt_last_summary_row" headers="grand_summary_stub_1 Dimensiones: 3">976,983</td>
+<td class="gt_row gt_right gt_grand_summary_row gt_first_grand_summary_row gt_last_summary_row" headers="grand_summary_stub_1 Dimensiones: 4">936,464</td>
+<td class="gt_row gt_right gt_grand_summary_row gt_first_grand_summary_row gt_last_summary_row" headers="grand_summary_stub_1 Dimensiones: 5">389,562</td>
+<td class="gt_row gt_right gt_grand_summary_row gt_first_grand_summary_row gt_last_summary_row" headers="grand_summary_stub_1 Dimensiones: 6">78,875</td>
+<td class="gt_row gt_right gt_grand_summary_row gt_first_grand_summary_row gt_last_summary_row" headers="grand_summary_stub_1 Dimensiones: 7">5,405</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+</figure>
+</div>
+</div>
+</section>
+</section>
+<section id="conclusión" class="level1">
+<h1>Conclusión</h1>
+<p>En esta sesión combinamos las funciones de <code>dplyr</code> que aprendimos en nuestra sesión de <code>encuestas de hogares</code> con nuevas funciones geográficas de los paquetes <code>terra</code> y <code>sf</code>, aprovechando la información de latitud y longitud que incluyeron nuestros amigos del INEI de Perú para los conglomerados de las viviendas de la Encuesta Nacional de Hogares (ENAHO), 2025.</p>
+<p>Esto nos permitió encontrar el número de personas que no solo son vulnerables en diferentes dimensiones, sino además tienen una probabilidad alta de ser afectados por deslizamientos provocados por lluvias según un mapa de amenaza <strong>(3,770,120 personas excluyendo a los vulnerables en 0 dimensiones de 34,856,707 con los que cuenta Perú, o un 10.8% de la población)</strong>. Combinar estos datos nos permite reducir el número de individuos que serían candidatos para un programa de respuesta temprana ante un desastre de esa naturaleza, reduciendo la carga presupuestaria para el diseño del mismo y focalizando la respuesta en las áreas más susceptibles.</p>
+<p>Nuestra última tabla <a href="#tbl-vulnerabilidad-multiple" class="quarto-xref">Tabla&nbsp;2</a> se presta muy bien para la <a href="#fig-dimensiones" class="quarto-xref">Figura&nbsp;1</a> de población vulnerable y expuesta a deslizamientos, según el número de dimensiones de vulnerabilidad, el cual nos abre la puerta para nuestra siguiente sesión en la que explicaremos los diferentes componentes de un gráfico como este, desarrollado con el paquete <code>ggplot2</code> y aprovecharemos para hacer algunos mapas para ver qué dominios administrativos requerirán más atención.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div id="fig-dimensiones" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-dimensiones-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="index_files/figure-html/fig-dimensiones-1.png" class="img-fluid figure-img" width="672">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-dimensiones-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figura&nbsp;1: Población expuesta a deslizamientos por lluvia, según el número de dimensiones de vulnerabilidad
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="referencias" class="level1 unnumbered">
+<h1 class="unnumbered">Referencias</h1>
+<div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" data-line-spacing="2" role="list">
+<div id="ref-cenepred2026sigrid" class="csl-entry" role="listitem">
+CENEPRED. (2026). <em>Sistema de Información para la Gestión del Riesgo de Desastres (SIGRID)</em>. Centro Nacional de Estimación, Prevención y Reducción del Riesgo de Desastres, CENEPRED, Perú. <a href="https://sigrid.cenepred.gob.pe/sigridv3/">https://sigrid.cenepred.gob.pe/sigridv3/</a>
+</div>
+<div id="ref-doan2023" class="csl-entry" role="listitem">
+Doan, M. K., Hill, R., Hallegatte, S., Corral Rodas, P. A., Brunckhorst, B. J., Nguyen, M., Freije-Rodriguez, S. y Naikal, E. (2023). <em>Counting People Exposed to, Vulnerable to, or at High Risk From Climate Shocks: A Methodology</em>. <a href="https://documents.worldbank.org/en/publication/documents-reports/documentdetail/099602511292336760/IDU07639ca570f3cb048db09bf60fc2cc82df22d">https://documents.worldbank.org/en/publication/documents-reports/documentdetail/099602511292336760/IDU07639ca570f3cb048db09bf60fc2cc82df22d</a>
+</div>
+<div id="ref-inei2026microdatos" class="csl-entry" role="listitem">
+INEI. (2026). <em><span>Encuesta Nacional de Hogares</span> <span>(ENAHO, 2025)</span></em>. Instituto Nacional de Estadística e Informática, Perú. <a href="https://proyectos.inei.gob.pe/microdatos/">https://proyectos.inei.gob.pe/microdatos/</a>
+</div>
+<div id="ref-nasa2020landslides" class="csl-entry" role="listitem">
+NASA Global Precipitation Measurement Mission. (2020). <em>Landslides</em>. NASA. <a href="https://gpm.nasa.gov/applications/landslides">https://gpm.nasa.gov/applications/landslides</a>
+</div>
+<div id="ref-arup2020" class="csl-entry" role="listitem">
+Redshaw, P., Bottomley, J. y Free, M. (2020). <em>The Global Landslide Hazard Map: Final Project Report</em>. Ove Arup &amp; Partners International Ltd. <a href="https://datacatalogfiles.worldbank.org/ddh-published/0037584/DR0045411/global-landslide-hazard-map-report.pdf">https://datacatalogfiles.worldbank.org/ddh-published/0037584/DR0045411/global-landslide-hazard-map-report.pdf</a>
+</div>
+<div id="ref-worldbank2021landslide" class="csl-entry" role="listitem">
+World Bank. (2021). <em>Global Landslide Hazard Map</em>. World Bank / Global Facility for Disaster Reduction; Recovery (GFDRR). <a href="https://datacatalog.worldbank.org/search/dataset/0037584/global-landslide-hazard-map">https://datacatalog.worldbank.org/search/dataset/0037584/global-landslide-hazard-map</a>
+</div>
+</div>
+
+
+</section>
+
+
+<div id="quarto-appendix" class="default"><section id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes"><h2 class="anchored quarto-appendix-heading">Notas</h2>
+
+<ol>
+<li id="fn1"><p>Siempre que sea posible, yo prefiero utilizar información oficial del país. Perú tiene un <a href="https://sigrid.cenepred.gob.pe/sigridv3/">Sistema de Información para la Gestión del Riesgo de Desastres</a> <span class="citation" data-cites="cenepred2026sigrid">(<a href="#ref-cenepred2026sigrid" role="doc-biblioref">CENEPRED, 2026</a>)</span> que cuenta con información geográfica muy interesante. No obstante, a pesar que tiene un visor de mapas, no cuenta con la posibilidad de descargar las capas, lo cual imposibilita este análisis. Tiene una funcionalidad de mandar mensajes al equipo por la cual solicité el acceso a las capas, pero nunca recibí una respuesta.<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn2"><p>Ellos le llaman “factores”, pero dado que la palabra <em>factores</em> tiene una connotación especial en R, nosotros utilizamos la denominación <em>dimensiones</em>.<a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+</ol>
+</section></div></main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copiado");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copiado");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/r-en-vivo\.github\.io\/r-envivo\/");
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>

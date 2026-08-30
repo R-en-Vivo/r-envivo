@@ -10,7 +10,7 @@ website:
     left:
       - href: index.qmd
         text: Inicio
-      - href: sesiones
+      - href: sesiones/index.qmd
         text: Sesiones
       - sidebar:documentos
       - href: dashboard.qmd
@@ -26,6 +26,13 @@ website:
       contents:
         - documentos/memoria-de-calculo.qmd
         - documentos/reporte.qmd
+
+execute:
+  freeze: auto
+
+resources:
+  - "datos/"
+  - "salidas/"      
 
 lang: es
 format:
