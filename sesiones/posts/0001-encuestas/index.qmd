@@ -14,8 +14,9 @@ csl: ../../../documentos/apa-es.csl
 ---
 # Video
 
-Puedes encontrar el vídeo de implementación de esta sesión [en YouTube](https://www.youtube.com/live/YaNlhnRMKN8).
+Puedes encontrar el vídeo de implementación de esta sesión [en YouTube](https://youtu.be/nmOMUW9vdn4).
 
+{{< video https://youtu.be/nmOMUW9vdn4 >}}
 
 # Preámbulo 
 
