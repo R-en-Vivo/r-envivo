@@ -1,17 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-<<<<<<< HEAD
-    <loc>https://r-en-vivo.github.io/r-envivo/sesiones/posts/0001-encuestas/index.html</loc>
-    <lastmod>2026-08-06T23:51:32.414Z</lastmod>
-=======
     <loc>https://r-en-vivo.github.io/r-envivo/sesiones/index.html</loc>
     <lastmod>2026-08-18T22:47:05.653Z</lastmod>
->>>>>>> 55301ab (remove large file)
   </url>
   <url>
     <loc>https://r-en-vivo.github.io/r-envivo/sesiones/posts/0002-gis/index.html</loc>
-    <lastmod>2026-08-30T00:21:50.169Z</lastmod>
+    <lastmod>2026-08-30T00:49:54.146Z</lastmod>
   </url>
   <url>
     <loc>https://r-en-vivo.github.io/r-envivo/about.html</loc>
@@ -23,11 +18,11 @@
   </url>
   <url>
     <loc>https://r-en-vivo.github.io/r-envivo/documentos/reporte.html</loc>
-    <lastmod>2026-08-27T00:36:50.294Z</lastmod>
+    <lastmod>2026-08-30T00:49:54.142Z</lastmod>
   </url>
   <url>
     <loc>https://r-en-vivo.github.io/r-envivo/dashboard.html</loc>
-    <lastmod>2026-08-27T00:36:46.072Z</lastmod>
+    <lastmod>2026-08-30T00:49:53.733Z</lastmod>
   </url>
   <url>
     <loc>https://r-en-vivo.github.io/r-envivo/documentos/memoria-de-calculo.html</loc>
@@ -43,6 +38,6 @@
   </url>
   <url>
     <loc>https://r-en-vivo.github.io/r-envivo/sesiones/posts/0001-encuestas/index.html</loc>
-    <lastmod>2026-08-29T03:52:07.720Z</lastmod>
+    <lastmod>2026-08-30T00:49:54.146Z</lastmod>
   </url>
 </urlset>

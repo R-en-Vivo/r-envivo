@@ -4,11 +4,7 @@
     "href": "sesiones/index.html",
     "title": "R En Vivo",
     "section": "",
-<<<<<<< HEAD
-    "text": "Puedes encontrar el vídeo de implementación de esta sesión en YouTube."
-=======
     "text": "La perspectiva geográfica de las encuestas\n\n\n\nciencia de datos\n\nrstats\n\nanálisis reproducible\n\nencuestas\n\ngis\n\nanálisis geográfico\n\ntidyverse\n\n\n\nExplorando el riesgo parte 2: los paquetes sf y terra\n\n\n\n\n\n26 ago 2026\n\n\nRenato Vargas\n\n\n\n\n\n\n\n\n\n\n\n\nEncuestas de Hogares\n\n\n\nciencia de datos\n\nrstats\n\nanálisis reproducible\n\nencuestas\n\ndplyr\n\n\n\nExplorando datos con R y dplyr\n\n\n\n\n\n6 ago 2026\n\n\nRenato Vargas\n\n\n\n\n\nNo hay resultados"
->>>>>>> 55301ab (remove large file)
   },
   {
     "objectID": "sesiones/posts/0002-gis/index.html",
