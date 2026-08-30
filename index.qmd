@@ -9,7 +9,9 @@ listing:
   feed: true
 ---
 
-Este sitio ilustra un paradigma de análisis reproducible construido enteramente con Quarto y tecnologías de fuente abierta. La idea central es que un mismo documento combine texto, código y resultados, de modo que cualquier persona pueda revisar, ejecutar de nuevo y entender cómo se llegó a cada cifra o gráfico.
+Este sitio ilustra un paradigma de análisis reproducible construido enteramente con Quarto y tecnologías de fuente abierta. La idea central es que un mismo documento combine texto, código y resultados, de modo que cualquier persona pueda revisar, ejecutar de nuevo y entender cómo se llegó a cada cifra o gráfico. Puedes ver la sesión en la que construimos este sitio aquí:
+
+{{< video https://youtu.be/NjvVyef1NB4 >}}
 
 En resumen, el sitio contiene:
 

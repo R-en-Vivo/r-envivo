@@ -185,7 +185,7 @@
     "href": "index.html",
     "title": "R En Vivo",
     "section": "",
-    "text": "Este sitio ilustra un paradigma de análisis reproducible construido enteramente con Quarto y tecnologías de fuente abierta. La idea central es que un mismo documento combine texto, código y resultados, de modo que cualquier persona pueda revisar, ejecutar de nuevo y entender cómo se llegó a cada cifra o gráfico.\nEn resumen, el sitio contiene:"
+    "text": "Este sitio ilustra un paradigma de análisis reproducible construido enteramente con Quarto y tecnologías de fuente abierta. La idea central es que un mismo documento combine texto, código y resultados, de modo que cualquier persona pueda revisar, ejecutar de nuevo y entender cómo se llegó a cada cifra o gráfico. Puedes ver la sesión en la que construimos este sitio aquí:\nEn resumen, el sitio contiene:"
   },
   {
     "objectID": "index.html#sesiones-de-r-en-vivo",
