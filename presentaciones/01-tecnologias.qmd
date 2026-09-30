@@ -1,17 +1,20 @@
 ---
 title: "Análisis de Datos y Reportes Reproducibles"
 subtitle: "Una breve introducción"
-author: "Renato Vargas (Economista / Analista de Datos)"
+author: 
+  - name: "Renato Vargas"
+    affiliations: 
+      - name: Economista / Analista de datos
 format: 
   revealjs:
-    theme: [default, pstyles.scss]
-    footer: "Los cuadros de oferta y utilización"
+    theme: [simple, pstyles.scss]
+    footer: "Análisis de Datos y Reportes Reproducibles"
 ---
 
 
 ## Contenido
 
-- ¿Por qué adoptar la reproducibilidad?
+- ¿Por qué [adoptar](https://google.com) la reproducibilidad?
 - Git (Control de Versiones).
 - Entorno de análisis estadístico R.
 - Positron.
@@ -30,7 +33,17 @@ format:
 :::
 
 
-## ¿Qué es Git (control de versiones)?
+## ¿Qué es Git (control de versiones)? 
+
+::: {.columns}
+
+::: {.column width="30%"}
+
+![](images/lab.png){width="100%"}
+
+:::
+
+::: {.column width="70%"}
 
 :::incremental
 - Sistema para registrar el historial de cambios de un directorio de proyecto (código, texto, datos).
@@ -42,6 +55,11 @@ format:
 - Los cambios de una rama se integran a otra mediante merge (o pull request en GitHub).
 - GitHub es una plataforma para alojar y compartir repositorios de git en la nube.
 :::
+
+:::
+
+:::
+
 
 ## Inicializar un repositorio y subirlo a GitHub
 
@@ -58,11 +76,11 @@ git push -u origin main
 R es un conjunto integrado de herramientas de software para la manipulación de datos, cálculo y visualización gráfica. Incluye:
 
 ::: incremental
--   Una eficaz herramienta para el manejo y almacenamiento de datos,
--   Un conjunto de operadores para cálculos en matrices,
--   Una colección grande, coherente e integrada de herramientas intermedias para el análisis de datos,
--   herramientas gráficas para el análisis y visualización de datos, ya sea en pantalla o en copia impresa, y
--   Un lenguaje de programación bien desarrollado, simple y eficaz que incluye condicionales, bucles, funciones recursivas definidas y herramientas para ingreso y salida de información.
+-   Una eficaz herramienta para el [manejo y almacenamiento de datos]{.emphasis},
+-   Un conjunto de [operadores para cálculos en matrices]{.emphasis},
+-   Una colección grande, coherente e integrada de [herramientas intermedias para el análisis de datos]{.emphasis},
+-   herramientas [gráficas para el análisis y visualización de datos]{.emphasis}, ya sea en pantalla o en copia impresa, y
+-   Un [lenguaje de programación bien desarrollado]{.emphasis}, simple y eficaz que incluye condicionales, bucles, funciones recursivas definidas y herramientas para ingreso y salida de información.
 -   Un ambiente en el que se han implementado funciones estadísticas.
 :::
 
@@ -89,6 +107,8 @@ R es un conjunto integrado de herramientas de software para la manipulación de 
 
 ::: {.absolute top="50%" left="50%" style="transform: translate(-50%, -50%); text-align: center;"}
 ¡Gracias!
+
+[renatovargas.com](https://renatovargas.com)
 :::
 
 

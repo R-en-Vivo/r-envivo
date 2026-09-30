@@ -102,7 +102,7 @@ div.csl-indent {
 <link href="../../../site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="../../../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../../../site_libs/bootstrap/bootstrap-629c56ba100745318e9dcb35146191d0.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="../../../site_libs/bootstrap/bootstrap-4e663f3a4ff1a491e18bd6a28adf0390.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -484,39 +484,41 @@ attr(,"package")
 <span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>    VIVIENDA,</span>
 <span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>    HOGAR,</span>
 <span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>    LATITUD,</span>
-<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a>    LONGITUD</span>
-<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span> </span>
-<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Nos aseguramos que solo utilizamos </span></span>
-<span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a>  <span class="co"># viviendas con info geográfica no faltante</span></span>
-<span id="cb12-14"><a href="#cb12-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(</span>
-<span id="cb12-15"><a href="#cb12-15" aria-hidden="true" tabindex="-1"></a>    <span class="sc">!</span><span class="fu">is.na</span>(LATITUD),</span>
-<span id="cb12-16"><a href="#cb12-16" aria-hidden="true" tabindex="-1"></a>    <span class="sc">!</span><span class="fu">is.na</span>(LONGITUD)</span>
-<span id="cb12-17"><a href="#cb12-17" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span> </span>
-<span id="cb12-18"><a href="#cb12-18" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Convertimos las coordenadas a una nube de </span></span>
-<span id="cb12-19"><a href="#cb12-19" aria-hidden="true" tabindex="-1"></a>  <span class="co"># puntos utilizando el mismo sistema de coordenadas</span></span>
-<span id="cb12-20"><a href="#cb12-20" aria-hidden="true" tabindex="-1"></a>  <span class="co"># de nuestras capas importadas EPSG: 4326</span></span>
-<span id="cb12-21"><a href="#cb12-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">st_as_sf</span>(</span>
-<span id="cb12-22"><a href="#cb12-22" aria-hidden="true" tabindex="-1"></a>    <span class="at">coords =</span> <span class="fu">c</span>(<span class="st">"LONGITUD"</span>, <span class="st">"LATITUD"</span>),</span>
-<span id="cb12-23"><a href="#cb12-23" aria-hidden="true" tabindex="-1"></a>    <span class="at">crs =</span> <span class="dv">4326</span>,</span>
-<span id="cb12-24"><a href="#cb12-24" aria-hidden="true" tabindex="-1"></a>    <span class="at">remove =</span> <span class="cn">FALSE</span></span>
-<span id="cb12-25"><a href="#cb12-25" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span> </span>
-<span id="cb12-26"><a href="#cb12-26" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Una vez convertidas en el paso anterior</span></span>
-<span id="cb12-27"><a href="#cb12-27" aria-hidden="true" tabindex="-1"></a>  <span class="co"># no necesitamos más LATITUD y LONGITUD</span></span>
-<span id="cb12-28"><a href="#cb12-28" aria-hidden="true" tabindex="-1"></a>  <span class="co"># así que las seleccionamos negativamente con !</span></span>
-<span id="cb12-29"><a href="#cb12-29" aria-hidden="true" tabindex="-1"></a>  <span class="co"># para deshacernos de ellas y mantener las demás</span></span>
-<span id="cb12-30"><a href="#cb12-30" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(</span>
-<span id="cb12-31"><a href="#cb12-31" aria-hidden="true" tabindex="-1"></a>    <span class="sc">!</span><span class="fu">c</span>(LATITUD, LONGITUD)</span>
-<span id="cb12-32"><a href="#cb12-32" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a>    LONGITUD,</span>
+<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a>    UBIGEO</span>
+<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span> </span>
+<span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Nos aseguramos que solo utilizamos </span></span>
+<span id="cb12-14"><a href="#cb12-14" aria-hidden="true" tabindex="-1"></a>  <span class="co"># viviendas con info geográfica no faltante</span></span>
+<span id="cb12-15"><a href="#cb12-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(</span>
+<span id="cb12-16"><a href="#cb12-16" aria-hidden="true" tabindex="-1"></a>    <span class="sc">!</span><span class="fu">is.na</span>(LATITUD),</span>
+<span id="cb12-17"><a href="#cb12-17" aria-hidden="true" tabindex="-1"></a>    <span class="sc">!</span><span class="fu">is.na</span>(LONGITUD)</span>
+<span id="cb12-18"><a href="#cb12-18" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span> </span>
+<span id="cb12-19"><a href="#cb12-19" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Convertimos las coordenadas a una nube de </span></span>
+<span id="cb12-20"><a href="#cb12-20" aria-hidden="true" tabindex="-1"></a>  <span class="co"># puntos utilizando el mismo sistema de coordenadas</span></span>
+<span id="cb12-21"><a href="#cb12-21" aria-hidden="true" tabindex="-1"></a>  <span class="co"># de nuestras capas importadas EPSG: 4326</span></span>
+<span id="cb12-22"><a href="#cb12-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">st_as_sf</span>(</span>
+<span id="cb12-23"><a href="#cb12-23" aria-hidden="true" tabindex="-1"></a>    <span class="at">coords =</span> <span class="fu">c</span>(<span class="st">"LONGITUD"</span>, <span class="st">"LATITUD"</span>),</span>
+<span id="cb12-24"><a href="#cb12-24" aria-hidden="true" tabindex="-1"></a>    <span class="at">crs =</span> <span class="dv">4326</span>,</span>
+<span id="cb12-25"><a href="#cb12-25" aria-hidden="true" tabindex="-1"></a>    <span class="at">remove =</span> <span class="cn">FALSE</span></span>
+<span id="cb12-26"><a href="#cb12-26" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span> </span>
+<span id="cb12-27"><a href="#cb12-27" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Una vez convertidas en el paso anterior</span></span>
+<span id="cb12-28"><a href="#cb12-28" aria-hidden="true" tabindex="-1"></a>  <span class="co"># no necesitamos más LATITUD y LONGITUD</span></span>
+<span id="cb12-29"><a href="#cb12-29" aria-hidden="true" tabindex="-1"></a>  <span class="co"># así que las seleccionamos negativamente con !</span></span>
+<span id="cb12-30"><a href="#cb12-30" aria-hidden="true" tabindex="-1"></a>  <span class="co"># para deshacernos de ellas y mantener las demás</span></span>
+<span id="cb12-31"><a href="#cb12-31" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(</span>
+<span id="cb12-32"><a href="#cb12-32" aria-hidden="true" tabindex="-1"></a>    <span class="sc">!</span><span class="fu">c</span>(LATITUD, LONGITUD)</span>
+<span id="cb12-33"><a href="#cb12-33" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>Ahora <code>viviendas_sf</code> (nombrada por simple features) es un objeto de puntos geográficos que retiene la información de identificación única del hogar <code>CONGLOME</code>, <code>VIVIENDA</code> Y <code>HOGAR</code>. Si usamos la función <code>glimpse()</code> de <code>dplyr</code>, podremos ver que hay una nueva columna llamada <code>geometry</code> que tiene las instrucciones para dibujar a los hogares como una nube de puntos.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">glimpse</span>(viviendas_sf)</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Rows: 44,599
-Columns: 4
+Columns: 5
 $ CONGLOME &lt;chr&gt; "015009", "015009", "015009", "015009", "015009", "015009", "…
 $ VIVIENDA &lt;chr&gt; "012", "025", "036", "049", "061", "074", "086", "097", "108"…
 $ HOGAR    &lt;chr&gt; "11", "11", "11", "11", "11", "11", "11", "11", "11", "11", "…
+$ UBIGEO   &lt;chr&gt; "010101", "010101", "010101", "010101", "010101", "010101", "…
 $ geometry &lt;POINT [°]&gt; POINT (-77.86923 -6.234387), POINT (-77.86923 -6.234387…</code></pre>
 </div>
 </div>
@@ -551,13 +553,13 @@ $ geometry &lt;POINT [°]&gt; POINT (-77.86923 -6.234387), POINT (-77.86923 -6.2
 <span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(frecuencia_deslizamiento <span class="sc">&gt;</span> <span class="dv">0</span>) <span class="sc">|&gt;</span> </span>
 <span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">head</span>()</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>  CONGLOME VIVIENDA HOGAR frecuencia_deslizamiento
-1   015024      026    11               0.00385021
-2   015024      039    11               0.00385021
-3   015024      069    11               0.00385021
-4   015024      083    11               0.00385021
-5   015024      098    11               0.00385021
-6   015024      123    11               0.00385021</code></pre>
+<pre><code>  CONGLOME VIVIENDA HOGAR UBIGEO frecuencia_deslizamiento
+1   015024      026    11 010101               0.00385021
+2   015024      039    11 010101               0.00385021
+3   015024      069    11 010101               0.00385021
+4   015024      083    11 010101               0.00385021
+5   015024      098    11 010101               0.00385021
+6   015024      123    11 010101               0.00385021</code></pre>
 </div>
 </div>
 <p>También podemos hacer una visualización rápida de los puntos (en rojo) sobre nuestro mapa de exposición para darnos una idea de nuestros hogares expuestos utilizando el objeto de <code>terra</code> que es geográfico: <code>viviendas_vector</code>. Esta visualización simple es cortesía de nuestro paquete <code>terra</code> el cual viene con esta funcionalidad para nuestros <code>SpatRaster</code>. En nuestra siguiente sesión haremos mapas más complejos con <code>ggplot2</code> y con <code>sf</code>.</p>
@@ -599,13 +601,20 @@ $ geometry &lt;POINT [°]&gt; POINT (-77.86923 -6.234387), POINT (-77.86923 -6.2
 <span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(exposicion_deslizamiento <span class="sc">==</span> <span class="dv">1</span>) <span class="sc">|&gt;</span> </span>
 <span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">head</span>()</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>  CONGLOME VIVIENDA HOGAR frecuencia_deslizamiento exposicion_deslizamiento
-1   015029      003    11               0.01938608                        1
-2   015029      017    11               0.01938608                        1
-3   015029      036    11               0.01938608                        1
-4   015029      047    11               0.01938608                        1
-5   015029      057    11               0.01938608                        1
-6   015029      068    11               0.01938608                        1</code></pre>
+<pre><code>  CONGLOME VIVIENDA HOGAR UBIGEO frecuencia_deslizamiento
+1   015029      003    11 010110               0.01938608
+2   015029      017    11 010110               0.01938608
+3   015029      036    11 010110               0.01938608
+4   015029      047    11 010110               0.01938608
+5   015029      057    11 010110               0.01938608
+6   015029      068    11 010110               0.01938608
+  exposicion_deslizamiento
+1                        1
+2                        1
+3                        1
+4                        1
+5                        1
+6                        1</code></pre>
 </div>
 </div>
 </section>
@@ -689,23 +698,23 @@ Tabla&nbsp;1: Número de personas vulnerables y expuestas por dominio y dimensi�
 </figcaption>
 <div aria-describedby="tbl-vulnerabilidad-dominio-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="cell-output-display">
-<div id="psritygstt" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
-<style>#psritygstt table {
+<div id="ttzisewexi" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#ttzisewexi table {
   font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-#psritygstt thead, #psritygstt tbody, #psritygstt tfoot, #psritygstt tr, #psritygstt td, #psritygstt th {
+#ttzisewexi thead, #ttzisewexi tbody, #ttzisewexi tfoot, #ttzisewexi tr, #ttzisewexi td, #ttzisewexi th {
   border-style: none;
 }
 
-#psritygstt p {
+#ttzisewexi p {
   margin: 0;
   padding: 0;
 }
 
-#psritygstt .gt_table {
+#ttzisewexi .gt_table {
   display: table;
   border-collapse: collapse;
   line-height: normal;
@@ -731,12 +740,12 @@ Tabla&nbsp;1: Número de personas vulnerables y expuestas por dominio y dimensi�
   border-left-color: #D3D3D3;
 }
 
-#psritygstt .gt_caption {
+#ttzisewexi .gt_caption {
   padding-top: 4px;
   padding-bottom: 4px;
 }
 
-#psritygstt .gt_title {
+#ttzisewexi .gt_title {
   color: #333333;
   font-size: 125%;
   font-weight: initial;
@@ -748,7 +757,7 @@ Tabla&nbsp;1: Número de personas vulnerables y expuestas por dominio y dimensi�
   border-bottom-width: 0;
 }
 
-#psritygstt .gt_subtitle {
+#ttzisewexi .gt_subtitle {
   color: #333333;
   font-size: 85%;
   font-weight: initial;
@@ -760,7 +769,7 @@ Tabla&nbsp;1: Número de personas vulnerables y expuestas por dominio y dimensi�
   border-top-width: 0;
 }
 
-#psritygstt .gt_heading {
+#ttzisewexi .gt_heading {
   background-color: #FFFFFF;
   text-align: center;
   border-bottom-color: #FFFFFF;
@@ -772,13 +781,13 @@ Tabla&nbsp;1: Número de personas vulnerables y expuestas por dominio y dimensi�
   border-right-color: #D3D3D3;
 }
 
-#psritygstt .gt_bottom_border {
+#ttzisewexi .gt_bottom_border {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
 }
 
-#psritygstt .gt_col_headings {
+#ttzisewexi .gt_col_headings {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -793,7 +802,7 @@ Tabla&nbsp;1: Número de personas vulnerables y expuestas por dominio y dimensi�
   border-right-color: #D3D3D3;
 }
 
-#psritygstt .gt_col_heading {
+#ttzisewexi .gt_col_heading {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -813,7 +822,7 @@ Tabla&nbsp;1: Número de personas vulnerables y expuestas por dominio y dimensi�
   overflow-x: hidden;
 }
 
-#psritygstt .gt_column_spanner_outer {
+#ttzisewexi .gt_column_spanner_outer {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -825,15 +834,15 @@ Tabla&nbsp;1: Número de personas vulnerables y expuestas por dominio y dimensi�
   padding-right: 4px;
 }
 
-#psritygstt .gt_column_spanner_outer:first-child {
+#ttzisewexi .gt_column_spanner_outer:first-child {
   padding-left: 0;
 }
 
-#psritygstt .gt_column_spanner_outer:last-child {
+#ttzisewexi .gt_column_spanner_outer:last-child {
   padding-right: 0;
 }
 
-#psritygstt .gt_column_spanner {
+#ttzisewexi .gt_column_spanner {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
@@ -845,11 +854,11 @@ Tabla&nbsp;1: Número de personas vulnerables y expuestas por dominio y dimensi�
   width: 100%;
 }
 
-#psritygstt .gt_spanner_row {
+#ttzisewexi .gt_spanner_row {
   border-bottom-style: hidden;
 }
 
-#psritygstt .gt_group_heading {
+#ttzisewexi .gt_group_heading {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -875,7 +884,7 @@ Tabla&nbsp;1: Número de personas vulnerables y expuestas por dominio y dimensi�
   text-align: left;
 }
 
-#psritygstt .gt_empty_group_heading {
+#ttzisewexi .gt_empty_group_heading {
   padding: 0.5px;
   color: #333333;
   background-color: #FFFFFF;
@@ -890,15 +899,15 @@ Tabla&nbsp;1: Número de personas vulnerables y expuestas por dominio y dimensi�
   vertical-align: middle;
 }
 
-#psritygstt .gt_from_md > :first-child {
+#ttzisewexi .gt_from_md > :first-child {
   margin-top: 0;
 }
 
-#psritygstt .gt_from_md > :last-child {
+#ttzisewexi .gt_from_md > :last-child {
   margin-bottom: 0;
 }
 
-#psritygstt .gt_row {
+#ttzisewexi .gt_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -917,7 +926,7 @@ Tabla&nbsp;1: Número de personas vulnerables y expuestas por dominio y dimensi�
   overflow-x: hidden;
 }
 
-#psritygstt .gt_stub {
+#ttzisewexi .gt_stub {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -930,7 +939,7 @@ Tabla&nbsp;1: Número de personas vulnerables y expuestas por dominio y dimensi�
   padding-right: 5px;
 }
 
-#psritygstt .gt_stub_row_group {
+#ttzisewexi .gt_stub_row_group {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -944,15 +953,15 @@ Tabla&nbsp;1: Número de personas vulnerables y expuestas por dominio y dimensi�
   vertical-align: top;
 }
 
-#psritygstt .gt_row_group_first td {
+#ttzisewexi .gt_row_group_first td {
   border-top-width: 2px;
 }
 
-#psritygstt .gt_row_group_first th {
+#ttzisewexi .gt_row_group_first th {
   border-top-width: 2px;
 }
 
-#psritygstt .gt_summary_row {
+#ttzisewexi .gt_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -962,16 +971,16 @@ Tabla&nbsp;1: Número de personas vulnerables y expuestas por dominio y dimensi�
   padding-right: 5px;
 }
 
-#psritygstt .gt_first_summary_row {
+#ttzisewexi .gt_first_summary_row {
   border-top-style: solid;
   border-top-color: #D3D3D3;
 }
 
-#psritygstt .gt_first_summary_row.thick {
+#ttzisewexi .gt_first_summary_row.thick {
   border-top-width: 2px;
 }
 
-#psritygstt .gt_last_summary_row {
+#ttzisewexi .gt_last_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -981,7 +990,7 @@ Tabla&nbsp;1: Número de personas vulnerables y expuestas por dominio y dimensi�
   border-bottom-color: #D3D3D3;
 }
 
-#psritygstt .gt_grand_summary_row {
+#ttzisewexi .gt_grand_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -991,7 +1000,7 @@ Tabla&nbsp;1: Número de personas vulnerables y expuestas por dominio y dimensi�
   padding-right: 5px;
 }
 
-#psritygstt .gt_first_grand_summary_row {
+#ttzisewexi .gt_first_grand_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1001,7 +1010,7 @@ Tabla&nbsp;1: Número de personas vulnerables y expuestas por dominio y dimensi�
   border-top-color: #D3D3D3;
 }
 
-#psritygstt .gt_last_grand_summary_row_top {
+#ttzisewexi .gt_last_grand_summary_row_top {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1011,11 +1020,11 @@ Tabla&nbsp;1: Número de personas vulnerables y expuestas por dominio y dimensi�
   border-bottom-color: #D3D3D3;
 }
 
-#psritygstt .gt_striped {
+#ttzisewexi .gt_striped {
   background-color: rgba(128, 128, 128, 0.05);
 }
 
-#psritygstt .gt_table_body {
+#ttzisewexi .gt_table_body {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -1024,7 +1033,7 @@ Tabla&nbsp;1: Número de personas vulnerables y expuestas por dominio y dimensi�
   border-bottom-color: #D3D3D3;
 }
 
-#psritygstt .gt_footnotes {
+#ttzisewexi .gt_footnotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -1038,7 +1047,7 @@ Tabla&nbsp;1: Número de personas vulnerables y expuestas por dominio y dimensi�
   border-right-color: #D3D3D3;
 }
 
-#psritygstt .gt_footnote {
+#ttzisewexi .gt_footnote {
   margin: 0px;
   font-size: 90%;
   padding-top: 4px;
@@ -1047,7 +1056,7 @@ Tabla&nbsp;1: Número de personas vulnerables y expuestas por dominio y dimensi�
   padding-right: 5px;
 }
 
-#psritygstt .gt_sourcenotes {
+#ttzisewexi .gt_sourcenotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -1061,7 +1070,7 @@ Tabla&nbsp;1: Número de personas vulnerables y expuestas por dominio y dimensi�
   border-right-color: #D3D3D3;
 }
 
-#psritygstt .gt_sourcenote {
+#ttzisewexi .gt_sourcenote {
   font-size: 90%;
   padding-top: 4px;
   padding-bottom: 4px;
@@ -1069,72 +1078,72 @@ Tabla&nbsp;1: Número de personas vulnerables y expuestas por dominio y dimensi�
   padding-right: 5px;
 }
 
-#psritygstt .gt_left {
+#ttzisewexi .gt_left {
   text-align: left;
 }
 
-#psritygstt .gt_center {
+#ttzisewexi .gt_center {
   text-align: center;
 }
 
-#psritygstt .gt_right {
+#ttzisewexi .gt_right {
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
 
-#psritygstt .gt_font_normal {
+#ttzisewexi .gt_font_normal {
   font-weight: normal;
 }
 
-#psritygstt .gt_font_bold {
+#ttzisewexi .gt_font_bold {
   font-weight: bold;
 }
 
-#psritygstt .gt_font_italic {
+#ttzisewexi .gt_font_italic {
   font-style: italic;
 }
 
-#psritygstt .gt_super {
+#ttzisewexi .gt_super {
   font-size: 65%;
 }
 
-#psritygstt .gt_footnote_marks {
+#ttzisewexi .gt_footnote_marks {
   font-size: 75%;
   vertical-align: 0.4em;
   position: initial;
 }
 
-#psritygstt .gt_asterisk {
+#ttzisewexi .gt_asterisk {
   font-size: 100%;
   vertical-align: 0;
 }
 
-#psritygstt .gt_indent_1 {
+#ttzisewexi .gt_indent_1 {
   text-indent: 5px;
 }
 
-#psritygstt .gt_indent_2 {
+#ttzisewexi .gt_indent_2 {
   text-indent: 10px;
 }
 
-#psritygstt .gt_indent_3 {
+#ttzisewexi .gt_indent_3 {
   text-indent: 15px;
 }
 
-#psritygstt .gt_indent_4 {
+#ttzisewexi .gt_indent_4 {
   text-indent: 20px;
 }
 
-#psritygstt .gt_indent_5 {
+#ttzisewexi .gt_indent_5 {
   text-indent: 25px;
 }
 
-#psritygstt .katex-display {
+#ttzisewexi .katex-display {
   display: inline-flex !important;
   margin-bottom: 0.75em !important;
 }
 
-#psritygstt div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
+#ttzisewexi div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
   height: 0px !important;
 }
 </style>
@@ -1325,23 +1334,23 @@ Tabla&nbsp;2: Número de personas vulnerables y expuestas en múltiples dimensio
 </figcaption>
 <div aria-describedby="tbl-vulnerabilidad-multiple-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="cell-output-display">
-<div id="qkqrbfrvny" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
-<style>#qkqrbfrvny table {
+<div id="vfwzcomacx" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#vfwzcomacx table {
   font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-#qkqrbfrvny thead, #qkqrbfrvny tbody, #qkqrbfrvny tfoot, #qkqrbfrvny tr, #qkqrbfrvny td, #qkqrbfrvny th {
+#vfwzcomacx thead, #vfwzcomacx tbody, #vfwzcomacx tfoot, #vfwzcomacx tr, #vfwzcomacx td, #vfwzcomacx th {
   border-style: none;
 }
 
-#qkqrbfrvny p {
+#vfwzcomacx p {
   margin: 0;
   padding: 0;
 }
 
-#qkqrbfrvny .gt_table {
+#vfwzcomacx .gt_table {
   display: table;
   border-collapse: collapse;
   line-height: normal;
@@ -1367,12 +1376,12 @@ Tabla&nbsp;2: Número de personas vulnerables y expuestas en múltiples dimensio
   border-left-color: #D3D3D3;
 }
 
-#qkqrbfrvny .gt_caption {
+#vfwzcomacx .gt_caption {
   padding-top: 4px;
   padding-bottom: 4px;
 }
 
-#qkqrbfrvny .gt_title {
+#vfwzcomacx .gt_title {
   color: #333333;
   font-size: 125%;
   font-weight: initial;
@@ -1384,7 +1393,7 @@ Tabla&nbsp;2: Número de personas vulnerables y expuestas en múltiples dimensio
   border-bottom-width: 0;
 }
 
-#qkqrbfrvny .gt_subtitle {
+#vfwzcomacx .gt_subtitle {
   color: #333333;
   font-size: 85%;
   font-weight: initial;
@@ -1396,7 +1405,7 @@ Tabla&nbsp;2: Número de personas vulnerables y expuestas en múltiples dimensio
   border-top-width: 0;
 }
 
-#qkqrbfrvny .gt_heading {
+#vfwzcomacx .gt_heading {
   background-color: #FFFFFF;
   text-align: center;
   border-bottom-color: #FFFFFF;
@@ -1408,13 +1417,13 @@ Tabla&nbsp;2: Número de personas vulnerables y expuestas en múltiples dimensio
   border-right-color: #D3D3D3;
 }
 
-#qkqrbfrvny .gt_bottom_border {
+#vfwzcomacx .gt_bottom_border {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
 }
 
-#qkqrbfrvny .gt_col_headings {
+#vfwzcomacx .gt_col_headings {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -1429,7 +1438,7 @@ Tabla&nbsp;2: Número de personas vulnerables y expuestas en múltiples dimensio
   border-right-color: #D3D3D3;
 }
 
-#qkqrbfrvny .gt_col_heading {
+#vfwzcomacx .gt_col_heading {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -1449,7 +1458,7 @@ Tabla&nbsp;2: Número de personas vulnerables y expuestas en múltiples dimensio
   overflow-x: hidden;
 }
 
-#qkqrbfrvny .gt_column_spanner_outer {
+#vfwzcomacx .gt_column_spanner_outer {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -1461,15 +1470,15 @@ Tabla&nbsp;2: Número de personas vulnerables y expuestas en múltiples dimensio
   padding-right: 4px;
 }
 
-#qkqrbfrvny .gt_column_spanner_outer:first-child {
+#vfwzcomacx .gt_column_spanner_outer:first-child {
   padding-left: 0;
 }
 
-#qkqrbfrvny .gt_column_spanner_outer:last-child {
+#vfwzcomacx .gt_column_spanner_outer:last-child {
   padding-right: 0;
 }
 
-#qkqrbfrvny .gt_column_spanner {
+#vfwzcomacx .gt_column_spanner {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
@@ -1481,11 +1490,11 @@ Tabla&nbsp;2: Número de personas vulnerables y expuestas en múltiples dimensio
   width: 100%;
 }
 
-#qkqrbfrvny .gt_spanner_row {
+#vfwzcomacx .gt_spanner_row {
   border-bottom-style: hidden;
 }
 
-#qkqrbfrvny .gt_group_heading {
+#vfwzcomacx .gt_group_heading {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1511,7 +1520,7 @@ Tabla&nbsp;2: Número de personas vulnerables y expuestas en múltiples dimensio
   text-align: left;
 }
 
-#qkqrbfrvny .gt_empty_group_heading {
+#vfwzcomacx .gt_empty_group_heading {
   padding: 0.5px;
   color: #333333;
   background-color: #FFFFFF;
@@ -1526,15 +1535,15 @@ Tabla&nbsp;2: Número de personas vulnerables y expuestas en múltiples dimensio
   vertical-align: middle;
 }
 
-#qkqrbfrvny .gt_from_md > :first-child {
+#vfwzcomacx .gt_from_md > :first-child {
   margin-top: 0;
 }
 
-#qkqrbfrvny .gt_from_md > :last-child {
+#vfwzcomacx .gt_from_md > :last-child {
   margin-bottom: 0;
 }
 
-#qkqrbfrvny .gt_row {
+#vfwzcomacx .gt_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1553,7 +1562,7 @@ Tabla&nbsp;2: Número de personas vulnerables y expuestas en múltiples dimensio
   overflow-x: hidden;
 }
 
-#qkqrbfrvny .gt_stub {
+#vfwzcomacx .gt_stub {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -1566,7 +1575,7 @@ Tabla&nbsp;2: Número de personas vulnerables y expuestas en múltiples dimensio
   padding-right: 5px;
 }
 
-#qkqrbfrvny .gt_stub_row_group {
+#vfwzcomacx .gt_stub_row_group {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -1580,15 +1589,15 @@ Tabla&nbsp;2: Número de personas vulnerables y expuestas en múltiples dimensio
   vertical-align: top;
 }
 
-#qkqrbfrvny .gt_row_group_first td {
+#vfwzcomacx .gt_row_group_first td {
   border-top-width: 2px;
 }
 
-#qkqrbfrvny .gt_row_group_first th {
+#vfwzcomacx .gt_row_group_first th {
   border-top-width: 2px;
 }
 
-#qkqrbfrvny .gt_summary_row {
+#vfwzcomacx .gt_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -1598,16 +1607,16 @@ Tabla&nbsp;2: Número de personas vulnerables y expuestas en múltiples dimensio
   padding-right: 5px;
 }
 
-#qkqrbfrvny .gt_first_summary_row {
+#vfwzcomacx .gt_first_summary_row {
   border-top-style: solid;
   border-top-color: #D3D3D3;
 }
 
-#qkqrbfrvny .gt_first_summary_row.thick {
+#vfwzcomacx .gt_first_summary_row.thick {
   border-top-width: 2px;
 }
 
-#qkqrbfrvny .gt_last_summary_row {
+#vfwzcomacx .gt_last_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1617,7 +1626,7 @@ Tabla&nbsp;2: Número de personas vulnerables y expuestas en múltiples dimensio
   border-bottom-color: #D3D3D3;
 }
 
-#qkqrbfrvny .gt_grand_summary_row {
+#vfwzcomacx .gt_grand_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -1627,7 +1636,7 @@ Tabla&nbsp;2: Número de personas vulnerables y expuestas en múltiples dimensio
   padding-right: 5px;
 }
 
-#qkqrbfrvny .gt_first_grand_summary_row {
+#vfwzcomacx .gt_first_grand_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1637,7 +1646,7 @@ Tabla&nbsp;2: Número de personas vulnerables y expuestas en múltiples dimensio
   border-top-color: #D3D3D3;
 }
 
-#qkqrbfrvny .gt_last_grand_summary_row_top {
+#vfwzcomacx .gt_last_grand_summary_row_top {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1647,11 +1656,11 @@ Tabla&nbsp;2: Número de personas vulnerables y expuestas en múltiples dimensio
   border-bottom-color: #D3D3D3;
 }
 
-#qkqrbfrvny .gt_striped {
+#vfwzcomacx .gt_striped {
   background-color: rgba(128, 128, 128, 0.05);
 }
 
-#qkqrbfrvny .gt_table_body {
+#vfwzcomacx .gt_table_body {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -1660,7 +1669,7 @@ Tabla&nbsp;2: Número de personas vulnerables y expuestas en múltiples dimensio
   border-bottom-color: #D3D3D3;
 }
 
-#qkqrbfrvny .gt_footnotes {
+#vfwzcomacx .gt_footnotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -1674,7 +1683,7 @@ Tabla&nbsp;2: Número de personas vulnerables y expuestas en múltiples dimensio
   border-right-color: #D3D3D3;
 }
 
-#qkqrbfrvny .gt_footnote {
+#vfwzcomacx .gt_footnote {
   margin: 0px;
   font-size: 90%;
   padding-top: 4px;
@@ -1683,7 +1692,7 @@ Tabla&nbsp;2: Número de personas vulnerables y expuestas en múltiples dimensio
   padding-right: 5px;
 }
 
-#qkqrbfrvny .gt_sourcenotes {
+#vfwzcomacx .gt_sourcenotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -1697,7 +1706,7 @@ Tabla&nbsp;2: Número de personas vulnerables y expuestas en múltiples dimensio
   border-right-color: #D3D3D3;
 }
 
-#qkqrbfrvny .gt_sourcenote {
+#vfwzcomacx .gt_sourcenote {
   font-size: 90%;
   padding-top: 4px;
   padding-bottom: 4px;
@@ -1705,72 +1714,72 @@ Tabla&nbsp;2: Número de personas vulnerables y expuestas en múltiples dimensio
   padding-right: 5px;
 }
 
-#qkqrbfrvny .gt_left {
+#vfwzcomacx .gt_left {
   text-align: left;
 }
 
-#qkqrbfrvny .gt_center {
+#vfwzcomacx .gt_center {
   text-align: center;
 }
 
-#qkqrbfrvny .gt_right {
+#vfwzcomacx .gt_right {
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
 
-#qkqrbfrvny .gt_font_normal {
+#vfwzcomacx .gt_font_normal {
   font-weight: normal;
 }
 
-#qkqrbfrvny .gt_font_bold {
+#vfwzcomacx .gt_font_bold {
   font-weight: bold;
 }
 
-#qkqrbfrvny .gt_font_italic {
+#vfwzcomacx .gt_font_italic {
   font-style: italic;
 }
 
-#qkqrbfrvny .gt_super {
+#vfwzcomacx .gt_super {
   font-size: 65%;
 }
 
-#qkqrbfrvny .gt_footnote_marks {
+#vfwzcomacx .gt_footnote_marks {
   font-size: 75%;
   vertical-align: 0.4em;
   position: initial;
 }
 
-#qkqrbfrvny .gt_asterisk {
+#vfwzcomacx .gt_asterisk {
   font-size: 100%;
   vertical-align: 0;
 }
 
-#qkqrbfrvny .gt_indent_1 {
+#vfwzcomacx .gt_indent_1 {
   text-indent: 5px;
 }
 
-#qkqrbfrvny .gt_indent_2 {
+#vfwzcomacx .gt_indent_2 {
   text-indent: 10px;
 }
 
-#qkqrbfrvny .gt_indent_3 {
+#vfwzcomacx .gt_indent_3 {
   text-indent: 15px;
 }
 
-#qkqrbfrvny .gt_indent_4 {
+#vfwzcomacx .gt_indent_4 {
   text-indent: 20px;
 }
 
-#qkqrbfrvny .gt_indent_5 {
+#vfwzcomacx .gt_indent_5 {
   text-indent: 25px;
 }
 
-#qkqrbfrvny .katex-display {
+#vfwzcomacx .katex-display {
   display: inline-flex !important;
   margin-bottom: 0.75em !important;
 }
 
-#qkqrbfrvny div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
+#vfwzcomacx div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
   height: 0px !important;
 }
 </style>

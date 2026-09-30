@@ -202,7 +202,8 @@ viviendas_sf <- viviendas |>
     VIVIENDA,
     HOGAR,
     LATITUD,
-    LONGITUD
+    LONGITUD,
+    UBIGEO
   ) |> 
   # Nos aseguramos que solo utilizamos 
   # viviendas con info geográfica no faltante

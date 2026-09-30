@@ -1,0 +1,133 @@
+---
+title: "Visualizando resultados de vulnerabilidad en Perú"
+description: "Gráficos con ggplot2 y tmap"
+author: "Renato Vargas"
+date: "2026-09-21"
+categories:
+  - ciencia de datosde vulnerabilidad en Perú
+  - rstats
+  - análisis reproducible
+  - encuestas
+  - gráficos
+  - tidyverse
+bibliography: referencias-0003.bib
+csl: ../../../documentos/apa-es.csl
+---
+
+# Video
+
+Puedes encontrar el vídeo de implementación de esta sesión [en YouTube](https://youtu.be/wZ-Tu-6sqXE):
+
+{{< video https://youtu.be/wZ-Tu-6sqXE >}}
+
+
+# Introducción
+
+En nuestras primeras sesiones hicimos un [ejercicio de extracción de información de encuestas de hogares](/sesiones/posts/0001-encuestas/index.qmd) con el paquete `dplyr` y aprendimos a [añadir la perspectiva geográfica](/sesiones/posts/0002-gis/index.qmd) con los paquetes `terra` y `sf`.
+
+Hoy, más que simplemente hacer gráficos con R, aprenderemos sobre "la gramática de gráficos" que es la filosofía sobre la cual está basado el paquete `ggplot2`. Existen muchos recursos para aprender este paquete y hoy solo quiero ponerlo en tu radar y dar un cierre a nuestro análisis de encuestas. Si quieres profundizar en este tema, un buen libro para empezar es el [capítulo de visualización](https://es.r4ds.hadley.nz/03-visualize.html) del libro _**"R Para Ciencia de Datos"**_ [wickham2023].
+
+Además exploraremos el paquete `tmap` que nos permite manipular datos geográficos y visualizarlos de una manera más efectiva que los abordajes que hemos visto anteriormente.
+
+## Preámbulo 
+
+Primeramente limpiamos el área de trabajo y cargamos las librerías correspondientes para el análisis.
+
+```{r}
+#| label: preambulo
+#| warning: false
+#| message: false
+
+# Limpiar el área de trabajo
+rm(list = ls()) 
+
+# Cargar librerías
+library(tidyverse) # Cargar dplyr y sus amigos
+library(gt) # tablas en html
+library(haven) # importar datos de SPSS y Stata
+library(tmap) # Manipular datos geográficos
+library(sf) # Manipular datos geográficos vectoriales
+```
+
+## Los Datos
+
+En una [sesión previa](/sesiones/posts/0002-gis/index.qmd) procesamos los datos de la Encuesta Nacional de Hogares (ENAHO) de Perú [@inei2026microdatos] para identificar a las personas que se encuentran en una condición de vulnerabilidad y además están ubicados en un área susceptible a deslizamientos provocados por lluvias y lo guardamos como el marco de datos `vulnerables_y_expuestos`. Ese nos servirá de punto de partida.
+
+Además, usaremos los límites geográficos oficiales del INEI en el mismo año de la encuesta (2025), los cuales coinciden con nuestros datos a través de la variable `UBIGEO` que identifica a los distritos de Perú. Aquí hacemos la advertencia que la encuesta es representativa a nivel nacional, de área urbana o rural, departamental  y los dominios geográficos (regiones naturales) que hemos usado anteriormente, así que hay que tener cuidado de no hacer generalizaciones a nivel distrital, a pesar que tenemos el dato para cada hogar dentro de la encuesta.
+
+::: {.callout-tip appearance="default"}
+## Descargas
+- **Vulnerables y Expuestos**: [datos RDS](/salidas/sesiones/0002-gis/vulnerables_y_expuestos.RDS)
+- **Vector de límites distritales de Perú de INEI (2025)**: [vector](/datos/gis/per/PER-distritos-INEI-2025.gpkg). 
+:::
+
+## Carga de datos
+
+```{r}
+#| label: cargar-datos
+
+# Base de datos de vulnerables y expuestos
+vulnerables_y_expuestos <- readRDS(
+  "salidas/sesiones/0002-gis/vulnerables_y_expuestos.RDS"
+  )
+
+# Límites distritales de Perú según INEI (2025)
+distritos_peru <- read_sf(
+  "datos/gis/per/PER-distritos-INEI-2025.gpkg"
+  )
+```
+
+# Análisis
+
+En nuestra sesión anterior hicimos la siguiente tabla que muestra la cantidad de personas por número de dimensiones de vulnerabilidad.
+
+```{r}
+tabla_multidimensional <- vulnerables_y_expuestos |> 
+  mutate(
+    Dominio = as_factor(DOMINIO),
+    personas = FACTOR07 * MIEPERHO * exposicion_deslizamiento,
+    num_dimensiones = rowSums(
+      across(starts_with("vulnerabilidad_")), na.rm = TRUE
+    )
+  ) |> 
+  group_by(Dominio, num_dimensiones) |> 
+  summarise(
+    personas = sum(personas, na.rm = TRUE),
+    .groups = "drop"
+  ) |> 
+  pivot_wider(
+    names_from = num_dimensiones,
+    names_prefix = "Dimensiones: ",
+    values_from = personas,
+    values_fill = 0
+  ) |> 
+  mutate(
+    `Población total` = rowSums(
+      across(starts_with("Dimensiones:")), na.rm = TRUE
+    )
+  ) |> 
+  select(Dominio, `Población total`, everything())
+```
+
+
+```{r}
+#| label: tbl-vulnerabilidad-multiple
+#| tbl-cap: "Número de personas vulnerables y expuestas en múltiples dimensiones, por dominio"
+
+tabla_multidimensional |> 
+  gt() |> 
+  fmt_number(
+    columns = where(is.numeric),
+    decimals = 0,
+    use_seps = TRUE
+  ) |> 
+  grand_summary_rows(
+    columns = where(is.numeric),
+    fns = list(label = "Total", id = "totales", fn = "sum"),
+    fmt = ~ fmt_number(., decimals = 0, use_seps = TRUE)
+  ) |> 
+  tab_options(
+    table.font.size = px(10),
+    table.width = pct(100)
+  )
+```

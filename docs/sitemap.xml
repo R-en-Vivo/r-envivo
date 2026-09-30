@@ -1,43 +1,47 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
+    <loc>https://r-en-vivo.github.io/r-envivo/presentaciones/01-tecnologias.html</loc>
+    <lastmod>2026-09-30T04:57:43.659Z</lastmod>
+  </url>
+  <url>
+    <loc>https://r-en-vivo.github.io/r-envivo/sesiones/posts/0003-visualizaciones/index.html</loc>
+    <lastmod>2026-09-19T16:21:42.921Z</lastmod>
+  </url>
+  <url>
     <loc>https://r-en-vivo.github.io/r-envivo/sesiones/index.html</loc>
-    <lastmod>2026-08-18T22:47:05.653Z</lastmod>
-  </url>
-  <url>
-    <loc>https://r-en-vivo.github.io/r-envivo/sesiones/posts/0002-gis/index.html</loc>
-    <lastmod>2026-08-30T00:49:54.146Z</lastmod>
-  </url>
-  <url>
-    <loc>https://r-en-vivo.github.io/r-envivo/about.html</loc>
-    <lastmod>2026-08-18T22:47:05.551Z</lastmod>
-  </url>
-  <url>
-    <loc>https://r-en-vivo.github.io/r-envivo/presentaciones.html</loc>
-    <lastmod>2026-08-18T22:47:05.651Z</lastmod>
+    <lastmod>2026-09-19T03:15:41.876Z</lastmod>
   </url>
   <url>
     <loc>https://r-en-vivo.github.io/r-envivo/documentos/reporte.html</loc>
-    <lastmod>2026-08-30T00:49:54.142Z</lastmod>
+    <lastmod>2026-09-19T03:15:41.865Z</lastmod>
   </url>
   <url>
-    <loc>https://r-en-vivo.github.io/r-envivo/dashboard.html</loc>
-    <lastmod>2026-08-30T00:49:53.733Z</lastmod>
-  </url>
-  <url>
-    <loc>https://r-en-vivo.github.io/r-envivo/documentos/memoria-de-calculo.html</loc>
-    <lastmod>2026-08-18T22:47:05.649Z</lastmod>
+    <loc>https://r-en-vivo.github.io/r-envivo/about.html</loc>
+    <lastmod>2026-08-04T20:41:23.669Z</lastmod>
   </url>
   <url>
     <loc>https://r-en-vivo.github.io/r-envivo/index.html</loc>
-    <lastmod>2026-08-30T01:21:21.282Z</lastmod>
+    <lastmod>2026-09-19T03:15:41.866Z</lastmod>
   </url>
   <url>
-    <loc>https://r-en-vivo.github.io/r-envivo/presentaciones/01-tecnologias.html</loc>
-    <lastmod>2026-08-18T22:47:05.651Z</lastmod>
+    <loc>https://r-en-vivo.github.io/r-envivo/presentaciones.html</loc>
+    <lastmod>2026-08-04T20:41:23.703Z</lastmod>
+  </url>
+  <url>
+    <loc>https://r-en-vivo.github.io/r-envivo/documentos/memoria-de-calculo.html</loc>
+    <lastmod>2026-08-04T20:41:23.703Z</lastmod>
+  </url>
+  <url>
+    <loc>https://r-en-vivo.github.io/r-envivo/dashboard.html</loc>
+    <lastmod>2026-09-19T03:15:41.313Z</lastmod>
+  </url>
+  <url>
+    <loc>https://r-en-vivo.github.io/r-envivo/sesiones/posts/0002-gis/index.html</loc>
+    <lastmod>2026-09-19T15:46:50.914Z</lastmod>
   </url>
   <url>
     <loc>https://r-en-vivo.github.io/r-envivo/sesiones/posts/0001-encuestas/index.html</loc>
-    <lastmod>2026-08-30T01:08:17.364Z</lastmod>
+    <lastmod>2026-09-19T03:15:41.876Z</lastmod>
   </url>
 </urlset>

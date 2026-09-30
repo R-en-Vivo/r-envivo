@@ -2,24 +2,80 @@
 
 @import url('https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400..700;1,400..700&family=Roboto:ital,wght@0,700;1,700&family=Space+Mono:ital,wght@0,400;0,700;1,400;1,700&display=swap');
 
-
 $presentation-heading-font: "Roboto", sans-serif;
 $font-family-sans-serif: "Lora", sans-serif;
 $font-family-monospace: "Space Mono", monospace;
 
 /*-- named colors --*/
-$theme-darkgreen: #0F6A4D; 
-$theme-white: #F7F1E3;
-$theme-darkyellow: #C7A24B;
-$theme-codegreen: #22B07B;
+$theme-darkteal: #063F42; 
+$theme-teal: #008080;
+$theme-lightteal: #67B8B3;
+$theme-lightorange: #FFD0A6;
+$theme-cream: #f5ece5;
+$theme-orange: #F47A32;
+$theme-brightorange: #FFA500;
+$theme-black: #000000;
+$theme-link: #3367A8;
 
-$body-bg: $theme-darkgreen;
-$body-color: $theme-white;
-$presentation-heading-color: $theme-darkyellow;
-$link-color: $theme-darkyellow;
-$code-color: $theme-codegreen;
 
-$presentation-font-size-root: 30px;
+$body-bg: $theme-cream;
+$body-color: $theme-black;
+$presentation-heading-color: $theme-teal;
+$link-color: $theme-link;
+$link-decoration: underline; 
+$code-color: $theme-teal;
+// $text-emphasis-color: $theme-orange; 
+
+/* 2. Create a class that uses that variable */
+.emphasis {
+  color: $theme-orange;
+  // font-weight: bold; /* Optional: adds extra punch to the emphasis */
+}
+
+$presentation-font-size-root: 25px;
 $code-block-font-size: 0.75em;
 
 /*-- scss:rules --*/
+
+@mixin background-full {
+    background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.theme-section1 {
+  &:is(.slide-background) {
+    background-image: url('../../assets/section4.svg');
+    @include background-full;
+  }
+  h3, h4, h5, p, pre, li {
+    margin-left: 15%;
+    width: 75%;
+  }
+  h2 {
+    font-size: 2em;
+  }
+  h3 {
+    font-size: 1.5em;
+  }
+}
+
+.reveal .footer {
+  // placement, this is what makes it a bar
+  bottom: 0 !important;
+  padding: 0.35em 1.5em !important;
+
+  // looks, change freely
+  background-color: $theme-teal;
+  color: $theme-cream !important;
+  font-size: 16px !important;
+  text-align: center !important;
+
+  a {
+    color: #f0b429 !important;
+  }
+}
+
+.reveal .slide-menu-button {
+  bottom: 2.5em !important;
+}

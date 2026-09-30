@@ -10,7 +10,965 @@
 <atom:link href="https://r-en-vivo.github.io/r-envivo/sesiones/index.xml" rel="self" type="application/rss+xml"/>
 <description></description>
 <generator>quarto-1.10.18</generator>
-<lastBuildDate>Wed, 26 Aug 2026 06:00:00 GMT</lastBuildDate>
+<lastBuildDate>Mon, 21 Sep 2026 06:00:00 GMT</lastBuildDate>
+<item>
+  <title>Visualizando resultados de vulnerabilidad en Perú</title>
+  <dc:creator>Renato Vargas</dc:creator>
+  <link>https://r-en-vivo.github.io/r-envivo/sesiones/posts/0003-visualizaciones/</link>
+  <description><![CDATA[ 
+
+
+
+
+<section id="video" class="level1">
+<h1>Video</h1>
+<p>Puedes encontrar el vídeo de implementación de esta sesión <a href="https://youtu.be/wZ-Tu-6sqXE">en YouTube</a>:</p>
+<div class="quarto-video ratio ratio-16x9"><iframe data-external="1" src="https://www.youtube.com/embed/wZ-Tu-6sqXE" title="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen=""></iframe></div>
+</section>
+<section id="introducción" class="level1">
+<h1>Introducción</h1>
+<p>En nuestras primeras sesiones hicimos un <a href="../../../sesiones/posts/0001-encuestas/index.html">ejercicio de extracción de información de encuestas de hogares</a> con el paquete <code>dplyr</code> y aprendimos a <a href="../../../sesiones/posts/0002-gis/index.html">añadir la perspectiva geográfica</a> con los paquetes <code>terra</code> y <code>sf</code>.</p>
+<p>Hoy, más que simplemente hacer gráficos con R, aprenderemos sobre “la gramática de gráficos” que es la filosofía sobre la cual está basado el paquete <code>ggplot2</code>. Existen muchos recursos para aprender este paquete y hoy solo quiero ponerlo en tu radar y dar un cierre a nuestro análisis de encuestas. Si quieres profundizar en este tema, un buen libro para empezar es el <a href="https://es.r4ds.hadley.nz/03-visualize.html">capítulo de visualización</a> del libro <em><strong>“R Para Ciencia de Datos”</strong></em> [wickham2023].</p>
+<p>Además exploraremos el paquete <code>tmap</code> que nos permite manipular datos geográficos y visualizarlos de una manera más efectiva que los abordajes que hemos visto anteriormente.</p>
+<section id="preámbulo" class="level2">
+<h2 class="anchored" data-anchor-id="preámbulo">Preámbulo</h2>
+<p>Primeramente limpiamos el área de trabajo y cargamos las librerías correspondientes para el análisis.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Limpiar el área de trabajo</span></span>
+<span id="cb1-2"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">rm</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">list =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">ls</span>()) </span>
+<span id="cb1-3"></span>
+<span id="cb1-4"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Cargar librerías</span></span>
+<span id="cb1-5"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">library</span>(tidyverse) <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Cargar dplyr y sus amigos</span></span>
+<span id="cb1-6"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">library</span>(gt) <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># tablas en html</span></span>
+<span id="cb1-7"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">library</span>(haven) <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># importar datos de SPSS y Stata</span></span>
+<span id="cb1-8"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">library</span>(tmap) <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Manipular datos geográficos</span></span>
+<span id="cb1-9"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">library</span>(sf) <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Manipular datos geográficos vectoriales</span></span></code></pre></div></div>
+</div>
+</section>
+<section id="los-datos" class="level2">
+<h2 class="anchored" data-anchor-id="los-datos">Los Datos</h2>
+<p>En una <a href="../../../sesiones/posts/0002-gis/index.html">sesión previa</a> procesamos los datos de la Encuesta Nacional de Hogares (ENAHO) de Perú <span class="citation" data-cites="inei2026microdatos">(INEI, 2026)</span> para identificar a las personas que se encuentran en una condición de vulnerabilidad y además están ubicados en un área susceptible a deslizamientos provocados por lluvias y lo guardamos como el marco de datos <code>vulnerables_y_expuestos</code>. Ese nos servirá de punto de partida.</p>
+<p>Además, usaremos los límites geográficos oficiales del INEI en el mismo año de la encuesta (2025), los cuales coinciden con nuestros datos a través de la variable <code>UBIGEO</code> que identifica a los distritos de Perú. Aquí hacemos la advertencia que la encuesta es representativa a nivel nacional, de área urbana o rural, departamental y los dominios geográficos (regiones naturales) que hemos usado anteriormente, así que hay que tener cuidado de no hacer generalizaciones a nivel distrital, a pesar que tenemos el dato para cada hogar dentro de la encuesta.</p>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>Descargas
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<ul>
+<li><strong>Vulnerables y Expuestos</strong>: <a href="../../../salidas/sesiones/0002-gis/vulnerables_y_expuestos.RDS">datos RDS</a></li>
+<li><strong>Vector de límites distritales de Perú de INEI (2025)</strong>: <a href="../../../datos/gis/per/PER-distritos-INEI-2025.gpkg">vector</a>.</li>
+</ul>
+</div>
+</div>
+</section>
+<section id="carga-de-datos" class="level2">
+<h2 class="anchored" data-anchor-id="carga-de-datos">Carga de datos</h2>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Base de datos de vulnerables y expuestos</span></span>
+<span id="cb2-2">vulnerables_y_expuestos <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">readRDS</span>(</span>
+<span id="cb2-3">  <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"salidas/sesiones/0002-gis/vulnerables_y_expuestos.RDS"</span></span>
+<span id="cb2-4">  )</span>
+<span id="cb2-5"></span>
+<span id="cb2-6"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Límites distritales de Perú según INEI (2025)</span></span>
+<span id="cb2-7">distritos_peru <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">read_sf</span>(</span>
+<span id="cb2-8">  <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"datos/gis/per/PER-distritos-INEI-2025.gpkg"</span></span>
+<span id="cb2-9">  )</span></code></pre></div></div>
+</div>
+</section>
+</section>
+<section id="análisis" class="level1">
+<h1>Análisis</h1>
+<p>En nuestra sesión anterior hicimos la siguiente tabla que muestra la cantidad de personas por número de dimensiones de vulnerabilidad.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1">tabla_multidimensional <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> vulnerables_y_expuestos <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">|&gt;</span> </span>
+<span id="cb3-2">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">mutate</span>(</span>
+<span id="cb3-3">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">Dominio =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">as_factor</span>(DOMINIO),</span>
+<span id="cb3-4">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">personas =</span> FACTOR07 <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span> MIEPERHO <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span> exposicion_deslizamiento,</span>
+<span id="cb3-5">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">num_dimensiones =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">rowSums</span>(</span>
+<span id="cb3-6">      <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">across</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">starts_with</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"vulnerabilidad_"</span>)), <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">na.rm =</span> <span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">TRUE</span></span>
+<span id="cb3-7">    )</span>
+<span id="cb3-8">  ) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">|&gt;</span> </span>
+<span id="cb3-9">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">group_by</span>(Dominio, num_dimensiones) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">|&gt;</span> </span>
+<span id="cb3-10">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">summarise</span>(</span>
+<span id="cb3-11">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">personas =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">sum</span>(personas, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">na.rm =</span> <span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">TRUE</span>),</span>
+<span id="cb3-12">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">.groups =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"drop"</span></span>
+<span id="cb3-13">  ) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">|&gt;</span> </span>
+<span id="cb3-14">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">pivot_wider</span>(</span>
+<span id="cb3-15">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">names_from =</span> num_dimensiones,</span>
+<span id="cb3-16">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">names_prefix =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Dimensiones: "</span>,</span>
+<span id="cb3-17">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">values_from =</span> personas,</span>
+<span id="cb3-18">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">values_fill =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span></span>
+<span id="cb3-19">  ) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">|&gt;</span> </span>
+<span id="cb3-20">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">mutate</span>(</span>
+<span id="cb3-21">    <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">`</span><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">Población total</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">`</span> <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">=</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">rowSums</span>(</span>
+<span id="cb3-22">      <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">across</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">starts_with</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Dimensiones:"</span>)), <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">na.rm =</span> <span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">TRUE</span></span>
+<span id="cb3-23">    )</span>
+<span id="cb3-24">  ) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">|&gt;</span> </span>
+<span id="cb3-25">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">select</span>(Dominio, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">`</span><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">Población total</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">`</span>, <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">everything</span>())</span></code></pre></div></div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1">tabla_multidimensional <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">|&gt;</span> </span>
+<span id="cb4-2">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">gt</span>() <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">|&gt;</span> </span>
+<span id="cb4-3">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">fmt_number</span>(</span>
+<span id="cb4-4">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">columns =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">where</span>(is.numeric),</span>
+<span id="cb4-5">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">decimals =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>,</span>
+<span id="cb4-6">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">use_seps =</span> <span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">TRUE</span></span>
+<span id="cb4-7">  ) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">|&gt;</span> </span>
+<span id="cb4-8">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">grand_summary_rows</span>(</span>
+<span id="cb4-9">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">columns =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">where</span>(is.numeric),</span>
+<span id="cb4-10">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">fns =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">list</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">label =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Total"</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">id =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"totales"</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">fn =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"sum"</span>),</span>
+<span id="cb4-11">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">fmt =</span> <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">~</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">fmt_number</span>(., <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">decimals =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">use_seps =</span> <span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">TRUE</span>)</span>
+<span id="cb4-12">  ) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">|&gt;</span> </span>
+<span id="cb4-13">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">tab_options</span>(</span>
+<span id="cb4-14">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">table.font.size =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">px</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">10</span>),</span>
+<span id="cb4-15">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">table.width =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">pct</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">100</span>)</span>
+<span id="cb4-16">  )</span></code></pre></div></div>
+<div id="tbl-vulnerabilidad-multiple" class="cell quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-vulnerabilidad-multiple-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Tabla&nbsp;1: Número de personas vulnerables y expuestas en múltiples dimensiones, por dominio
+</figcaption>
+<div aria-describedby="tbl-vulnerabilidad-multiple-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="cell-output-display">
+<div id="nmqfeycfka" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#nmqfeycfka table {
+  font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#nmqfeycfka thead, #nmqfeycfka tbody, #nmqfeycfka tfoot, #nmqfeycfka tr, #nmqfeycfka td, #nmqfeycfka th {
+  border-style: none;
+}
+
+#nmqfeycfka p {
+  margin: 0;
+  padding: 0;
+}
+
+#nmqfeycfka .gt_table {
+  display: table;
+  border-collapse: collapse;
+  line-height: normal;
+  margin-left: auto;
+  margin-right: auto;
+  color: #333333;
+  font-size: 10px;
+  font-weight: normal;
+  font-style: normal;
+  background-color: #FFFFFF;
+  width: 100%;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #A8A8A8;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #A8A8A8;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+}
+
+#nmqfeycfka .gt_caption {
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+
+#nmqfeycfka .gt_title {
+  color: #333333;
+  font-size: 125%;
+  font-weight: initial;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-color: #FFFFFF;
+  border-bottom-width: 0;
+}
+
+#nmqfeycfka .gt_subtitle {
+  color: #333333;
+  font-size: 85%;
+  font-weight: initial;
+  padding-top: 3px;
+  padding-bottom: 5px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-color: #FFFFFF;
+  border-top-width: 0;
+}
+
+#nmqfeycfka .gt_heading {
+  background-color: #FFFFFF;
+  text-align: center;
+  border-bottom-color: #FFFFFF;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#nmqfeycfka .gt_bottom_border {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#nmqfeycfka .gt_col_headings {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#nmqfeycfka .gt_col_heading {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 6px;
+  padding-left: 5px;
+  padding-right: 5px;
+  overflow-x: hidden;
+}
+
+#nmqfeycfka .gt_column_spanner_outer {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  padding-top: 0;
+  padding-bottom: 0;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+#nmqfeycfka .gt_column_spanner_outer:first-child {
+  padding-left: 0;
+}
+
+#nmqfeycfka .gt_column_spanner_outer:last-child {
+  padding-right: 0;
+}
+
+#nmqfeycfka .gt_column_spanner {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  overflow-x: hidden;
+  display: inline-block;
+  width: 100%;
+}
+
+#nmqfeycfka .gt_spanner_row {
+  border-bottom-style: hidden;
+}
+
+#nmqfeycfka .gt_group_heading {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  text-align: left;
+}
+
+#nmqfeycfka .gt_empty_group_heading {
+  padding: 0.5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: middle;
+}
+
+#nmqfeycfka .gt_from_md > :first-child {
+  margin-top: 0;
+}
+
+#nmqfeycfka .gt_from_md > :last-child {
+  margin-bottom: 0;
+}
+
+#nmqfeycfka .gt_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  margin: 10px;
+  border-top-style: solid;
+  border-top-width: 1px;
+  border-top-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  overflow-x: hidden;
+}
+
+#nmqfeycfka .gt_stub {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#nmqfeycfka .gt_stub_row_group {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+  vertical-align: top;
+}
+
+#nmqfeycfka .gt_row_group_first td {
+  border-top-width: 2px;
+}
+
+#nmqfeycfka .gt_row_group_first th {
+  border-top-width: 2px;
+}
+
+#nmqfeycfka .gt_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#nmqfeycfka .gt_first_summary_row {
+  border-top-style: solid;
+  border-top-color: #D3D3D3;
+}
+
+#nmqfeycfka .gt_first_summary_row.thick {
+  border-top-width: 2px;
+}
+
+#nmqfeycfka .gt_last_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#nmqfeycfka .gt_grand_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#nmqfeycfka .gt_first_grand_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-style: double;
+  border-top-width: 6px;
+  border-top-color: #D3D3D3;
+}
+
+#nmqfeycfka .gt_last_grand_summary_row_top {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: double;
+  border-bottom-width: 6px;
+  border-bottom-color: #D3D3D3;
+}
+
+#nmqfeycfka .gt_striped {
+  background-color: rgba(128, 128, 128, 0.05);
+}
+
+#nmqfeycfka .gt_table_body {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#nmqfeycfka .gt_footnotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#nmqfeycfka .gt_footnote {
+  margin: 0px;
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#nmqfeycfka .gt_sourcenotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#nmqfeycfka .gt_sourcenote {
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#nmqfeycfka .gt_left {
+  text-align: left;
+}
+
+#nmqfeycfka .gt_center {
+  text-align: center;
+}
+
+#nmqfeycfka .gt_right {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+#nmqfeycfka .gt_font_normal {
+  font-weight: normal;
+}
+
+#nmqfeycfka .gt_font_bold {
+  font-weight: bold;
+}
+
+#nmqfeycfka .gt_font_italic {
+  font-style: italic;
+}
+
+#nmqfeycfka .gt_super {
+  font-size: 65%;
+}
+
+#nmqfeycfka .gt_footnote_marks {
+  font-size: 75%;
+  vertical-align: 0.4em;
+  position: initial;
+}
+
+#nmqfeycfka .gt_asterisk {
+  font-size: 100%;
+  vertical-align: 0;
+}
+
+#nmqfeycfka .gt_indent_1 {
+  text-indent: 5px;
+}
+
+#nmqfeycfka .gt_indent_2 {
+  text-indent: 10px;
+}
+
+#nmqfeycfka .gt_indent_3 {
+  text-indent: 15px;
+}
+
+#nmqfeycfka .gt_indent_4 {
+  text-indent: 20px;
+}
+
+#nmqfeycfka .gt_indent_5 {
+  text-indent: 25px;
+}
+
+#nmqfeycfka .katex-display {
+  display: inline-flex !important;
+  margin-bottom: 0.75em !important;
+}
+
+#nmqfeycfka div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
+  height: 0px !important;
+}
+</style>
+
+<table class="gt_table cell caption-top table table-sm table-striped small" data-quarto-bootstrap="false">
+<thead>
+<tr class="gt_col_headings header">
+<th id="a::stub" class="gt_col_heading gt_columns_bottom_border gt_left" data-quarto-table-cell-role="th" scope="col"></th>
+<th id="Dominio" class="gt_col_heading gt_columns_bottom_border gt_center" data-quarto-table-cell-role="th" scope="col">dominio</th>
+<th id="Población-total" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">Población total</th>
+<th id="Dimensiones:-0" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">Dimensiones: 0</th>
+<th id="Dimensiones:-1" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">Dimensiones: 1</th>
+<th id="Dimensiones:-2" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">Dimensiones: 2</th>
+<th id="Dimensiones:-3" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">Dimensiones: 3</th>
+<th id="Dimensiones:-4" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">Dimensiones: 4</th>
+<th id="Dimensiones:-5" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">Dimensiones: 5</th>
+<th id="Dimensiones:-6" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">Dimensiones: 6</th>
+<th id="Dimensiones:-7" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">Dimensiones: 7</th>
+</tr>
+</thead>
+<tbody class="gt_table_body">
+<tr class="odd">
+<th id="stub_1_1" class="gt_row gt_left gt_stub" data-quarto-table-cell-role="th" scope="row"></th>
+<td class="gt_row gt_center" headers="stub_1_1 Dominio">Costa Norte</td>
+<td class="gt_row gt_right" headers="stub_1_1 Población total">43,149</td>
+<td class="gt_row gt_right" headers="stub_1_1 Dimensiones: 0">0</td>
+<td class="gt_row gt_right" headers="stub_1_1 Dimensiones: 1">2,217</td>
+<td class="gt_row gt_right" headers="stub_1_1 Dimensiones: 2">5,254</td>
+<td class="gt_row gt_right" headers="stub_1_1 Dimensiones: 3">8,481</td>
+<td class="gt_row gt_right" headers="stub_1_1 Dimensiones: 4">19,222</td>
+<td class="gt_row gt_right" headers="stub_1_1 Dimensiones: 5">7,001</td>
+<td class="gt_row gt_right" headers="stub_1_1 Dimensiones: 6">119</td>
+<td class="gt_row gt_right" headers="stub_1_1 Dimensiones: 7">855</td>
+</tr>
+<tr class="even">
+<th id="stub_1_2" class="gt_row gt_left gt_stub" data-quarto-table-cell-role="th" scope="row"></th>
+<td class="gt_row gt_center" headers="stub_1_2 Dominio">Costa Centro</td>
+<td class="gt_row gt_right" headers="stub_1_2 Población total">54,283</td>
+<td class="gt_row gt_right" headers="stub_1_2 Dimensiones: 0">541</td>
+<td class="gt_row gt_right" headers="stub_1_2 Dimensiones: 1">5,530</td>
+<td class="gt_row gt_right" headers="stub_1_2 Dimensiones: 2">13,679</td>
+<td class="gt_row gt_right" headers="stub_1_2 Dimensiones: 3">9,829</td>
+<td class="gt_row gt_right" headers="stub_1_2 Dimensiones: 4">15,376</td>
+<td class="gt_row gt_right" headers="stub_1_2 Dimensiones: 5">7,122</td>
+<td class="gt_row gt_right" headers="stub_1_2 Dimensiones: 6">2,207</td>
+<td class="gt_row gt_right" headers="stub_1_2 Dimensiones: 7">0</td>
+</tr>
+<tr class="odd">
+<th id="stub_1_3" class="gt_row gt_left gt_stub" data-quarto-table-cell-role="th" scope="row"></th>
+<td class="gt_row gt_center" headers="stub_1_3 Dominio">Costa Sur</td>
+<td class="gt_row gt_right" headers="stub_1_3 Población total">0</td>
+<td class="gt_row gt_right" headers="stub_1_3 Dimensiones: 0">0</td>
+<td class="gt_row gt_right" headers="stub_1_3 Dimensiones: 1">0</td>
+<td class="gt_row gt_right" headers="stub_1_3 Dimensiones: 2">0</td>
+<td class="gt_row gt_right" headers="stub_1_3 Dimensiones: 3">0</td>
+<td class="gt_row gt_right" headers="stub_1_3 Dimensiones: 4">0</td>
+<td class="gt_row gt_right" headers="stub_1_3 Dimensiones: 5">0</td>
+<td class="gt_row gt_right" headers="stub_1_3 Dimensiones: 6">0</td>
+<td class="gt_row gt_right" headers="stub_1_3 Dimensiones: 7">0</td>
+</tr>
+<tr class="even">
+<th id="stub_1_4" class="gt_row gt_left gt_stub" data-quarto-table-cell-role="th" scope="row"></th>
+<td class="gt_row gt_center" headers="stub_1_4 Dominio">Sierra Norte</td>
+<td class="gt_row gt_right" headers="stub_1_4 Población total">654,130</td>
+<td class="gt_row gt_right" headers="stub_1_4 Dimensiones: 0">4,532</td>
+<td class="gt_row gt_right" headers="stub_1_4 Dimensiones: 1">24,476</td>
+<td class="gt_row gt_right" headers="stub_1_4 Dimensiones: 2">95,835</td>
+<td class="gt_row gt_right" headers="stub_1_4 Dimensiones: 3">149,459</td>
+<td class="gt_row gt_right" headers="stub_1_4 Dimensiones: 4">241,858</td>
+<td class="gt_row gt_right" headers="stub_1_4 Dimensiones: 5">110,130</td>
+<td class="gt_row gt_right" headers="stub_1_4 Dimensiones: 6">27,011</td>
+<td class="gt_row gt_right" headers="stub_1_4 Dimensiones: 7">830</td>
+</tr>
+<tr class="odd">
+<th id="stub_1_5" class="gt_row gt_left gt_stub" data-quarto-table-cell-role="th" scope="row"></th>
+<td class="gt_row gt_center" headers="stub_1_5 Dominio">Sierra Centro</td>
+<td class="gt_row gt_right" headers="stub_1_5 Población total">1,558,658</td>
+<td class="gt_row gt_right" headers="stub_1_5 Dimensiones: 0">27,503</td>
+<td class="gt_row gt_right" headers="stub_1_5 Dimensiones: 1">209,416</td>
+<td class="gt_row gt_right" headers="stub_1_5 Dimensiones: 2">386,441</td>
+<td class="gt_row gt_right" headers="stub_1_5 Dimensiones: 3">409,802</td>
+<td class="gt_row gt_right" headers="stub_1_5 Dimensiones: 4">351,680</td>
+<td class="gt_row gt_right" headers="stub_1_5 Dimensiones: 5">147,166</td>
+<td class="gt_row gt_right" headers="stub_1_5 Dimensiones: 6">24,968</td>
+<td class="gt_row gt_right" headers="stub_1_5 Dimensiones: 7">1,683</td>
+</tr>
+<tr class="even">
+<th id="stub_1_6" class="gt_row gt_left gt_stub" data-quarto-table-cell-role="th" scope="row"></th>
+<td class="gt_row gt_center" headers="stub_1_6 Dominio">Sierra Sur</td>
+<td class="gt_row gt_right" headers="stub_1_6 Población total">944,598</td>
+<td class="gt_row gt_right" headers="stub_1_6 Dimensiones: 0">18,847</td>
+<td class="gt_row gt_right" headers="stub_1_6 Dimensiones: 1">173,485</td>
+<td class="gt_row gt_right" headers="stub_1_6 Dimensiones: 2">253,080</td>
+<td class="gt_row gt_right" headers="stub_1_6 Dimensiones: 3">250,920</td>
+<td class="gt_row gt_right" headers="stub_1_6 Dimensiones: 4">162,972</td>
+<td class="gt_row gt_right" headers="stub_1_6 Dimensiones: 5">68,760</td>
+<td class="gt_row gt_right" headers="stub_1_6 Dimensiones: 6">15,023</td>
+<td class="gt_row gt_right" headers="stub_1_6 Dimensiones: 7">1,510</td>
+</tr>
+<tr class="odd">
+<th id="stub_1_7" class="gt_row gt_left gt_stub" data-quarto-table-cell-role="th" scope="row"></th>
+<td class="gt_row gt_center" headers="stub_1_7 Dominio">Selva</td>
+<td class="gt_row gt_right" headers="stub_1_7 Población total">511,035</td>
+<td class="gt_row gt_right" headers="stub_1_7 Dimensiones: 0">17,683</td>
+<td class="gt_row gt_right" headers="stub_1_7 Dimensiones: 1">44,660</td>
+<td class="gt_row gt_right" headers="stub_1_7 Dimensiones: 2">100,921</td>
+<td class="gt_row gt_right" headers="stub_1_7 Dimensiones: 3">142,953</td>
+<td class="gt_row gt_right" headers="stub_1_7 Dimensiones: 4">145,357</td>
+<td class="gt_row gt_right" headers="stub_1_7 Dimensiones: 5">49,385</td>
+<td class="gt_row gt_right" headers="stub_1_7 Dimensiones: 6">9,548</td>
+<td class="gt_row gt_right" headers="stub_1_7 Dimensiones: 7">527</td>
+</tr>
+<tr class="even">
+<th id="stub_1_8" class="gt_row gt_left gt_stub" data-quarto-table-cell-role="th" scope="row"></th>
+<td class="gt_row gt_center" headers="stub_1_8 Dominio">Lima Metropolitana</td>
+<td class="gt_row gt_right" headers="stub_1_8 Población total">79,638</td>
+<td class="gt_row gt_right" headers="stub_1_8 Dimensiones: 0">6,266</td>
+<td class="gt_row gt_right" headers="stub_1_8 Dimensiones: 1">34,391</td>
+<td class="gt_row gt_right" headers="stub_1_8 Dimensiones: 2">33,444</td>
+<td class="gt_row gt_right" headers="stub_1_8 Dimensiones: 3">5,537</td>
+<td class="gt_row gt_right" headers="stub_1_8 Dimensiones: 4">0</td>
+<td class="gt_row gt_right" headers="stub_1_8 Dimensiones: 5">0</td>
+<td class="gt_row gt_right" headers="stub_1_8 Dimensiones: 6">0</td>
+<td class="gt_row gt_right" headers="stub_1_8 Dimensiones: 7">0</td>
+</tr>
+<tr class="odd">
+<th id="grand_summary_stub_1" class="gt_row gt_left gt_stub gt_grand_summary_row gt_first_grand_summary_row gt_last_summary_row" data-quarto-table-cell-role="th" scope="row">Total</th>
+<td class="gt_row gt_center gt_grand_summary_row gt_first_grand_summary_row gt_last_summary_row" headers="grand_summary_stub_1 Dominio">—</td>
+<td class="gt_row gt_right gt_grand_summary_row gt_first_grand_summary_row gt_last_summary_row" headers="grand_summary_stub_1 Población total">3,845,491</td>
+<td class="gt_row gt_right gt_grand_summary_row gt_first_grand_summary_row gt_last_summary_row" headers="grand_summary_stub_1 Dimensiones: 0">75,371</td>
+<td class="gt_row gt_right gt_grand_summary_row gt_first_grand_summary_row gt_last_summary_row" headers="grand_summary_stub_1 Dimensiones: 1">494,176</td>
+<td class="gt_row gt_right gt_grand_summary_row gt_first_grand_summary_row gt_last_summary_row" headers="grand_summary_stub_1 Dimensiones: 2">888,655</td>
+<td class="gt_row gt_right gt_grand_summary_row gt_first_grand_summary_row gt_last_summary_row" headers="grand_summary_stub_1 Dimensiones: 3">976,983</td>
+<td class="gt_row gt_right gt_grand_summary_row gt_first_grand_summary_row gt_last_summary_row" headers="grand_summary_stub_1 Dimensiones: 4">936,464</td>
+<td class="gt_row gt_right gt_grand_summary_row gt_first_grand_summary_row gt_last_summary_row" headers="grand_summary_stub_1 Dimensiones: 5">389,562</td>
+<td class="gt_row gt_right gt_grand_summary_row gt_first_grand_summary_row gt_last_summary_row" headers="grand_summary_stub_1 Dimensiones: 6">78,875</td>
+<td class="gt_row gt_right gt_grand_summary_row gt_first_grand_summary_row gt_last_summary_row" headers="grand_summary_stub_1 Dimensiones: 7">5,405</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+</figure>
+</div>
+</div>
+
+
+
+</section>
+
+<div id="quarto-appendix" class="default"><section class="quarto-appendix-contents" id="quarto-bibliography"><h2 class="anchored quarto-appendix-heading">Referencias</h2><div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" data-line-spacing="2">
+<div id="ref-inei2026microdatos" class="csl-entry">
+INEI. (2026). <em><span>Encuesta Nacional de Hogares</span> <span>(ENAHO, 2025)</span></em>. Instituto Nacional de Estadística e Informática, Perú. <a href="https://proyectos.inei.gob.pe/microdatos/">https://proyectos.inei.gob.pe/microdatos/</a>
+</div>
+</div></section></div> ]]></description>
+  <category>ciencia de datosde vulnerabilidad en Perú</category>
+  <category>rstats</category>
+  <category>análisis reproducible</category>
+  <category>encuestas</category>
+  <category>gráficos</category>
+  <category>tidyverse</category>
+  <guid>https://r-en-vivo.github.io/r-envivo/sesiones/posts/0003-visualizaciones/</guid>
+  <pubDate>Mon, 21 Sep 2026 06:00:00 GMT</pubDate>
+</item>
 <item>
   <title>La perspectiva geográfica de las encuestas</title>
   <dc:creator>Renato Vargas</dc:creator>
@@ -395,45 +1353,46 @@ font-style: inherit;">select</span>(</span>
 <span id="cb12-7">    VIVIENDA,</span>
 <span id="cb12-8">    HOGAR,</span>
 <span id="cb12-9">    LATITUD,</span>
-<span id="cb12-10">    LONGITUD</span>
-<span id="cb12-11">  ) <span class="sc" style="color: #5E5E5E;
+<span id="cb12-10">    LONGITUD,</span>
+<span id="cb12-11">    UBIGEO</span>
+<span id="cb12-12">  ) <span class="sc" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">|&gt;</span> </span>
-<span id="cb12-12">  <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Nos aseguramos que solo utilizamos </span></span>
 <span id="cb12-13">  <span class="co" style="color: #5E5E5E;
 background-color: null;
+font-style: inherit;"># Nos aseguramos que solo utilizamos </span></span>
+<span id="cb12-14">  <span class="co" style="color: #5E5E5E;
+background-color: null;
 font-style: inherit;"># viviendas con info geográfica no faltante</span></span>
-<span id="cb12-14">  <span class="fu" style="color: #4758AB;
+<span id="cb12-15">  <span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">filter</span>(</span>
-<span id="cb12-15">    <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">!</span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">is.na</span>(LATITUD),</span>
 <span id="cb12-16">    <span class="sc" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">!</span><span class="fu" style="color: #4758AB;
 background-color: null;
+font-style: inherit;">is.na</span>(LATITUD),</span>
+<span id="cb12-17">    <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">!</span><span class="fu" style="color: #4758AB;
+background-color: null;
 font-style: inherit;">is.na</span>(LONGITUD)</span>
-<span id="cb12-17">  ) <span class="sc" style="color: #5E5E5E;
+<span id="cb12-18">  ) <span class="sc" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">|&gt;</span> </span>
-<span id="cb12-18">  <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Convertimos las coordenadas a una nube de </span></span>
 <span id="cb12-19">  <span class="co" style="color: #5E5E5E;
 background-color: null;
-font-style: inherit;"># puntos utilizando el mismo sistema de coordenadas</span></span>
+font-style: inherit;"># Convertimos las coordenadas a una nube de </span></span>
 <span id="cb12-20">  <span class="co" style="color: #5E5E5E;
 background-color: null;
+font-style: inherit;"># puntos utilizando el mismo sistema de coordenadas</span></span>
+<span id="cb12-21">  <span class="co" style="color: #5E5E5E;
+background-color: null;
 font-style: inherit;"># de nuestras capas importadas EPSG: 4326</span></span>
-<span id="cb12-21">  <span class="fu" style="color: #4758AB;
+<span id="cb12-22">  <span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">st_as_sf</span>(</span>
-<span id="cb12-22">    <span class="at" style="color: #657422;
+<span id="cb12-23">    <span class="at" style="color: #657422;
 background-color: null;
 font-style: inherit;">coords =</span> <span class="fu" style="color: #4758AB;
 background-color: null;
@@ -442,40 +1401,40 @@ background-color: null;
 font-style: inherit;">"LONGITUD"</span>, <span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">"LATITUD"</span>),</span>
-<span id="cb12-23">    <span class="at" style="color: #657422;
+<span id="cb12-24">    <span class="at" style="color: #657422;
 background-color: null;
 font-style: inherit;">crs =</span> <span class="dv" style="color: #AD0000;
 background-color: null;
 font-style: inherit;">4326</span>,</span>
-<span id="cb12-24">    <span class="at" style="color: #657422;
+<span id="cb12-25">    <span class="at" style="color: #657422;
 background-color: null;
 font-style: inherit;">remove =</span> <span class="cn" style="color: #8f5902;
 background-color: null;
 font-style: inherit;">FALSE</span></span>
-<span id="cb12-25">  ) <span class="sc" style="color: #5E5E5E;
+<span id="cb12-26">  ) <span class="sc" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">|&gt;</span> </span>
-<span id="cb12-26">  <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Una vez convertidas en el paso anterior</span></span>
 <span id="cb12-27">  <span class="co" style="color: #5E5E5E;
 background-color: null;
-font-style: inherit;"># no necesitamos más LATITUD y LONGITUD</span></span>
+font-style: inherit;"># Una vez convertidas en el paso anterior</span></span>
 <span id="cb12-28">  <span class="co" style="color: #5E5E5E;
 background-color: null;
-font-style: inherit;"># así que las seleccionamos negativamente con !</span></span>
+font-style: inherit;"># no necesitamos más LATITUD y LONGITUD</span></span>
 <span id="cb12-29">  <span class="co" style="color: #5E5E5E;
 background-color: null;
+font-style: inherit;"># así que las seleccionamos negativamente con !</span></span>
+<span id="cb12-30">  <span class="co" style="color: #5E5E5E;
+background-color: null;
 font-style: inherit;"># para deshacernos de ellas y mantener las demás</span></span>
-<span id="cb12-30">  <span class="fu" style="color: #4758AB;
+<span id="cb12-31">  <span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">select</span>(</span>
-<span id="cb12-31">    <span class="sc" style="color: #5E5E5E;
+<span id="cb12-32">    <span class="sc" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">!</span><span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">c</span>(LATITUD, LONGITUD)</span>
-<span id="cb12-32">  )</span></code></pre></div></div>
+<span id="cb12-33">  )</span></code></pre></div></div>
 </div>
 <p>Ahora <code>viviendas_sf</code> (nombrada por simple features) es un objeto de puntos geográficos que retiene la información de identificación única del hogar <code>CONGLOME</code>, <code>VIVIENDA</code> Y <code>HOGAR</code>. Si usamos la función <code>glimpse()</code> de <code>dplyr</code>, podremos ver que hay una nueva columna llamada <code>geometry</code> que tiene las instrucciones para dibujar a los hogares como una nube de puntos.</p>
 <div class="cell">
@@ -484,10 +1443,11 @@ background-color: null;
 font-style: inherit;">glimpse</span>(viviendas_sf)</span></code></pre></div></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Rows: 44,599
-Columns: 4
+Columns: 5
 $ CONGLOME &lt;chr&gt; "015009", "015009", "015009", "015009", "015009", "015009", "…
 $ VIVIENDA &lt;chr&gt; "012", "025", "036", "049", "061", "074", "086", "097", "108"…
 $ HOGAR    &lt;chr&gt; "11", "11", "11", "11", "11", "11", "11", "11", "11", "11", "…
+$ UBIGEO   &lt;chr&gt; "010101", "010101", "010101", "010101", "010101", "010101", "…
 $ geometry &lt;POINT [°]&gt; POINT (-77.86923 -6.234387), POINT (-77.86923 -6.234387…</code></pre>
 </div>
 </div>
@@ -576,13 +1536,13 @@ font-style: inherit;">|&gt;</span> </span>
 background-color: null;
 font-style: inherit;">head</span>()</span></code></pre></div></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>  CONGLOME VIVIENDA HOGAR frecuencia_deslizamiento
-1   015024      026    11               0.00385021
-2   015024      039    11               0.00385021
-3   015024      069    11               0.00385021
-4   015024      083    11               0.00385021
-5   015024      098    11               0.00385021
-6   015024      123    11               0.00385021</code></pre>
+<pre><code>  CONGLOME VIVIENDA HOGAR UBIGEO frecuencia_deslizamiento
+1   015024      026    11 010101               0.00385021
+2   015024      039    11 010101               0.00385021
+3   015024      069    11 010101               0.00385021
+4   015024      083    11 010101               0.00385021
+5   015024      098    11 010101               0.00385021
+6   015024      123    11 010101               0.00385021</code></pre>
 </div>
 </div>
 <p>También podemos hacer una visualización rápida de los puntos (en rojo) sobre nuestro mapa de exposición para darnos una idea de nuestros hogares expuestos utilizando el objeto de <code>terra</code> que es geográfico: <code>viviendas_vector</code>. Esta visualización simple es cortesía de nuestro paquete <code>terra</code> el cual viene con esta funcionalidad para nuestros <code>SpatRaster</code>. En nuestra siguiente sesión haremos mapas más complejos con <code>ggplot2</code> y con <code>sf</code>.</p>
@@ -680,13 +1640,20 @@ font-style: inherit;">|&gt;</span> </span>
 background-color: null;
 font-style: inherit;">head</span>()</span></code></pre></div></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>  CONGLOME VIVIENDA HOGAR frecuencia_deslizamiento exposicion_deslizamiento
-1   015029      003    11               0.01938608                        1
-2   015029      017    11               0.01938608                        1
-3   015029      036    11               0.01938608                        1
-4   015029      047    11               0.01938608                        1
-5   015029      057    11               0.01938608                        1
-6   015029      068    11               0.01938608                        1</code></pre>
+<pre><code>  CONGLOME VIVIENDA HOGAR UBIGEO frecuencia_deslizamiento
+1   015029      003    11 010110               0.01938608
+2   015029      017    11 010110               0.01938608
+3   015029      036    11 010110               0.01938608
+4   015029      047    11 010110               0.01938608
+5   015029      057    11 010110               0.01938608
+6   015029      068    11 010110               0.01938608
+  exposicion_deslizamiento
+1                        1
+2                        1
+3                        1
+4                        1
+5                        1
+6                        1</code></pre>
 </div>
 </div>
 </section>
@@ -1010,23 +1977,23 @@ Tabla&nbsp;1: Número de personas vulnerables y expuestas por dominio y dimensi�
 </figcaption>
 <div aria-describedby="tbl-vulnerabilidad-dominio-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="cell-output-display">
-<div id="psritygstt" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
-<style>#psritygstt table {
+<div id="ttzisewexi" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#ttzisewexi table {
   font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-#psritygstt thead, #psritygstt tbody, #psritygstt tfoot, #psritygstt tr, #psritygstt td, #psritygstt th {
+#ttzisewexi thead, #ttzisewexi tbody, #ttzisewexi tfoot, #ttzisewexi tr, #ttzisewexi td, #ttzisewexi th {
   border-style: none;
 }
 
-#psritygstt p {
+#ttzisewexi p {
   margin: 0;
   padding: 0;
 }
 
-#psritygstt .gt_table {
+#ttzisewexi .gt_table {
   display: table;
   border-collapse: collapse;
   line-height: normal;
@@ -1052,12 +2019,12 @@ Tabla&nbsp;1: Número de personas vulnerables y expuestas por dominio y dimensi�
   border-left-color: #D3D3D3;
 }
 
-#psritygstt .gt_caption {
+#ttzisewexi .gt_caption {
   padding-top: 4px;
   padding-bottom: 4px;
 }
 
-#psritygstt .gt_title {
+#ttzisewexi .gt_title {
   color: #333333;
   font-size: 125%;
   font-weight: initial;
@@ -1069,7 +2036,7 @@ Tabla&nbsp;1: Número de personas vulnerables y expuestas por dominio y dimensi�
   border-bottom-width: 0;
 }
 
-#psritygstt .gt_subtitle {
+#ttzisewexi .gt_subtitle {
   color: #333333;
   font-size: 85%;
   font-weight: initial;
@@ -1081,7 +2048,7 @@ Tabla&nbsp;1: Número de personas vulnerables y expuestas por dominio y dimensi�
   border-top-width: 0;
 }
 
-#psritygstt .gt_heading {
+#ttzisewexi .gt_heading {
   background-color: #FFFFFF;
   text-align: center;
   border-bottom-color: #FFFFFF;
@@ -1093,13 +2060,13 @@ Tabla&nbsp;1: Número de personas vulnerables y expuestas por dominio y dimensi�
   border-right-color: #D3D3D3;
 }
 
-#psritygstt .gt_bottom_border {
+#ttzisewexi .gt_bottom_border {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
 }
 
-#psritygstt .gt_col_headings {
+#ttzisewexi .gt_col_headings {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -1114,7 +2081,7 @@ Tabla&nbsp;1: Número de personas vulnerables y expuestas por dominio y dimensi�
   border-right-color: #D3D3D3;
 }
 
-#psritygstt .gt_col_heading {
+#ttzisewexi .gt_col_heading {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -1134,7 +2101,7 @@ Tabla&nbsp;1: Número de personas vulnerables y expuestas por dominio y dimensi�
   overflow-x: hidden;
 }
 
-#psritygstt .gt_column_spanner_outer {
+#ttzisewexi .gt_column_spanner_outer {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -1146,15 +2113,15 @@ Tabla&nbsp;1: Número de personas vulnerables y expuestas por dominio y dimensi�
   padding-right: 4px;
 }
 
-#psritygstt .gt_column_spanner_outer:first-child {
+#ttzisewexi .gt_column_spanner_outer:first-child {
   padding-left: 0;
 }
 
-#psritygstt .gt_column_spanner_outer:last-child {
+#ttzisewexi .gt_column_spanner_outer:last-child {
   padding-right: 0;
 }
 
-#psritygstt .gt_column_spanner {
+#ttzisewexi .gt_column_spanner {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
@@ -1166,11 +2133,11 @@ Tabla&nbsp;1: Número de personas vulnerables y expuestas por dominio y dimensi�
   width: 100%;
 }
 
-#psritygstt .gt_spanner_row {
+#ttzisewexi .gt_spanner_row {
   border-bottom-style: hidden;
 }
 
-#psritygstt .gt_group_heading {
+#ttzisewexi .gt_group_heading {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1196,7 +2163,7 @@ Tabla&nbsp;1: Número de personas vulnerables y expuestas por dominio y dimensi�
   text-align: left;
 }
 
-#psritygstt .gt_empty_group_heading {
+#ttzisewexi .gt_empty_group_heading {
   padding: 0.5px;
   color: #333333;
   background-color: #FFFFFF;
@@ -1211,15 +2178,15 @@ Tabla&nbsp;1: Número de personas vulnerables y expuestas por dominio y dimensi�
   vertical-align: middle;
 }
 
-#psritygstt .gt_from_md > :first-child {
+#ttzisewexi .gt_from_md > :first-child {
   margin-top: 0;
 }
 
-#psritygstt .gt_from_md > :last-child {
+#ttzisewexi .gt_from_md > :last-child {
   margin-bottom: 0;
 }
 
-#psritygstt .gt_row {
+#ttzisewexi .gt_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1238,7 +2205,7 @@ Tabla&nbsp;1: Número de personas vulnerables y expuestas por dominio y dimensi�
   overflow-x: hidden;
 }
 
-#psritygstt .gt_stub {
+#ttzisewexi .gt_stub {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -1251,7 +2218,7 @@ Tabla&nbsp;1: Número de personas vulnerables y expuestas por dominio y dimensi�
   padding-right: 5px;
 }
 
-#psritygstt .gt_stub_row_group {
+#ttzisewexi .gt_stub_row_group {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -1265,15 +2232,15 @@ Tabla&nbsp;1: Número de personas vulnerables y expuestas por dominio y dimensi�
   vertical-align: top;
 }
 
-#psritygstt .gt_row_group_first td {
+#ttzisewexi .gt_row_group_first td {
   border-top-width: 2px;
 }
 
-#psritygstt .gt_row_group_first th {
+#ttzisewexi .gt_row_group_first th {
   border-top-width: 2px;
 }
 
-#psritygstt .gt_summary_row {
+#ttzisewexi .gt_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -1283,16 +2250,16 @@ Tabla&nbsp;1: Número de personas vulnerables y expuestas por dominio y dimensi�
   padding-right: 5px;
 }
 
-#psritygstt .gt_first_summary_row {
+#ttzisewexi .gt_first_summary_row {
   border-top-style: solid;
   border-top-color: #D3D3D3;
 }
 
-#psritygstt .gt_first_summary_row.thick {
+#ttzisewexi .gt_first_summary_row.thick {
   border-top-width: 2px;
 }
 
-#psritygstt .gt_last_summary_row {
+#ttzisewexi .gt_last_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1302,7 +2269,7 @@ Tabla&nbsp;1: Número de personas vulnerables y expuestas por dominio y dimensi�
   border-bottom-color: #D3D3D3;
 }
 
-#psritygstt .gt_grand_summary_row {
+#ttzisewexi .gt_grand_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -1312,7 +2279,7 @@ Tabla&nbsp;1: Número de personas vulnerables y expuestas por dominio y dimensi�
   padding-right: 5px;
 }
 
-#psritygstt .gt_first_grand_summary_row {
+#ttzisewexi .gt_first_grand_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1322,7 +2289,7 @@ Tabla&nbsp;1: Número de personas vulnerables y expuestas por dominio y dimensi�
   border-top-color: #D3D3D3;
 }
 
-#psritygstt .gt_last_grand_summary_row_top {
+#ttzisewexi .gt_last_grand_summary_row_top {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1332,11 +2299,11 @@ Tabla&nbsp;1: Número de personas vulnerables y expuestas por dominio y dimensi�
   border-bottom-color: #D3D3D3;
 }
 
-#psritygstt .gt_striped {
+#ttzisewexi .gt_striped {
   background-color: rgba(128, 128, 128, 0.05);
 }
 
-#psritygstt .gt_table_body {
+#ttzisewexi .gt_table_body {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -1345,7 +2312,7 @@ Tabla&nbsp;1: Número de personas vulnerables y expuestas por dominio y dimensi�
   border-bottom-color: #D3D3D3;
 }
 
-#psritygstt .gt_footnotes {
+#ttzisewexi .gt_footnotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -1359,7 +2326,7 @@ Tabla&nbsp;1: Número de personas vulnerables y expuestas por dominio y dimensi�
   border-right-color: #D3D3D3;
 }
 
-#psritygstt .gt_footnote {
+#ttzisewexi .gt_footnote {
   margin: 0px;
   font-size: 90%;
   padding-top: 4px;
@@ -1368,7 +2335,7 @@ Tabla&nbsp;1: Número de personas vulnerables y expuestas por dominio y dimensi�
   padding-right: 5px;
 }
 
-#psritygstt .gt_sourcenotes {
+#ttzisewexi .gt_sourcenotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -1382,7 +2349,7 @@ Tabla&nbsp;1: Número de personas vulnerables y expuestas por dominio y dimensi�
   border-right-color: #D3D3D3;
 }
 
-#psritygstt .gt_sourcenote {
+#ttzisewexi .gt_sourcenote {
   font-size: 90%;
   padding-top: 4px;
   padding-bottom: 4px;
@@ -1390,72 +2357,72 @@ Tabla&nbsp;1: Número de personas vulnerables y expuestas por dominio y dimensi�
   padding-right: 5px;
 }
 
-#psritygstt .gt_left {
+#ttzisewexi .gt_left {
   text-align: left;
 }
 
-#psritygstt .gt_center {
+#ttzisewexi .gt_center {
   text-align: center;
 }
 
-#psritygstt .gt_right {
+#ttzisewexi .gt_right {
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
 
-#psritygstt .gt_font_normal {
+#ttzisewexi .gt_font_normal {
   font-weight: normal;
 }
 
-#psritygstt .gt_font_bold {
+#ttzisewexi .gt_font_bold {
   font-weight: bold;
 }
 
-#psritygstt .gt_font_italic {
+#ttzisewexi .gt_font_italic {
   font-style: italic;
 }
 
-#psritygstt .gt_super {
+#ttzisewexi .gt_super {
   font-size: 65%;
 }
 
-#psritygstt .gt_footnote_marks {
+#ttzisewexi .gt_footnote_marks {
   font-size: 75%;
   vertical-align: 0.4em;
   position: initial;
 }
 
-#psritygstt .gt_asterisk {
+#ttzisewexi .gt_asterisk {
   font-size: 100%;
   vertical-align: 0;
 }
 
-#psritygstt .gt_indent_1 {
+#ttzisewexi .gt_indent_1 {
   text-indent: 5px;
 }
 
-#psritygstt .gt_indent_2 {
+#ttzisewexi .gt_indent_2 {
   text-indent: 10px;
 }
 
-#psritygstt .gt_indent_3 {
+#ttzisewexi .gt_indent_3 {
   text-indent: 15px;
 }
 
-#psritygstt .gt_indent_4 {
+#ttzisewexi .gt_indent_4 {
   text-indent: 20px;
 }
 
-#psritygstt .gt_indent_5 {
+#ttzisewexi .gt_indent_5 {
   text-indent: 25px;
 }
 
-#psritygstt .katex-display {
+#ttzisewexi .katex-display {
   display: inline-flex !important;
   margin-bottom: 0.75em !important;
 }
 
-#psritygstt div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
+#ttzisewexi div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
   height: 0px !important;
 }
 </style>
@@ -1822,23 +2789,23 @@ Tabla&nbsp;2: Número de personas vulnerables y expuestas en múltiples dimensio
 </figcaption>
 <div aria-describedby="tbl-vulnerabilidad-multiple-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="cell-output-display">
-<div id="qkqrbfrvny" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
-<style>#qkqrbfrvny table {
+<div id="vfwzcomacx" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#vfwzcomacx table {
   font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-#qkqrbfrvny thead, #qkqrbfrvny tbody, #qkqrbfrvny tfoot, #qkqrbfrvny tr, #qkqrbfrvny td, #qkqrbfrvny th {
+#vfwzcomacx thead, #vfwzcomacx tbody, #vfwzcomacx tfoot, #vfwzcomacx tr, #vfwzcomacx td, #vfwzcomacx th {
   border-style: none;
 }
 
-#qkqrbfrvny p {
+#vfwzcomacx p {
   margin: 0;
   padding: 0;
 }
 
-#qkqrbfrvny .gt_table {
+#vfwzcomacx .gt_table {
   display: table;
   border-collapse: collapse;
   line-height: normal;
@@ -1864,12 +2831,12 @@ Tabla&nbsp;2: Número de personas vulnerables y expuestas en múltiples dimensio
   border-left-color: #D3D3D3;
 }
 
-#qkqrbfrvny .gt_caption {
+#vfwzcomacx .gt_caption {
   padding-top: 4px;
   padding-bottom: 4px;
 }
 
-#qkqrbfrvny .gt_title {
+#vfwzcomacx .gt_title {
   color: #333333;
   font-size: 125%;
   font-weight: initial;
@@ -1881,7 +2848,7 @@ Tabla&nbsp;2: Número de personas vulnerables y expuestas en múltiples dimensio
   border-bottom-width: 0;
 }
 
-#qkqrbfrvny .gt_subtitle {
+#vfwzcomacx .gt_subtitle {
   color: #333333;
   font-size: 85%;
   font-weight: initial;
@@ -1893,7 +2860,7 @@ Tabla&nbsp;2: Número de personas vulnerables y expuestas en múltiples dimensio
   border-top-width: 0;
 }
 
-#qkqrbfrvny .gt_heading {
+#vfwzcomacx .gt_heading {
   background-color: #FFFFFF;
   text-align: center;
   border-bottom-color: #FFFFFF;
@@ -1905,13 +2872,13 @@ Tabla&nbsp;2: Número de personas vulnerables y expuestas en múltiples dimensio
   border-right-color: #D3D3D3;
 }
 
-#qkqrbfrvny .gt_bottom_border {
+#vfwzcomacx .gt_bottom_border {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
 }
 
-#qkqrbfrvny .gt_col_headings {
+#vfwzcomacx .gt_col_headings {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -1926,7 +2893,7 @@ Tabla&nbsp;2: Número de personas vulnerables y expuestas en múltiples dimensio
   border-right-color: #D3D3D3;
 }
 
-#qkqrbfrvny .gt_col_heading {
+#vfwzcomacx .gt_col_heading {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -1946,7 +2913,7 @@ Tabla&nbsp;2: Número de personas vulnerables y expuestas en múltiples dimensio
   overflow-x: hidden;
 }
 
-#qkqrbfrvny .gt_column_spanner_outer {
+#vfwzcomacx .gt_column_spanner_outer {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -1958,15 +2925,15 @@ Tabla&nbsp;2: Número de personas vulnerables y expuestas en múltiples dimensio
   padding-right: 4px;
 }
 
-#qkqrbfrvny .gt_column_spanner_outer:first-child {
+#vfwzcomacx .gt_column_spanner_outer:first-child {
   padding-left: 0;
 }
 
-#qkqrbfrvny .gt_column_spanner_outer:last-child {
+#vfwzcomacx .gt_column_spanner_outer:last-child {
   padding-right: 0;
 }
 
-#qkqrbfrvny .gt_column_spanner {
+#vfwzcomacx .gt_column_spanner {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
@@ -1978,11 +2945,11 @@ Tabla&nbsp;2: Número de personas vulnerables y expuestas en múltiples dimensio
   width: 100%;
 }
 
-#qkqrbfrvny .gt_spanner_row {
+#vfwzcomacx .gt_spanner_row {
   border-bottom-style: hidden;
 }
 
-#qkqrbfrvny .gt_group_heading {
+#vfwzcomacx .gt_group_heading {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -2008,7 +2975,7 @@ Tabla&nbsp;2: Número de personas vulnerables y expuestas en múltiples dimensio
   text-align: left;
 }
 
-#qkqrbfrvny .gt_empty_group_heading {
+#vfwzcomacx .gt_empty_group_heading {
   padding: 0.5px;
   color: #333333;
   background-color: #FFFFFF;
@@ -2023,15 +2990,15 @@ Tabla&nbsp;2: Número de personas vulnerables y expuestas en múltiples dimensio
   vertical-align: middle;
 }
 
-#qkqrbfrvny .gt_from_md > :first-child {
+#vfwzcomacx .gt_from_md > :first-child {
   margin-top: 0;
 }
 
-#qkqrbfrvny .gt_from_md > :last-child {
+#vfwzcomacx .gt_from_md > :last-child {
   margin-bottom: 0;
 }
 
-#qkqrbfrvny .gt_row {
+#vfwzcomacx .gt_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -2050,7 +3017,7 @@ Tabla&nbsp;2: Número de personas vulnerables y expuestas en múltiples dimensio
   overflow-x: hidden;
 }
 
-#qkqrbfrvny .gt_stub {
+#vfwzcomacx .gt_stub {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -2063,7 +3030,7 @@ Tabla&nbsp;2: Número de personas vulnerables y expuestas en múltiples dimensio
   padding-right: 5px;
 }
 
-#qkqrbfrvny .gt_stub_row_group {
+#vfwzcomacx .gt_stub_row_group {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -2077,15 +3044,15 @@ Tabla&nbsp;2: Número de personas vulnerables y expuestas en múltiples dimensio
   vertical-align: top;
 }
 
-#qkqrbfrvny .gt_row_group_first td {
+#vfwzcomacx .gt_row_group_first td {
   border-top-width: 2px;
 }
 
-#qkqrbfrvny .gt_row_group_first th {
+#vfwzcomacx .gt_row_group_first th {
   border-top-width: 2px;
 }
 
-#qkqrbfrvny .gt_summary_row {
+#vfwzcomacx .gt_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -2095,16 +3062,16 @@ Tabla&nbsp;2: Número de personas vulnerables y expuestas en múltiples dimensio
   padding-right: 5px;
 }
 
-#qkqrbfrvny .gt_first_summary_row {
+#vfwzcomacx .gt_first_summary_row {
   border-top-style: solid;
   border-top-color: #D3D3D3;
 }
 
-#qkqrbfrvny .gt_first_summary_row.thick {
+#vfwzcomacx .gt_first_summary_row.thick {
   border-top-width: 2px;
 }
 
-#qkqrbfrvny .gt_last_summary_row {
+#vfwzcomacx .gt_last_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -2114,7 +3081,7 @@ Tabla&nbsp;2: Número de personas vulnerables y expuestas en múltiples dimensio
   border-bottom-color: #D3D3D3;
 }
 
-#qkqrbfrvny .gt_grand_summary_row {
+#vfwzcomacx .gt_grand_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -2124,7 +3091,7 @@ Tabla&nbsp;2: Número de personas vulnerables y expuestas en múltiples dimensio
   padding-right: 5px;
 }
 
-#qkqrbfrvny .gt_first_grand_summary_row {
+#vfwzcomacx .gt_first_grand_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -2134,7 +3101,7 @@ Tabla&nbsp;2: Número de personas vulnerables y expuestas en múltiples dimensio
   border-top-color: #D3D3D3;
 }
 
-#qkqrbfrvny .gt_last_grand_summary_row_top {
+#vfwzcomacx .gt_last_grand_summary_row_top {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -2144,11 +3111,11 @@ Tabla&nbsp;2: Número de personas vulnerables y expuestas en múltiples dimensio
   border-bottom-color: #D3D3D3;
 }
 
-#qkqrbfrvny .gt_striped {
+#vfwzcomacx .gt_striped {
   background-color: rgba(128, 128, 128, 0.05);
 }
 
-#qkqrbfrvny .gt_table_body {
+#vfwzcomacx .gt_table_body {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -2157,7 +3124,7 @@ Tabla&nbsp;2: Número de personas vulnerables y expuestas en múltiples dimensio
   border-bottom-color: #D3D3D3;
 }
 
-#qkqrbfrvny .gt_footnotes {
+#vfwzcomacx .gt_footnotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -2171,7 +3138,7 @@ Tabla&nbsp;2: Número de personas vulnerables y expuestas en múltiples dimensio
   border-right-color: #D3D3D3;
 }
 
-#qkqrbfrvny .gt_footnote {
+#vfwzcomacx .gt_footnote {
   margin: 0px;
   font-size: 90%;
   padding-top: 4px;
@@ -2180,7 +3147,7 @@ Tabla&nbsp;2: Número de personas vulnerables y expuestas en múltiples dimensio
   padding-right: 5px;
 }
 
-#qkqrbfrvny .gt_sourcenotes {
+#vfwzcomacx .gt_sourcenotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -2194,7 +3161,7 @@ Tabla&nbsp;2: Número de personas vulnerables y expuestas en múltiples dimensio
   border-right-color: #D3D3D3;
 }
 
-#qkqrbfrvny .gt_sourcenote {
+#vfwzcomacx .gt_sourcenote {
   font-size: 90%;
   padding-top: 4px;
   padding-bottom: 4px;
@@ -2202,72 +3169,72 @@ Tabla&nbsp;2: Número de personas vulnerables y expuestas en múltiples dimensio
   padding-right: 5px;
 }
 
-#qkqrbfrvny .gt_left {
+#vfwzcomacx .gt_left {
   text-align: left;
 }
 
-#qkqrbfrvny .gt_center {
+#vfwzcomacx .gt_center {
   text-align: center;
 }
 
-#qkqrbfrvny .gt_right {
+#vfwzcomacx .gt_right {
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
 
-#qkqrbfrvny .gt_font_normal {
+#vfwzcomacx .gt_font_normal {
   font-weight: normal;
 }
 
-#qkqrbfrvny .gt_font_bold {
+#vfwzcomacx .gt_font_bold {
   font-weight: bold;
 }
 
-#qkqrbfrvny .gt_font_italic {
+#vfwzcomacx .gt_font_italic {
   font-style: italic;
 }
 
-#qkqrbfrvny .gt_super {
+#vfwzcomacx .gt_super {
   font-size: 65%;
 }
 
-#qkqrbfrvny .gt_footnote_marks {
+#vfwzcomacx .gt_footnote_marks {
   font-size: 75%;
   vertical-align: 0.4em;
   position: initial;
 }
 
-#qkqrbfrvny .gt_asterisk {
+#vfwzcomacx .gt_asterisk {
   font-size: 100%;
   vertical-align: 0;
 }
 
-#qkqrbfrvny .gt_indent_1 {
+#vfwzcomacx .gt_indent_1 {
   text-indent: 5px;
 }
 
-#qkqrbfrvny .gt_indent_2 {
+#vfwzcomacx .gt_indent_2 {
   text-indent: 10px;
 }
 
-#qkqrbfrvny .gt_indent_3 {
+#vfwzcomacx .gt_indent_3 {
   text-indent: 15px;
 }
 
-#qkqrbfrvny .gt_indent_4 {
+#vfwzcomacx .gt_indent_4 {
   text-indent: 20px;
 }
 
-#qkqrbfrvny .gt_indent_5 {
+#vfwzcomacx .gt_indent_5 {
   text-indent: 25px;
 }
 
-#qkqrbfrvny .katex-display {
+#vfwzcomacx .katex-display {
   display: inline-flex !important;
   margin-bottom: 0.75em !important;
 }
 
-#qkqrbfrvny div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
+#vfwzcomacx div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
   height: 0px !important;
 }
 </style>
